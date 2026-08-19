@@ -41,7 +41,7 @@ function loadPadoruModel(): Promise<THREE.Group> {
             mesh.frustumCulled = false
           }
         })
-        fbx.scale.setScalar(1.35)
+        fbx.scale.setScalar(1.50)
         // Center the chibi body (X offset centers the bag + character)
         fbx.position.set(0.095, -0.28, 0)
         padoruCache = fbx
@@ -114,7 +114,7 @@ function loadChibiChickModel(): Promise<THREE.Group> {
           }
         })
         // Scale Chibi Chick to fit smoothly in the chibi world
-        chickScene.scale.setScalar(1.35)
+        chickScene.scale.setScalar(1.55)
         // Chick model naturally faces +Z forward
         chickScene.rotation.y = 0
         chickScene.position.set(0, -0.28, 0)
@@ -173,7 +173,7 @@ function loadChibiGirlModel(): Promise<THREE.Group> {
             }
           }
         })
-        scene.scale.setScalar(0.75)
+        scene.scale.setScalar(0.88)
         // VRoid faces -Z in bind pose; rotate 180 (Math.PI) to face forward (+Z)
         scene.rotation.y = Math.PI
         scene.position.set(0, -0.28, 0)
@@ -234,7 +234,7 @@ function loadChibiStudentModel(): Promise<THREE.Group> {
             }
           }
         })
-        scene.scale.setScalar(1.05)
+        scene.scale.setScalar(1.22)
         scene.rotation.y = Math.PI
         scene.position.set(0, -0.28, 0)
         chibiStudentCache = scene
@@ -294,7 +294,7 @@ function loadChibiPrincessModel(): Promise<THREE.Group> {
             }
           }
         })
-        scene.scale.setScalar(0.54)
+        scene.scale.setScalar(0.64)
         scene.rotation.y = Math.PI
         scene.position.set(0, -0.28, 0)
         chibiPrincessCache = scene

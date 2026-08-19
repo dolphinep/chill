@@ -379,27 +379,27 @@ export default function ManualPage() {
                   <svg viewBox="0 0 200 180" className="h-38 w-38 drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]">
                     <defs>
                       <linearGradient id="islandGrass" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#4ade80" />
-                        <stop offset="60%" stop-color="#16a34a" />
-                        <stop offset="100%" stop-color="#14532d" />
+                        <stop offset="0%" stopColor="#4ade80" />
+                        <stop offset="60%" stopColor="#16a34a" />
+                        <stop offset="100%" stopColor="#14532d" />
                       </linearGradient>
                       <linearGradient id="islandRock" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#4c2c69" />
-                        <stop offset="40%" stop-color="#311947" />
-                        <stop offset="100%" stop-color="#170a24" />
+                        <stop offset="0%" stopColor="#4c2c69" />
+                        <stop offset="40%" stopColor="#311947" />
+                        <stop offset="100%" stopColor="#170a24" />
                       </linearGradient>
                       <linearGradient id="islandMoon" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#fffbeb" />
-                        <stop offset="100%" stop-color="#fde047" />
+                        <stop offset="0%" stopColor="#fffbeb" />
+                        <stop offset="100%" stopColor="#fde047" />
                       </linearGradient>
                       <linearGradient id="fireGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" stop-color="#ef4444" />
-                        <stop offset="50%" stop-color="#f97316" />
-                        <stop offset="100%" stop-color="#fde047" />
+                        <stop offset="0%" stopColor="#ef4444" />
+                        <stop offset="50%" stopColor="#f97316" />
+                        <stop offset="100%" stopColor="#fde047" />
                       </linearGradient>
                       <radialGradient id="campGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.8" />
-                        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+                        <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
+                        <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
                       </radialGradient>
                     </defs>
 
@@ -474,11 +474,11 @@ export default function ManualPage() {
                       <polygon points="4,3 7,7 2,7" fill="#d97706" />
                       <polygon points="8,3 11,7 6,7" fill="#d97706" />
                       {/* Sleeping Closed Eyes */}
-                      <path d="M4,9 Q6,11 8,9" fill="none" stroke="#78350f" stroke-width="1" />
+                      <path d="M4,9 Q6,11 8,9" fill="none" stroke="#78350f" strokeWidth="1" />
                       {/* Curled Tail */}
-                      <path d="M22,10 Q26,6 24,3" fill="none" stroke="#f2c879" stroke-width="2.5" stroke-linecap="round" />
+                      <path d="M22,10 Q26,6 24,3" fill="none" stroke="#f2c879" strokeWidth="2.5" strokeLinecap="round" />
                       {/* Zzz Sparkles */}
-                      <text x="14" y="0" font-size="8" fill="#fef08a" font-family="sans-serif" font-weight="bold">z</text>
+                      <text x="14" y="0" fontSize="8" fill="#fef08a" fontFamily="sans-serif" fontWeight="bold">z</text>
                     </g>
                   </svg>
                 </div>

@@ -17,6 +17,19 @@ import {
 import { useSceneryId } from '@/lib/scenery/sceneryStore'
 import { ChromeAiGuide } from './ChromeAiGuide'
 
+function HidePetIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <circle cx="12" cy="15" r="3.2" stroke="currentColor" />
+      <circle cx="7.5" cy="10.5" r="1.5" fill="currentColor" />
+      <circle cx="16.5" cy="10.5" r="1.5" fill="currentColor" />
+      <circle cx="10.5" cy="7.5" r="1.4" fill="currentColor" />
+      <circle cx="13.5" cy="7.5" r="1.4" fill="currentColor" />
+      <line x1="4.5" y1="4.5" x2="19.5" y2="19.5" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function CompanionModal({
   command,
 }: {
@@ -192,11 +205,11 @@ export function CompanionModal({
           <div className="flex items-center gap-3">
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-2xl border ${
-                isHidden ? 'border-white/10 bg-white/5' : `${activePetInfo.cardBorder} ${activePetInfo.cardBg}`
+                isHidden ? 'border-white/15 bg-white/10 text-white/60 shadow-inner' : `${activePetInfo.cardBorder} ${activePetInfo.cardBg}`
               } p-1.5 shadow-inner ring-1 ring-white/10`}
             >
               {isHidden ? (
-                <span className="text-lg">🚫</span>
+                <HidePetIcon className="h-5 w-5 text-white/70" />
               ) : (
                 renderCompanionIcon(species, 'h-7 w-7')
               )}
@@ -334,8 +347,8 @@ export function CompanionModal({
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 p-1 shadow-inner text-lg">
-                  🚫
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 p-1 shadow-inner text-white/70">
+                  <HidePetIcon className="h-5 w-5" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-white group-hover:text-amber-200 transition">
@@ -389,8 +402,8 @@ export function CompanionModal({
         ) : isHidden ? (
           /* Empty State when Companion is Hidden */
           <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-white/10 bg-white/5 text-3xl shadow-inner mb-3">
-              🚫
+            <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-white/10 bg-white/5 shadow-inner mb-3 text-white/60">
+              <HidePetIcon className="h-8 w-8" />
             </div>
             <h3 className="text-sm font-bold text-white mb-1">Companion is Hidden</h3>
             <p className="text-xs text-white/60 max-w-xs mb-5 leading-relaxed">

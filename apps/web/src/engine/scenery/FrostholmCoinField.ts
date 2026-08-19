@@ -45,6 +45,15 @@ export class FrostholmCoinField {
   #sparkles: Sparkle[] = []
   #audioCtx: AudioContext | null = null
   #scene: THREE.Scene
+  #giftBox: {
+    group: THREE.Group
+    x: number
+    y: number
+    z: number
+    targetY: number
+    vy: number
+    landed: boolean
+  } | null = null
 
   constructor(
     scene: THREE.Scene,
@@ -318,6 +327,29 @@ export class FrostholmCoinField {
     if (activeSparkles > 0 || this.#sparkleMesh.instanceMatrix.needsUpdate) {
       this.#sparkleMesh.instanceMatrix.needsUpdate = true
     }
+
+    // 3. Animate 3D Falling Victory Gift Box
+    if (this.#giftBox) {
+      const gb = this.#giftBox
+      if (!gb.landed) {
+        gb.vy -= 18.0 * dt
+        gb.y += gb.vy * dt
+        if (gb.y <= gb.targetY) {
+          gb.y = gb.targetY
+          if (Math.abs(gb.vy) > 2.5) {
+            gb.vy = -gb.vy * 0.35 // bounce
+            this.#burstSparkles(gb.x, gb.y + 0.3, gb.z)
+          } else {
+            gb.vy = 0
+            gb.landed = true
+            this.#burstSparkles(gb.x, gb.y + 0.3, gb.z)
+            this.#burstSparkles(gb.x, gb.y + 0.8, gb.z)
+          }
+        }
+      }
+      gb.group.rotation.y += 1.2 * dt
+      gb.group.position.set(gb.x, gb.y + Math.sin(time * 3.0) * 0.04, gb.z)
+    }
   }
 
   #collect(index: number, coin: CoinData, floatY: number): void {
@@ -337,6 +369,76 @@ export class FrostholmCoinField {
 
     // Play Crystal Coin Chime
     this.#playCoinChime()
+
+    // If reached 30 coins target, spawn the grand Falling Gift Box!
+    const totalCollected = coinStore.getSnapshot().collectedIds.length
+    if (totalCollected === TARGET_FROSTHOLM_COINS) {
+      this.#spawnGiftBox(coin.x, floatY, coin.z)
+    }
+  }
+
+  #spawnGiftBox(x: number, y: number, z: number): void {
+    if (this.#giftBox) {
+      this.group.remove(this.#giftBox.group)
+      this.#giftBox = null
+    }
+
+    const giftGroup = new THREE.Group()
+
+    // 1. Box Cube (Festive Ruby Red)
+    const boxGeo = new THREE.BoxGeometry(0.7, 0.7, 0.7)
+    const boxMat = new THREE.MeshStandardMaterial({
+      color: 0xef4444,
+      roughness: 0.35,
+      metalness: 0.15,
+      emissive: 0x7f1d1d,
+      emissiveIntensity: 0.3,
+    })
+    const boxMesh = new THREE.Mesh(boxGeo, boxMat)
+    boxMesh.castShadow = true
+    giftGroup.add(boxMesh)
+
+    // 2. Gold Ribbon Bands (Cross)
+    const ribbonMat = new THREE.MeshStandardMaterial({
+      color: 0xfbbf24,
+      roughness: 0.25,
+      metalness: 0.45,
+      emissive: 0xd97706,
+      emissiveIntensity: 0.4,
+    })
+    const ribbonHoriz = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.16, 0.72), ribbonMat)
+    giftGroup.add(ribbonHoriz)
+
+    const ribbonVert1 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.72, 0.72), ribbonMat)
+    giftGroup.add(ribbonVert1)
+
+    // 3. Gold Bow on Top
+    const bowLeft = new THREE.Mesh(new THREE.TorusGeometry(0.14, 0.04, 8, 16), ribbonMat)
+    bowLeft.position.set(-0.12, 0.42, 0)
+    bowLeft.rotation.z = Math.PI / 4
+    giftGroup.add(bowLeft)
+
+    const bowRight = new THREE.Mesh(new THREE.TorusGeometry(0.14, 0.04, 8, 16), ribbonMat)
+    bowRight.position.set(0.12, 0.42, 0)
+    bowRight.rotation.z = -Math.PI / 4
+    giftGroup.add(bowRight)
+
+    const startY = y + 8.5
+    giftGroup.position.set(x, startY, z)
+    this.group.add(giftGroup)
+
+    this.#giftBox = {
+      group: giftGroup,
+      x,
+      y: startY,
+      z,
+      targetY: y + 0.38,
+      vy: -1.0,
+      landed: false,
+    }
+
+    // Burst celebration sparkles in advance
+    this.#burstSparkles(x, y + 2.0, z)
   }
 
   #burstSparkles(x: number, y: number, z: number): void {
@@ -409,6 +511,11 @@ export class FrostholmCoinField {
   /** Reset all coins to visible & uncollected for a fresh run */
   resetAll(): void {
     coinStore.resetRun()
+    if (this.#giftBox) {
+      this.group.remove(this.#giftBox.group)
+      this.#giftBox = null
+    }
+
     for (let i = 0; i < this.#coins.length; i++) {
       const coin = this.#coins[i]!
       coin.collected = false
@@ -429,6 +536,10 @@ export class FrostholmCoinField {
   }
 
   dispose(): void {
+    if (this.#giftBox) {
+      this.group.remove(this.#giftBox.group)
+      this.#giftBox = null
+    }
     this.#scene.remove(this.group)
     this.#coinMesh.geometry.dispose()
     if (Array.isArray(this.#coinMesh.material)) {

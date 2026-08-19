@@ -58,15 +58,6 @@ function getRank(timeMs: number): RankInfo {
   }
 }
 
-function TrophyIcon({ className = 'h-4 w-4' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
-      <path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2M6 3h12v7a6 6 0 0 1-12 0V3z" strokeLinejoin="round" />
-      <path d="M12 16v4M8 20h8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 function TimerIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
@@ -83,22 +74,6 @@ function RefreshIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
       <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M3 3v5h5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function CloseIcon({ className = 'h-4 w-4' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className}>
-      <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function CheckIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className}>
-      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -134,7 +109,16 @@ export function CoinHud({ command }: CoinHudProps) {
     prevCountRef.current = collectedIds.length
   }, [collectedIds.length])
 
-  // Handle ESC key to dismiss celebration modal
+  // Auto-dissolve celebration flare after 7 seconds
+  useEffect(() => {
+    if (!isComplete) return
+    const timer = setTimeout(() => {
+      setIsDismissed(true)
+    }, 7000)
+    return () => clearTimeout(timer)
+  }, [isComplete])
+
+  // Handle ESC key to dismiss celebration
   useEffect(() => {
     if (!showCelebration) return
     const onKeyDown = (e: KeyboardEvent) => {
@@ -224,122 +208,62 @@ export function CoinHud({ command }: CoinHudProps) {
         </div>
       </div>
 
-      {/* Victory Speedrun Celebration Modal */}
+      {/* Minimal & Elegant Level Up / Course Clear Cinematic Flare (Positioned below SkyClock) */}
       {showCelebration && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-150 pointer-events-auto">
-          {/* Click outside to dismiss */}
-          <div className="fixed inset-0" onClick={() => setIsDismissed(true)} />
+        <div className="fixed inset-x-0 top-48 sm:top-50 z-30 pointer-events-none flex flex-col items-center select-none animate-in fade-in zoom-in-95 duration-700">
+          {/* Subtle Golden Glow / Aura Behind Text */}
+          <div className="absolute -inset-8 rounded-full bg-radial from-amber-400/25 via-amber-500/10 to-transparent blur-3xl -z-10" />
 
-          {/* Modal Container */}
-          <div
-            className="animate-in fade-in zoom-in-95 relative z-10 flex w-full max-w-md flex-col gap-4 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/90 p-5 text-white shadow-2xl backdrop-blur-xl duration-150"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/30 shadow">
-                  <TrophyIcon className="h-4 w-4" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-white tracking-wide">
-                    Challenge Completed
-                  </h2>
-                  <p className="text-[10px] text-white/50">
-                    Frostholm Ridge · Coin Speedrun
-                  </p>
-                </div>
-              </div>
+          {/* Subtitle */}
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-linear-to-r from-transparent to-amber-300/70" />
+            <span className="font-mono text-[11px] uppercase tracking-[0.35em] text-amber-200/90 font-medium">
+              FROSTHOLM RIDGE
+            </span>
+            <span className="h-px w-10 bg-linear-to-l from-transparent to-amber-300/70" />
+          </div>
 
-              <button
-                type="button"
-                onClick={() => setIsDismissed(true)}
-                aria-label="Close"
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition"
-              >
-                <CloseIcon />
-              </button>
+          {/* Main Monumental Title (Cinzel Typography) */}
+          <h1 className="mt-2 font-[family-name:var(--font-constellation)] text-4xl sm:text-5xl font-normal tracking-[0.22em] text-transparent bg-clip-text bg-linear-to-b from-yellow-100 via-amber-200 to-amber-400 drop-shadow-[0_4px_24px_rgba(251,191,36,0.45)]">
+            COURSE CLEAR
+          </h1>
+
+          {/* Decorative Divider Line with Center Diamond */}
+          <div className="flex items-center gap-2 mt-2.5 w-56 sm:w-72">
+            <span className="h-px flex-1 bg-linear-to-r from-transparent to-amber-400/80" />
+            <span className="rotate-45 block h-1.5 w-1.5 bg-amber-300 shadow-[0_0_10px_#fde047]" />
+            <span className="h-px flex-1 bg-linear-to-l from-transparent to-amber-400/80" />
+          </div>
+
+          {/* Minimal Floating Stats Badge */}
+          <div className="flex items-center gap-3 mt-3 px-5 py-1.5 rounded-full bg-black/40 border border-amber-400/30 backdrop-blur-md shadow-2xl">
+            <div className="flex items-center gap-1.5 font-mono text-xs text-white/90">
+              <span className="text-[10px] text-white/50 tracking-wider">TIME</span>
+              <span className="font-bold text-amber-200 tracking-tight">
+                {completedTimeMs ? formatTime(completedTimeMs) : '--:--.-'}
+              </span>
             </div>
 
-            {/* Content Body */}
-            <div className="flex flex-col gap-3">
-              {/* Primary Stats Grid */}
-              <div className="grid grid-cols-2 gap-2.5">
-                {/* Time Card */}
-                <div className="flex flex-col justify-between rounded-xl border border-white/10 bg-white/5 p-3">
-                  <div className="flex items-center justify-between text-white/50 text-[10px] font-semibold tracking-wider uppercase">
-                    <span>Time Taken</span>
-                    <TimerIcon className="h-3 w-3 text-white/40" />
-                  </div>
-                  <div className="mt-1">
-                    <span className="font-mono text-xl sm:text-2xl font-bold text-white tracking-tight">
-                      {completedTimeMs ? formatTime(completedTimeMs) : '--:--.-'}
-                    </span>
-                    {bestTimeMs && (
-                      <div className="mt-0.5 text-[10px] text-white/40 font-mono">
-                        Best: {formatTime(bestTimeMs)}
-                      </div>
-                    )}
-                  </div>
-                </div>
+            <span className="text-white/30 text-xs">·</span>
 
-                {/* Speedrun Rank Card */}
-                <div className="flex flex-col justify-between rounded-xl border border-white/10 bg-white/5 p-3">
-                  <div className="flex items-center justify-between text-white/50 text-[10px] font-semibold tracking-wider uppercase">
-                    <span>Speedrun Rank</span>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${rank?.badgeColor ?? 'text-white border-white/20'}`}>
-                      {rank?.label ?? 'S-Rank'}
-                    </span>
-                  </div>
-                  <div className="mt-1">
-                    <span className="text-xs font-semibold text-white/90 truncate block">
-                      {rank?.tag ?? 'Alpine Champion'}
-                    </span>
-                    <div className="mt-0.5 flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                      <CheckIcon className="h-2.5 w-2.5" />
-                      <span>Target reached</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Summary Info Box */}
-              <div className="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-white/60">Coins Collected</span>
-                  <span className="font-mono font-semibold text-amber-300">
-                    {collectedCount} / {TARGET_FROSTHOLM_COINS} (100%)
-                  </span>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
-                  <div className="h-full bg-linear-to-r from-amber-500 to-yellow-300 rounded-full w-full" />
-                </div>
-                <div className="flex items-center justify-between text-[11px] text-white/50 pt-0.5">
-                  <span>Location</span>
-                  <span className="text-white/80">Frostholm Ridge</span>
-                </div>
-              </div>
+            <div className="flex items-center gap-1.5">
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${rank?.badgeColor ?? 'text-white border-white/20'}`}>
+                {rank?.label ?? 'S-Rank'}
+              </span>
+              <span className="text-xs font-medium text-amber-100/90">
+                {rank?.tag ?? 'Alpine Champion'}
+              </span>
             </div>
 
-            {/* Footer / Actions */}
-            <div className="flex items-center gap-2 pt-1 border-t border-white/10">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 px-4 py-2.5 text-xs font-semibold text-amber-200 hover:text-white transition active:scale-95 shadow-md"
-              >
-                <RefreshIcon className="h-3.5 w-3.5" />
-                <span>Play Again</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setIsDismissed(true)}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-white/25 px-4 py-2.5 text-xs font-medium text-white/80 hover:text-white transition active:scale-95"
-              >
-                <span>Free Ski</span>
-              </button>
-            </div>
+            {bestTimeMs && (
+              <>
+                <span className="text-white/30 text-xs">·</span>
+                <div className="flex items-center gap-1 font-mono text-[11px] text-white/60">
+                  <span className="text-[9px] text-white/40">BEST</span>
+                  <span>{formatTime(bestTimeMs)}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
