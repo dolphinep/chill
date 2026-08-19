@@ -59,8 +59,8 @@ gcloud run deploy chill-demo \
   --session-affinity \
   --timeout=3600 \
   --port=8080 \
-  --min-instances=0 \
-  --max-instances=3 \
+  --min-instances=1 \
+  --max-instances=1 \
   --memory=1Gi \
   --cpu=1
 

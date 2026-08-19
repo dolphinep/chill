@@ -38,4 +38,4 @@ USER appuser
 
 EXPOSE 8080
 
-CMD ["npx", "tsx", "scripts/unified-server.ts"]
+CMD ["node", "./node_modules/tsx/dist/cli.mjs", "scripts/unified-server.ts"]
