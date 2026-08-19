@@ -56,7 +56,7 @@ let nextSid = 1
 const HOST_GRACE_MS = 120_000
 
 function getOrCreateRoom(rawName?: string, sceneryId = 'frostholm-ridge'): RoomState {
-  const name = rawName?.trim() || 'Default Room'
+  const name = rawName?.trim() || 'Lobby'
   const key = name.toLowerCase()
 
   let room = rooms.get(key)

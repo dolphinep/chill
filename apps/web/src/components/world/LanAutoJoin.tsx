@@ -83,7 +83,7 @@ export function LanAutoJoin() {
     const roomParam = searchParams.get('room')
     const hostname = window.location.hostname
 
-    // If room query param is explicitly provided in URL (e.g. ?room=cc), auto-join that room
+    // If room query param is explicitly provided in URL (e.g. ?room=xyz), auto-join that room
     if (roomParam) {
       void joinLan(hostname, randomDisplayName(), getAvatarConfig(), sceneryId, roomParam).catch(
         (e: unknown) => {
@@ -93,11 +93,11 @@ export function LanAutoJoin() {
       return
     }
 
-    // Loading from `localhost` without room param means plain solo dev
-    if (hostname === 'localhost' || hostname === '127.0.0.1') return
-    void joinLan(hostname, randomDisplayName(), getAvatarConfig(), sceneryId).catch(
+    // Default: Auto-join public "Lobby" room so all players meet together seamlessly
+    void joinLan(hostname, randomDisplayName(), getAvatarConfig(), sceneryId, 'Lobby').catch(
       (e: unknown) => {
-        console.error('[lan] auto-join failed:', e)
+        // Safe offline fallback in solo mode if local relay isn't running
+        console.log('[lan] auto-join lobby (offline/solo mode):', e)
       },
     )
   }, [lanSession.mode, sceneryId])
