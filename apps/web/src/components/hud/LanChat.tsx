@@ -171,16 +171,16 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                 <ChatBubbleIcon className="h-3.5 w-3.5" />
               </div>
               <div>
-                <h3 className="text-xs font-bold tracking-wide text-white">แชทผู้เล่น</h3>
+                <h3 className="text-xs font-bold tracking-wide text-white">Live Chat</h3>
                 <span className="text-[10px] text-[#f2c879]/80 font-mono">
-                  {peerCount} คน ในห้อง {lanSession.roomName || 'ห้องหลัก'}
+                  {peerCount} {peerCount === 1 ? 'player' : 'players'} in {lanSession.roomName || 'Room'}
                 </span>
               </div>
             </div>
 
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] text-white/40 font-mono hidden sm:inline">
-                <kbd className="rounded border border-white/20 bg-white/10 px-1 py-0.5">Esc</kbd> ปิด
+                <kbd className="rounded border border-white/20 bg-white/10 px-1 py-0.5">Esc</kbd> Close
               </span>
               <button
                 type="button"
@@ -211,9 +211,9 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 mb-2 text-white/40">
                   <ChatBubbleIcon className="h-4 w-4" />
                 </div>
-                <p className="text-xs font-medium text-white/60">ยังไม่มีข้อความ</p>
+                <p className="text-xs font-medium text-white/60">No messages yet</p>
                 <p className="text-[11px] mt-0.5 text-white/40">
-                  {lanSession.roster.length === 0 ? 'พิมพ์ทักทายในห้องได้เลย' : 'ทักทายเพื่อนๆ ในห้องได้เลย!'}
+                  {lanSession.roster.length === 0 ? 'Say hello to the world!' : 'Say hi to everyone in the room!'}
                 </p>
               </div>
             ) : (
@@ -276,7 +276,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') submitMessage()
                 }}
-                placeholder="พิมพ์ข้อความ... (กด Enter เพื่อส่ง)"
+                placeholder="Type a message... (Press Enter to send)"
                 className="w-full rounded-2xl border border-white/15 bg-black/40 pl-3 pr-10 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-[#f2c879]/60 transition"
               />
 
@@ -284,7 +284,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                 type="button"
                 onClick={() => submitMessage()}
                 disabled={!text.trim()}
-                title="ส่งข้อความ"
+                title="Send message"
                 className="absolute right-1.5 flex h-7 w-7 items-center justify-center rounded-xl bg-[#f2c879] text-slate-950 transition hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none shadow"
               >
                 <svg
@@ -300,7 +300,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
             </div>
 
             <div className="flex items-center justify-between px-1.5 pt-1 text-[10px] text-white/40">
-              <span>กด <kbd className="font-mono text-white/60">Enter</kbd> เพื่อส่งข้อความ</span>
+              <span>Press <kbd className="font-mono text-white/60">Enter</kbd> to send</span>
               <span>
                 {graphemeCount(text)}/{MAX_GRAPHEMES}
               </span>
@@ -317,8 +317,8 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
           else setOpen(false)
         }}
         aria-expanded={open}
-        aria-label="แชทผู้เล่น (Enter)"
-        title="แชทผู้เล่น (Enter)"
+        aria-label="Multiplayer Chat (Enter)"
+        title="Multiplayer Chat (Enter)"
         className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl border shadow-2xl backdrop-blur-xl transition hover:scale-110 active:scale-95 ${
           open
             ? 'border-[#f2c879] bg-[#f2c879]/20 text-[#f2c879]'

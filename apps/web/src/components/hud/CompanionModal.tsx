@@ -270,7 +270,7 @@ export function CompanionModal({
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3.5 w-3.5">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" strokeLinejoin="round" />
             </svg>
-            <span>สนทนา</span>
+            <span>Chat</span>
           </button>
           <button
             type="button"
@@ -287,7 +287,7 @@ export function CompanionModal({
               <rect x="3" y="14" width="7" height="7" rx="2" />
               <rect x="14" y="14" width="7" height="7" rx="2" />
             </svg>
-            <span>เลือกสัตว์เลี้ยง</span>
+            <span>Choose Companion</span>
           </button>
         </div>
 
@@ -296,7 +296,7 @@ export function CompanionModal({
           /* Species Selector List */
           <div className="flex-1 space-y-2 overflow-y-auto p-4 custom-scrollbar">
             <p className="text-white/70 text-xs font-medium tracking-wide mb-1">
-              เลือกสัตว์เลี้ยงคู่หูของคุณ
+              Choose your companion pet
             </p>
             {COMPANION_SPECIES_LIST.map((info) => {
               const isSelected = species === info.id
@@ -342,13 +342,13 @@ export function CompanionModal({
             {aiStatus && !aiStatus.isAvailable && (
               <div className="flex flex-col border-b border-amber-500/20 bg-amber-500/10">
                 <div className="flex items-center justify-between px-3 py-1.5 text-[11px] text-amber-200">
-                  <span>กำลังใช้งานโหมดตอบกลับออฟไลน์</span>
+                  <span>Using offline response mode</span>
                   <button
                     type="button"
                     onClick={() => setShowAiGuide((v) => !v)}
                     className="underline hover:text-white"
                   >
-                    {showAiGuide ? 'ซ่อนคำแนะนำ' : 'ตั้งค่า Chrome Built-in AI'}
+                    {showAiGuide ? 'Hide Guide' : 'Setup Chrome Built-in AI'}
                   </button>
                 </div>
                 {showAiGuide && (
@@ -404,7 +404,7 @@ export function CompanionModal({
                 onClick={handlePetAction}
                 className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/90 hover:bg-white/20 hover:text-white transition"
               >
-                <span>ลูบหัวสัตว์เลี้ยง</span>
+                <span>Pet / Hug</span>
               </button>
               {activePetInfo.quickPrompts.map((q) => (
                 <button
@@ -430,7 +430,7 @@ export function CompanionModal({
                 type="text"
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                placeholder={`พิมพ์คุยกับ ${petName || activePetInfo.name}...`}
+                placeholder={`Chat with ${petName || activePetInfo.name}...`}
                 className="border-white/15 bg-white/10 text-white placeholder:text-white/40 flex-1 rounded-xl border px-3.5 py-2 text-xs outline-none focus:border-amber-400/50"
               />
               <button
@@ -438,7 +438,7 @@ export function CompanionModal({
                 disabled={!inputVal.trim() || isThinking}
                 className="flex items-center gap-1 rounded-xl bg-amber-400 px-3.5 py-2 text-xs font-bold text-slate-950 shadow-md hover:bg-amber-300 disabled:opacity-40 transition"
               >
-                <span>ส่ง</span>
+                <span>Send</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3 w-3">
                   <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>

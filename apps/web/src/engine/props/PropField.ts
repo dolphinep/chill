@@ -36,7 +36,11 @@ type FireworkRocket = {
   x: number
   y: number
   z: number
+  vx: number
   vy: number
+  vz: number
+  flightTimeS: number
+  maxFlightTimeS: number
   targetY: number
   color: THREE.Color
   trail: THREE.Points
@@ -230,19 +234,23 @@ export class PropField {
       }
 
       case 'firework': {
+        const mortarGroup = new THREE.Group()
         const mortar = new THREE.Mesh(
           new THREE.CylinderGeometry(0.08, 0.09, 0.45, 8),
           this.#mortarMat,
         )
         mortar.position.set(0, 0.225, 0)
         mortar.castShadow = true
-        propGroup.add(mortar)
+        mortarGroup.add(mortar)
+        // Tilt mortar 30 degrees forward from vertical (60 degrees elevation from ground)
+        mortarGroup.rotation.x = -Math.PI / 6
+        propGroup.add(mortarGroup)
 
-        const base = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.04, 0.3), this.#mortarMat)
+        const base = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.04, 0.36), this.#mortarMat)
         base.position.set(0, 0.02, 0)
         propGroup.add(base)
 
-        this.#launchRocket(data.x, groundY + 0.45, data.z)
+        this.#launchRocket(data.x, groundY + 0.45, data.z, data.yaw)
         break
       }
 
@@ -735,7 +743,12 @@ export class PropField {
   relaunchFirework(propId: string): void {
     const instance = this.#props.get(propId)
     if (!instance || instance.data.type !== 'firework') return
-    this.#launchRocket(instance.data.x, instance.group.position.y + 0.45, instance.data.z)
+    this.#launchRocket(
+      instance.data.x,
+      instance.group.position.y + 0.45,
+      instance.data.z,
+      instance.data.yaw,
+    )
   }
 
   getNearbyProp(
@@ -890,8 +903,8 @@ export class PropField {
     this.#props.delete(id)
   }
 
-  #launchRocket(x: number, startY: number, z: number): void {
-    const rocketGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.25, 5)
+  #launchRocket(x: number, startY: number, z: number, yaw = 0): void {
+    const rocketGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.3, 6)
     const colors = [
       new THREE.Color(0xff3366),
       new THREE.Color(0x38bdf8),
@@ -905,28 +918,45 @@ export class PropField {
     const rocketMat = new THREE.MeshBasicMaterial({ color })
     const rocketMesh = new THREE.Mesh(rocketGeo, rocketMat)
     rocketMesh.position.set(x, startY, z)
+
+    // Launch forward at 60 degrees elevation (Math.PI / 3 from ground)
+    const elevation = Math.PI / 3 // 60 degrees
+    const speed = 25.0 + Math.random() * 5.0
+    const fx = -Math.sin(yaw)
+    const fz = -Math.cos(yaw)
+    const vx = speed * Math.cos(elevation) * fx
+    const vy = speed * Math.sin(elevation)
+    const vz = speed * Math.cos(elevation) * fz
+
+    const launchDir = new THREE.Vector3(vx, vy, vz).normalize()
+    rocketMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), launchDir)
     this.group.add(rocketMesh)
 
-    const maxTrail = 24
+    const maxTrail = 28
     const trailPositions = new Float32Array(maxTrail * 3)
     const trailGeo = new THREE.BufferGeometry()
     trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3))
     const trailMat = new THREE.PointsMaterial({
-      color: 0xffdd88,
-      size: 0.18,
+      color: 0xffe088,
+      size: 0.24,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
     })
     const trail = new THREE.Points(trailGeo, trailMat)
     this.group.add(trail)
 
-    const targetHeight = startY + 22 + Math.random() * 8
+    const targetHeight = startY + 24 + Math.random() * 8
     this.#rockets.push({
       mesh: rocketMesh,
       x,
       y: startY,
       z,
-      vy: 18 + Math.random() * 4,
+      vx,
+      vy,
+      vz,
+      flightTimeS: 0,
+      maxFlightTimeS: 1.35 + Math.random() * 0.3,
       targetY: targetHeight,
       color,
       trail,
@@ -937,21 +967,32 @@ export class PropField {
   }
 
   #explodeFirework(x: number, y: number, z: number, color: THREE.Color): void {
-    const particleCount = 65
+    const particleCount = 180
     const particles: SparkParticle[] = []
     const positions = new Float32Array(particleCount * 3)
     const colors = new Float32Array(particleCount * 3)
 
+    const glitterPalette = [
+      color,
+      color,
+      color,
+      new THREE.Color(0xffdf40), // Glitter Gold
+      new THREE.Color(0xffffff), // Radiant White
+      new THREE.Color(0x38bdf8), // Sky Cyan flare
+      new THREE.Color(0xf472b6), // Neon Pink flare
+    ]
+
     for (let i = 0; i < particleCount; i++) {
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(Math.random() * 2 - 1)
-      const speed = 4.5 + Math.random() * 7.5
+      // Large explosive burst radius
+      const speed = 9.0 + Math.random() * 15.0
 
       const vx = speed * Math.sin(phi) * Math.cos(theta)
-      const vy = speed * Math.cos(phi) * 0.8 + 1.5
+      const vy = speed * Math.cos(phi) * 0.9 + 2.0
       const vz = speed * Math.sin(phi) * Math.sin(theta)
 
-      const partColor = Math.random() < 0.25 ? new THREE.Color(0xffffff) : color
+      const partColor = glitterPalette[Math.floor(Math.random() * glitterPalette.length)]!
       particles.push({
         x,
         y,
@@ -962,7 +1003,7 @@ export class PropField {
         color: partColor,
         alpha: 1.0,
         lifeS: 0,
-        maxLifeS: 1.2 + Math.random() * 0.8,
+        maxLifeS: 2.2 + Math.random() * 0.9,
       })
 
       positions[i * 3] = x
@@ -978,7 +1019,7 @@ export class PropField {
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
 
     const material = new THREE.PointsMaterial({
-      size: 0.32,
+      size: 0.55,
       vertexColors: true,
       transparent: true,
       opacity: 1.0,
@@ -1060,30 +1101,37 @@ export class PropField {
       }
     }
 
-    // 2. Animate Ascending Firework Rockets
+    // 2. Animate Ascending Firework Rockets (forward 60° arc)
     for (let i = this.#rockets.length - 1; i >= 0; i--) {
       const r = this.#rockets[i]!
+      r.flightTimeS += dt
+      r.x += r.vx * dt
       r.y += r.vy * dt
-      r.mesh.position.set(r.x, r.y, r.z)
+      r.z += r.vz * dt
+      r.vy -= 4.5 * dt // gentle arc gravity
 
-      if (r.trailCount < 24) {
-        r.trailPositions[r.trailCount * 3] = r.x + (Math.random() - 0.5) * 0.1
+      r.mesh.position.set(r.x, r.y, r.z)
+      const currentDir = new THREE.Vector3(r.vx, r.vy, r.vz).normalize()
+      r.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), currentDir)
+
+      if (r.trailCount < 28) {
+        r.trailPositions[r.trailCount * 3] = r.x + (Math.random() - 0.5) * 0.12
         r.trailPositions[r.trailCount * 3 + 1] = r.y - 0.2
-        r.trailPositions[r.trailCount * 3 + 2] = r.z + (Math.random() - 0.5) * 0.1
+        r.trailPositions[r.trailCount * 3 + 2] = r.z + (Math.random() - 0.5) * 0.12
         r.trailCount++
       } else {
-        for (let t = 0; t < 23; t++) {
+        for (let t = 0; t < 27; t++) {
           r.trailPositions[t * 3] = r.trailPositions[(t + 1) * 3]!
           r.trailPositions[t * 3 + 1] = r.trailPositions[(t + 1) * 3 + 1]!
           r.trailPositions[t * 3 + 2] = r.trailPositions[(t + 1) * 3 + 2]!
         }
-        r.trailPositions[69] = r.x
-        r.trailPositions[70] = r.y - 0.2
-        r.trailPositions[71] = r.z
+        r.trailPositions[81] = r.x
+        r.trailPositions[82] = r.y - 0.2
+        r.trailPositions[83] = r.z
       }
       r.trail.geometry.attributes['position']!.needsUpdate = true
 
-      if (r.y >= r.targetY) {
+      if (r.flightTimeS >= r.maxFlightTimeS || r.y >= r.targetY) {
         this.#explodeFirework(r.x, r.y, r.z, r.color)
         this.group.remove(r.mesh)
         this.group.remove(r.trail)
@@ -1093,7 +1141,7 @@ export class PropField {
       }
     }
 
-    // 3. Animate Burst Particles
+    // 3. Animate Burst Particles (Big Majestic Bloom)
     for (let b = this.#bursts.length - 1; b >= 0; b--) {
       const burst = this.#bursts[b]!
       const posAttr = burst.geometry.attributes['position'] as THREE.BufferAttribute
@@ -1105,9 +1153,9 @@ export class PropField {
         part.lifeS += dt
         if (part.lifeS < part.maxLifeS) {
           allDead = false
-          part.vy -= 7.5 * dt
-          part.vx *= 0.98
-          part.vz *= 0.98
+          part.vy -= 5.5 * dt // soft particle gravity
+          part.vx *= 0.985
+          part.vz *= 0.985
           part.x += part.vx * dt
           part.y += part.vy * dt
           part.z += part.vz * dt
@@ -1120,7 +1168,7 @@ export class PropField {
       posAttr.needsUpdate = true
 
       const mat = burst.points.material as THREE.PointsMaterial
-      mat.opacity = Math.max(0, mat.opacity - dt * 0.65)
+      mat.opacity = Math.max(0, mat.opacity - dt * 0.45)
 
       if (allDead || mat.opacity <= 0.02) {
         this.group.remove(burst.points)
