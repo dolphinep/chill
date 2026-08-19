@@ -17,8 +17,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'campfire',
     key: '1',
-    name: 'Campfire',
-    desc: 'Warm bonfire',
+    name: 'กองไฟ',
+    desc: 'กองไฟอบอุ่น',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -39,8 +39,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'firework',
     key: '2',
-    name: 'Firework',
-    desc: 'Sky rocket',
+    name: 'ดอกไม้ไฟ',
+    desc: 'พลุสว่างไสว',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -60,8 +60,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'sign',
     key: '3',
-    name: 'Wooden Sign',
-    desc: 'Custom sign',
+    name: 'ป้ายไม้',
+    desc: 'ข้อความกำหนดเอง',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -87,8 +87,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'lantern',
     key: '4',
-    name: 'Garden Lantern',
-    desc: 'Stone lamp',
+    name: 'โคมไฟหิน',
+    desc: 'โคมไฟสวนญี่ปุ่น',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -106,8 +106,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'bench',
     key: '5',
-    name: 'Log Bench',
-    desc: 'Wood bench',
+    name: 'ม้านั่งไม้',
+    desc: 'ที่นั่งพักผ่อน',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -124,8 +124,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'tent',
     key: '6',
-    name: 'Camp Tent',
-    desc: 'Camp shelter',
+    name: 'เต็นท์แคมป์',
+    desc: 'ที่พักผ่อน',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -142,8 +142,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'tea_table',
     key: '7',
-    name: 'Tea Table',
-    desc: 'Cozy seating',
+    name: 'โต๊ะน้ำชา',
+    desc: 'โต๊ะนั่งจิบชา',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -160,8 +160,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'sakura_pot',
     key: '8',
-    name: 'Sakura Bonsai',
-    desc: 'Cherry bloom',
+    name: 'บอนไซซากุระ',
+    desc: 'กระถางซากุระ',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -179,8 +179,8 @@ const PROP_ITEMS: PropItem[] = [
   {
     type: 'quote_billboard',
     key: 'B',
-    name: 'Daily Billboard',
-    desc: 'AI quote board',
+    name: 'ป้ายคำคมประจำวัน',
+    desc: 'ป้ายข้อความ AI',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -267,7 +267,7 @@ export function PropPaletteModal({
       >
         <div className="flex items-center justify-between border-b border-white/10 px-1 pb-1.5">
           <span className="text-[11px] font-medium tracking-wider text-white/50 uppercase">
-            Place Prop
+            วางสิ่งของ (Place Prop)
           </span>
           <span className="font-mono text-[10px] text-white/40">1-8 · B</span>
         </div>
@@ -275,13 +275,13 @@ export function PropPaletteModal({
         {signInputOpen ? (
           <div className="animate-in fade-in flex flex-col gap-2 rounded-xl border border-white/10 bg-white/4 p-2.5 duration-100">
             <div className="flex items-center justify-between text-[11px] text-white/70">
-              <span>Sign Message:</span>
+              <span>ข้อความบนป้าย:</span>
               <button
                 type="button"
                 onClick={() => setSignInputOpen(false)}
                 className="text-[10px] text-white/40 hover:text-white"
               >
-                Cancel
+                ยกเลิก
               </button>
             </div>
             <div className="flex items-center gap-1.5">
@@ -300,7 +300,7 @@ export function PropPaletteModal({
                   }
                 }}
                 onKeyUp={(e) => e.stopPropagation()}
-                placeholder="Sign message..."
+                placeholder="พิมพ์ข้อความบนป้าย..."
                 className="flex-1 rounded-lg border border-white/15 bg-black/40 px-2.5 py-1.5 text-xs text-white placeholder-white/30 focus:border-white/40 focus:outline-none"
               />
               <button
@@ -315,7 +315,7 @@ export function PropPaletteModal({
                     setAiGenerating(false)
                   }
                 }}
-                title="Generate poem / quote with AI"
+                title="สร้างกลอน / ข้อความด้วย AI"
                 className="border-glass-edge hover:bg-glass-foreground/15 text-glass-foreground flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition active:scale-95 disabled:opacity-50"
               >
                 <svg
@@ -330,7 +330,7 @@ export function PropPaletteModal({
                     strokeLinecap="round"
                   />
                 </svg>
-                <span>{aiGenerating ? '…' : 'AI Poem'}</span>
+                <span>{aiGenerating ? '…' : 'กลอน AI'}</span>
               </button>
             </div>
             <button
@@ -338,7 +338,7 @@ export function PropPaletteModal({
               onClick={() => handlePlace('sign', signText)}
               className="w-full rounded-lg bg-white/15 py-1.5 text-[11px] font-medium text-white transition hover:bg-white/25 active:scale-95"
             >
-              Place Sign (Enter)
+              ปักป้ายข้อความ (Enter)
             </button>
           </div>
         ) : (

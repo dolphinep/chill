@@ -159,7 +159,7 @@ export function PropInteractionPrompt({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="border-glass-edge flex items-center justify-between border-b pb-2">
-            <h3 className="text-glass-foreground text-[13px] font-medium">Signpost</h3>
+            <h3 className="text-glass-foreground text-[13px] font-medium">ป้ายข้อความ</h3>
             <button
               type="button"
               onClick={() => {
@@ -182,7 +182,7 @@ export function PropInteractionPrompt({
 
           <div className="flex flex-col gap-2 py-1">
             <p className="text-glass-foreground text-sm leading-relaxed font-medium">
-              &ldquo;{readingSign.text || 'Cozy Spot'}&rdquo;
+              &ldquo;{readingSign.text || 'จุดพักผ่อนแสนสบาย'}&rdquo;
             </p>
             {readingSign.authorName && (
               <span className="text-glass-faint text-[11px] italic">
@@ -199,7 +199,7 @@ export function PropInteractionPrompt({
               }}
               className="border-glass-edge hover:bg-glass-foreground/10 text-glass-faint hover:text-glass-foreground rounded-md border px-3 py-1.5 text-xs transition"
             >
-              Close (Esc)
+              ปิด (Esc)
             </button>
           </div>
         </div>
@@ -209,14 +209,14 @@ export function PropInteractionPrompt({
 
   // 2. Large Daily Quote Billboard Modal
   if (billboardOpen) {
-    const currentQuote = billboardOpen.text || 'Work hard, rest well, and take a moment to breathe.'
+    const currentQuote = billboardOpen.text || 'ทำงานเต็มที่ แล้วอย่าลืมพักผ่อนสูดอากาศบริสุทธิ์ให้เต็มปอด'
 
     const categories: { key: QuoteCategory; label: string }[] = [
-      { key: 'all', label: 'All' },
-      { key: 'working', label: 'Work & Life' },
-      { key: 'teen', label: 'Youth & Ambition' },
-      { key: 'burnout', label: 'Mindfulness' },
-      { key: 'funny', label: 'Witty' },
+      { key: 'all', label: 'ทั้งหมด' },
+      { key: 'working', label: 'วัยทำงาน' },
+      { key: 'teen', label: 'วัยรุ่น & อนาคต' },
+      { key: 'burnout', label: 'พักผ่อน & ฮีลใจ' },
+      { key: 'funny', label: 'มุกกวนๆ' },
     ]
 
     const isAiReady = !!aiStatus?.isAvailable
@@ -231,7 +231,7 @@ export function PropInteractionPrompt({
           <div className="border-glass-edge flex items-center justify-between border-b pb-2">
             <div>
               <h3 className="text-glass-foreground text-[13px] font-medium">
-                Daily Inspiration Billboard
+                ป้ายข้อความสร้างแรงบันดาลใจประจำวัน
               </h3>
             </div>
             <button
@@ -270,7 +270,7 @@ export function PropInteractionPrompt({
             <p className="text-glass-foreground text-sm leading-relaxed font-medium">
               {isGeneratingQuote ? (
                 <span className="text-glass-muted animate-pulse">
-                  Generating fresh quote with AI…
+                  กำลังสร้างข้อความใหม่ด้วย AI…
                 </span>
               ) : (
                 `“${currentQuote}”`
@@ -278,7 +278,7 @@ export function PropInteractionPrompt({
             </p>
 
             <div className="text-glass-faint text-[11px] italic">
-              {billboardOpen.authorName || '— Chill Daily Billboard'}
+              {billboardOpen.authorName || '— ป้ายข้อความประจำวัน'}
             </div>
           </div>
 
@@ -315,21 +315,21 @@ export function PropInteractionPrompt({
                       type: 'updatePropText',
                       propId: billboardOpen.propId,
                       text: customQuoteText.trim(),
-                      authorName: 'Written by Player',
+                      authorName: 'เขียนโดยผู้เล่น',
                     })
                     setBillboardOpen((prev) =>
                       prev
                         ? {
                             ...prev,
                             text: customQuoteText.trim(),
-                            authorName: 'Written by Player',
+                            authorName: 'เขียนโดยผู้เล่น',
                           }
                         : null,
                     )
                     setIsEditingQuote(false)
                   }
                 }}
-                placeholder="Type custom quote..."
+                placeholder="พิมพ์ข้อความที่ต้องการบนป้าย..."
                 className="border-glass-edge bg-glass-foreground/5 text-glass-foreground placeholder:text-glass-faint flex-1 rounded-lg border px-3 py-1.5 text-xs outline-none"
               />
               <button
@@ -340,14 +340,14 @@ export function PropInteractionPrompt({
                       type: 'updatePropText',
                       propId: billboardOpen.propId,
                       text: customQuoteText.trim(),
-                      authorName: 'Written by Player',
+                      authorName: 'เขียนโดยผู้เล่น',
                     })
                     setBillboardOpen((prev) =>
                       prev
                         ? {
                             ...prev,
                             text: customQuoteText.trim(),
-                            authorName: 'Written by Player',
+                            authorName: 'เขียนโดยผู้เล่น',
                           }
                         : null,
                     )
@@ -356,7 +356,7 @@ export function PropInteractionPrompt({
                 }}
                 className="border-glass-edge hover:bg-glass-foreground/15 text-glass-foreground rounded-lg border px-3 py-1.5 text-xs font-medium"
               >
-                Save
+                บันทึก
               </button>
             </div>
           )}
@@ -408,10 +408,10 @@ export function PropInteractionPrompt({
                 </svg>
                 <span>
                   {isGeneratingQuote
-                    ? 'Generating…'
+                    ? 'กำลังสร้าง…'
                     : isAiReady
-                      ? 'AI New Quote'
-                      : 'New Quote'}
+                      ? 'สร้างคำคม AI'
+                      : 'สุ่มคำคมใหม่'}
                 </span>
               </button>
 
@@ -423,7 +423,7 @@ export function PropInteractionPrompt({
                 }}
                 className="border-glass-edge hover:bg-glass-foreground/10 text-glass-faint hover:text-glass-foreground rounded-md border px-2.5 py-1.5 text-xs transition"
               >
-                Edit
+                แก้ไข
               </button>
             </div>
 
@@ -436,7 +436,7 @@ export function PropInteractionPrompt({
               }}
               className="border-glass-edge hover:bg-glass-foreground/10 text-glass-faint hover:text-glass-foreground rounded-md border px-3 py-1.5 text-xs transition"
             >
-              Close (Esc)
+              ปิด (Esc)
             </button>
           </div>
         </div>

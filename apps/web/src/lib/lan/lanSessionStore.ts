@@ -136,16 +136,30 @@ function getRelayUrl(hostAddress?: string): string {
   }
   const isHttps = window.location.protocol === 'https:'
   const proto = isHttps ? 'wss' : 'ws'
+  const isLocalHost =
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 
-  // If hostAddress is provided explicitly (e.g. guest connecting to specific IP)
+  // If hostAddress is provided explicitly (e.g. guest connecting to specific IP or domain)
   if (hostAddress) {
     const cleanHost = hostAddress.trim()
-    return cleanHost.includes(':') ? `${proto}://${cleanHost}` : `${proto}://${cleanHost}:${LAN_RELAY_PORT}`
+    if (cleanHost.includes(':')) {
+      return `${proto}://${cleanHost}`
+    }
+    // If the hostAddress matches the current page hostname or origin, or if on HTTPS / Cloud Run (production):
+    if (
+      cleanHost === window.location.hostname ||
+      cleanHost === window.location.host ||
+      !isLocalHost ||
+      isHttps
+    ) {
+      return `${proto}://${window.location.host}`
+    }
+    // Local dev on plain HTTP and localhost/LAN IP
+    return `${proto}://${cleanHost}:${LAN_RELAY_PORT}`
   }
 
   // Deployed production mode on standard web ports (Cloud Run, reverse proxies, etc.)
-  const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  if (!isLocalHost) {
+  if (!isLocalHost || isHttps) {
     return `${proto}://${window.location.host}`
   }
 

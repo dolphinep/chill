@@ -3,20 +3,17 @@
 import { useEffect, useState } from 'react'
 import { getAvatarConfig } from '@/lib/avatar/avatarStore'
 import { randomDisplayName } from '@/lib/avatar/randomName'
-import { leaveLan, startHosting, useLanSession } from '@/lib/lan/lanSessionStore'
+import { leaveLan, startHosting, joinLan, useLanSession } from '@/lib/lan/lanSessionStore'
 import { useSceneryId } from '@/lib/scenery/sceneryStore'
 import { SCENERY_REGISTRY } from '@/lib/scenery/registry'
 
-/**
- * Hosting lives here, not in `ComfortSettings` — a LAN session is something you start
- * once and then want a quick, glanceable "am I live, what's the link" affordance for,
- * not a setting you dig through a panel to check.
- */
+function getWebShareUrl(roomName: string | null): string {
+  if (typeof window === 'undefined') return ''
+  const base = window.location.origin
+  return roomName ? `${base}/?room=${encodeURIComponent(roomName)}` : base
+}
 
-/** `?room=` is purely a label for whoever's reading the link before they click it (or
- * confirming after) — it's not how the guest's browser finds the host; that's still
- * `address`, auto-filled from `location.hostname` the moment they open it. */
-function shareUrl(address: string, roomName: string | null): string {
+function getLanShareUrl(address: string, roomName: string | null): string {
   const base = `http://${address}:3100`
   return roomName ? `${base}/?room=${encodeURIComponent(roomName)}` : base
 }
@@ -40,7 +37,7 @@ export function LanDockIcon({ onClick }: { onClick: () => void }) {
     ? 'Hosting — copy link (L)'
     : guest
       ? 'Connected to room (L)'
-      : 'LAN Multiplayer (L)'
+      : 'Multiplayer Rooms (L)'
   return (
     <div className="group relative flex flex-col items-center">
       <div className="absolute -top-10 left-1/2 -translate-x-1/2 translate-y-1 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-150 pointer-events-none px-3 py-1 text-xs font-medium text-white bg-slate-950/90 backdrop-blur-md rounded-lg whitespace-nowrap shadow-2xl border border-white/20 z-50 after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-slate-950/90">
@@ -79,7 +76,8 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const [shareAddresses, setShareAddresses] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [copiedWeb, setCopiedWeb] = useState(false)
+  const [copiedLanIndex, setCopiedLanIndex] = useState<number | null>(null)
 
   useEffect(() => {
     if (!isOpen) return
@@ -100,24 +98,42 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
   if (!isOpen) return null
 
   const currentSceneryName = SCENERY_REGISTRY[sceneryId]?.place ?? sceneryId
+  const isLocalHost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
 
   async function handleStartHosting(): Promise<void> {
     setBusy(true)
     setError(null)
     try {
-      const res = await fetch('/api/lan/info')
-      const info = (await res.json()) as { addresses: string[] }
-      if (Array.isArray(info.addresses)) {
-        setShareAddresses(info.addresses)
-      }
       await startHosting(
         displayName.trim() || 'Host',
         getAvatarConfig(),
         sceneryId,
-        roomName.trim() || 'Room',
+        roomName.trim() || 'Cozy Room',
       )
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not start hosting')
+      setError(e instanceof Error ? e.message : 'Could not create room')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleJoinRoom(): Promise<void> {
+    setBusy(true)
+    setError(null)
+    try {
+      const targetRoom = roomName.trim() || 'Cozy Room'
+      const hostname = window.location.hostname
+      await joinLan(
+        hostname,
+        displayName.trim() || randomDisplayName(),
+        getAvatarConfig(),
+        sceneryId,
+        targetRoom,
+      )
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not join room')
     } finally {
       setBusy(false)
     }
@@ -145,24 +161,43 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
     return ok
   }
 
-  function handleCopy(url: string, index: number): void {
+  function handleCopyWebLink(): void {
+    const url = getWebShareUrl(lanSession.roomName)
     copyText(url)
-    setCopiedIndex(index)
-    setTimeout(() => setCopiedIndex((v) => (v === index ? null : v)), 1500)
+    setCopiedWeb(true)
+    setTimeout(() => setCopiedWeb(false), 2000)
+  }
+
+  function handleCopyLan(url: string, index: number): void {
+    copyText(url)
+    setCopiedLanIndex(index)
+    setTimeout(() => setCopiedLanIndex((v) => (v === index ? null : v)), 2000)
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="glass flex w-full max-w-sm flex-col gap-4 p-5 text-white shadow-2xl rounded-2xl border border-white/15">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      {/* Click outside to close */}
+      <div className="fixed inset-0" onClick={onClose} />
+
+      <div
+        className="glass relative z-10 flex w-full max-w-sm flex-col gap-4 p-5 text-white shadow-2xl rounded-2xl border border-white/15 animate-in fade-in zoom-in-95 duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-white/10 pb-3">
           <div className="flex items-center gap-2.5">
-            <ShareIcon />
-            <h2 className="text-sm font-medium text-white/95">LAN Multiplayer</h2>
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-white shadow">
+              <ShareIcon />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-white tracking-wide">Multiplayer Rooms</h2>
+              <p className="text-[10px] text-white/50">Play together in real-time 3D</p>
+            </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-white/60 hover:text-white p-1 rounded-lg hover:bg-white/10 transition"
+            aria-label="Close"
+            className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
               <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
@@ -170,108 +205,174 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
           </button>
         </div>
 
+        {/* GUEST MODE VIEW */}
         {lanSession.mode === 'guest' && (
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse shrink-0" />
-              <span className="text-white/90 font-medium">
-                {lanSession.roomName ? `Connected to "${lanSession.roomName}"` : 'Connected as Guest'}
-              </span>
-              <span className="text-white/50">
-                · {lanSession.roster.length} {lanSession.roster.length === 1 ? 'friend' : 'friends'}
+            <div className="flex items-center justify-between rounded-xl bg-white/5 px-3 py-2.5 border border-white/10 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-sky-400 animate-pulse shrink-0" />
+                <span className="text-white font-semibold">
+                  {lanSession.roomName ? `"${lanSession.roomName}"` : 'Guest Room'}
+                </span>
+              </div>
+              <span className="text-white/50 text-[11px]">
+                {lanSession.roster.length} {lanSession.roster.length === 1 ? 'friend' : 'friends'} online
               </span>
             </div>
-            <p className="text-xs text-white/70">
-              You are currently connected as a guest. The host controls the active scenery.
+
+            {/* Share link to invite others to this room too */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[11px] text-white/60 font-medium">Invite others with link:</span>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 min-w-0 truncate rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-[11px] text-white/90 font-mono">
+                  {getWebShareUrl(lanSession.roomName)}
+                </code>
+                <button
+                  type="button"
+                  onClick={handleCopyWebLink}
+                  className="shrink-0 px-3 py-2 text-xs font-semibold rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white transition active:scale-95"
+                >
+                  {copiedWeb ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-white/60 leading-relaxed">
+              You are connected as a guest. The room host controls the active scenery.
             </p>
+
             <button
               type="button"
               onClick={() => leaveLan()}
-              className="px-3 py-2 text-xs font-medium rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white transition"
+              className="mt-1 px-4 py-2.5 text-xs font-semibold rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white/90 hover:text-white transition active:scale-95"
             >
-              Leave session
+              Leave Room
             </button>
           </div>
         )}
 
+        {/* SOLO MODE VIEW: CREATE OR JOIN ROOM */}
         {lanSession.mode === 'solo' && (
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between rounded-xl bg-white/5 px-3 py-2 border border-white/10 text-xs">
-              <span className="text-white/60">Active Scenery:</span>
+              <span className="text-white/60">Scenery:</span>
               <span className="text-white font-medium text-right">{currentSceneryName}</span>
             </div>
-            <input
-              type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Your name"
-              className="glass px-3 py-2 text-xs outline-none rounded-xl"
-            />
-            <input
-              type="text"
-              value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
-              placeholder="Room name (e.g. Cozy Stargazing)"
-              className="glass px-3 py-2 text-xs outline-none rounded-xl"
-            />
-            <button
-              type="button"
-              onClick={() => void handleStartHosting()}
-              disabled={busy}
-              className="px-3 py-2 text-xs font-medium rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-white transition disabled:opacity-50"
-            >
-              {busy ? 'Starting…' : 'Start hosting'}
-            </button>
-            {error && <p className="text-[11px] text-red-300">{error}</p>}
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                Display Name
+              </label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Your name"
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder-white/40 focus:border-white/30 focus:outline-none transition"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                Room Name / Code
+              </label>
+              <input
+                type="text"
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+                placeholder="e.g. Cozy Stargazing, Room 101"
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder-white/40 focus:border-white/30 focus:outline-none transition"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              <button
+                type="button"
+                onClick={() => void handleStartHosting()}
+                disabled={busy}
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 hover:text-white transition active:scale-95 disabled:opacity-50 shadow-md"
+              >
+                <span>{busy ? 'Creating…' : 'Create Room'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void handleJoinRoom()}
+                disabled={busy}
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-200 hover:text-white transition active:scale-95 disabled:opacity-50 shadow-md"
+              >
+                <span>{busy ? 'Joining…' : 'Join Room'}</span>
+              </button>
+            </div>
+
+            {error && <p className="text-[11px] text-red-300 text-center">{error}</p>}
           </div>
         )}
 
+        {/* HOSTING MODE VIEW */}
         {lanSession.mode === 'hosting' && (
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                <span className="text-white/90 font-medium">
-                  {lanSession.roomName ? `Hosting "${lanSession.roomName}"` : 'Hosting'}
+            <div className="flex items-center justify-between rounded-xl bg-white/5 px-3 py-2.5 border border-white/10 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="text-white font-semibold">
+                  {lanSession.roomName ? `"${lanSession.roomName}"` : 'Your Room'}
                 </span>
-                <span className="text-white/50">
-                  · {lanSession.roster.length} {lanSession.roster.length === 1 ? 'friend' : 'friends'}
+                <span className="text-[10px] text-emerald-300 bg-emerald-500/20 px-1.5 py-0.5 rounded border border-emerald-400/30 font-bold">
+                  HOST
                 </span>
               </div>
-              <span className="text-[10px] text-white/60 bg-white/10 px-2 py-0.5 rounded-md font-medium">
-                {currentSceneryName}
+              <span className="text-white/50 text-[11px]">
+                {lanSession.roster.length} {lanSession.roster.length === 1 ? 'friend' : 'friends'} online
               </span>
             </div>
-            {shareAddresses.length > 0 ? (
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-white/60">
-                  Share this link on the same WiFi — it opens straight into the room, no
-                  address or room name to type:
-                </span>
+
+            {/* Public Web Share Link */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[11px] text-white/70 font-medium">
+                Share this link with friends to join:
+              </span>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 min-w-0 truncate rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-[11px] text-white/90 font-mono">
+                  {getWebShareUrl(lanSession.roomName)}
+                </code>
+                <button
+                  type="button"
+                  onClick={handleCopyWebLink}
+                  className="shrink-0 px-3 py-2 text-xs font-semibold rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-white transition active:scale-95"
+                >
+                  {copiedWeb ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {/* Local WiFi LAN links (shown only when running locally on localhost/LAN dev) */}
+            {isLocalHost && shareAddresses.length > 0 && (
+              <div className="flex flex-col gap-1.5 border-t border-white/10 pt-2">
+                <span className="text-[10px] text-white/50">Local WiFi IP link (LAN):</span>
                 {shareAddresses.map((a, i) => (
                   <div key={a} className="flex items-center gap-2">
-                    <code className="flex-1 min-w-0 truncate rounded-lg bg-white/5 border border-white/10 px-2.5 py-1.5 text-[11px] text-white/85">
-                      {shareUrl(a, lanSession.roomName)}
+                    <code className="flex-1 min-w-0 truncate rounded-lg bg-white/5 border border-white/10 px-2.5 py-1 text-[10px] text-white/70 font-mono">
+                      {getLanShareUrl(a, lanSession.roomName)}
                     </code>
                     <button
                       type="button"
-                      onClick={() => handleCopy(shareUrl(a, lanSession.roomName), i)}
-                      className="shrink-0 px-2.5 py-1.5 text-[11px] font-medium rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white transition"
+                      onClick={() => handleCopyLan(getLanShareUrl(a, lanSession.roomName), i)}
+                      className="shrink-0 px-2 py-1 text-[10px] font-medium rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white transition"
                     >
-                      {copiedIndex === i ? 'Copied!' : 'Copy'}
+                      {copiedLanIndex === i ? 'Copied!' : 'Copy'}
                     </button>
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-[11px] text-white/50">No LAN address detected on this machine.</p>
             )}
+
             <button
               type="button"
               onClick={() => leaveLan()}
-              className="px-3 py-2 text-xs font-medium rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white transition"
+              className="mt-1 px-4 py-2.5 text-xs font-semibold rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white/90 hover:text-white transition active:scale-95"
             >
-              Stop hosting
+              Stop Hosting (Close Room)
             </button>
           </div>
         )}
@@ -279,3 +380,4 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
     </div>
   )
 }
+

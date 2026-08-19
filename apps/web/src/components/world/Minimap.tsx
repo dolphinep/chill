@@ -48,13 +48,16 @@ export function Minimap({
   if (lanSession.mode === 'solo' || !snapshot) return null
 
   return (
-    <div className="fixed top-3 left-3 z-40 flex flex-col items-center gap-1.5 select-none">
+    <div className="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-40 flex flex-col items-center gap-1.5 select-none animate-in fade-in duration-200">
       {lanSession.roomName && (
-        <span className="glass rounded-full px-2.5 py-0.5 text-[10px] font-medium text-glass-foreground">
+        <span className="glass rounded-full px-2.5 py-0.5 text-[10px] font-medium text-glass-foreground border border-white/10 shadow-sm">
           {lanSession.roomName}
         </span>
       )}
-      <div className="glass relative rounded-full" style={{ width: MAP_PX, height: MAP_PX }}>
+      <div
+        className="glass relative rounded-full border border-white/15 shadow-xl backdrop-blur-xl bg-black/20"
+        style={{ width: MAP_PX, height: MAP_PX }}
+      >
         {/* Local player: always at the ring's center — everyone else moves relative
             to them, not the other way round. */}
         <div

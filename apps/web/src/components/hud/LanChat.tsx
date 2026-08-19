@@ -6,12 +6,12 @@ import { graphemeCount, MAX_GRAPHEMES, truncateGraphemes } from '@/lib/thoughts/
 import { useLanSession, type ChatMessage } from '@/lib/lan/lanSessionStore'
 
 const QUICK_PHRASES = [
-  '👋 Hello!',
-  '✨ So cozy~',
-  '⛷️ Let’s ski!',
-  '🏐 Volleyball match!',
-  '🍵 Tea by the fire',
-  '💖 Thank you!',
+  'สวัสดีครับ/ค่ะ',
+  'บรรยากาศดีจัง',
+  'ไปเล่นสกีกันไหม',
+  'เล่นวอลเลย์บอลกันเถอะ',
+  'นั่งพักผ่อนริมกองไฟ',
+  'ขอบคุณนะ',
 ]
 
 const PLAYER_COLORS = [
@@ -33,12 +33,20 @@ function formatTime(epochMs: number): string {
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
+function ChatBubbleIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 /**
- * Enhanced Real-time Multiplayer Chat with:
+ * Enhanced Real-time Multiplayer Chat:
  * - Enter shortcut to open & focus
  * - Unread message notifications & Toast Preview
- * - Quick Action Emotes
- * - Distinct player badges & Starry Night styling
+ * - Quick Action Thai phrases
+ * - Distinct player badges & Starry Night glassmorphic styling
  */
 export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) {
   const lanSession = useLanSession()
@@ -63,7 +71,6 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
     if (lanSession.mode === 'solo') return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if meta/ctrl/alt is held
       if (e.metaKey || e.ctrlKey || e.altKey) return
 
       const activeEl = document.activeElement as HTMLElement | null
@@ -90,7 +97,6 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
   // Focus input when opened
   useEffect(() => {
     if (open) {
-      // Slight delay to allow DOM render
       const t = setTimeout(() => inputRef.current?.focus(), 50)
       return () => clearTimeout(t)
     }
@@ -140,8 +146,8 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
           }}
           className="flex cursor-pointer items-start gap-2 max-w-xs rounded-2xl border border-[#f2c879]/40 bg-[#1c132e]/95 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl transition hover:scale-105 active:scale-95 animate-in fade-in slide-in-from-bottom-2 duration-200"
         >
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f2c879]/20 text-[#f2c879] text-xs font-bold">
-            💬
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f2c879]/20 text-[#f2c879]">
+            <ChatBubbleIcon className="h-3.5 w-3.5" />
           </div>
           <div className="flex-1 min-w-0 text-left">
             <div className="flex items-center justify-between gap-1">
@@ -161,20 +167,20 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/10 pb-2.5 px-1">
             <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#f2c879]/20 text-[#f2c879] text-xs">
-                💬
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#f2c879]/20 text-[#f2c879]">
+                <ChatBubbleIcon className="h-3.5 w-3.5" />
               </div>
               <div>
-                <h3 className="text-xs font-bold tracking-wide text-white">Player Chat</h3>
+                <h3 className="text-xs font-bold tracking-wide text-white">แชทผู้เล่น</h3>
                 <span className="text-[10px] text-[#f2c879]/80 font-mono">
-                  {peerCount} player{peerCount > 1 ? 's' : ''} in {lanSession.roomName || 'room'}
+                  {peerCount} คน ในห้อง {lanSession.roomName || 'ห้องหลัก'}
                 </span>
               </div>
             </div>
 
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] text-white/40 font-mono hidden sm:inline">
-                <kbd className="rounded border border-white/20 bg-white/10 px-1 py-0.5">Esc</kbd> close
+                <kbd className="rounded border border-white/20 bg-white/10 px-1 py-0.5">Esc</kbd> ปิด
               </span>
               <button
                 type="button"
@@ -202,10 +208,12 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
           >
             {lanSession.chatMessages.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center text-center p-4 text-white/40">
-                <span className="text-2xl mb-1">🍵</span>
-                <p className="text-xs font-medium text-white/60">No messages yet</p>
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 mb-2 text-white/40">
+                  <ChatBubbleIcon className="h-4 w-4" />
+                </div>
+                <p className="text-xs font-medium text-white/60">ยังไม่มีข้อความ</p>
                 <p className="text-[11px] mt-0.5 text-white/40">
-                  Say hi to {lanSession.roster.length === 0 ? 'the room' : 'your friends'}!
+                  {lanSession.roster.length === 0 ? 'พิมพ์ทักทายในห้องได้เลย' : 'ทักทายเพื่อนๆ ในห้องได้เลย!'}
                 </p>
               </div>
             ) : (
@@ -268,7 +276,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') submitMessage()
                 }}
-                placeholder="Type a message... (Enter to send)"
+                placeholder="พิมพ์ข้อความ... (กด Enter เพื่อส่ง)"
                 className="w-full rounded-2xl border border-white/15 bg-black/40 pl-3 pr-10 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-[#f2c879]/60 transition"
               />
 
@@ -276,7 +284,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                 type="button"
                 onClick={() => submitMessage()}
                 disabled={!text.trim()}
-                title="Send message"
+                title="ส่งข้อความ"
                 className="absolute right-1.5 flex h-7 w-7 items-center justify-center rounded-xl bg-[#f2c879] text-slate-950 transition hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none shadow"
               >
                 <svg
@@ -292,7 +300,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
             </div>
 
             <div className="flex items-center justify-between px-1.5 pt-1 text-[10px] text-white/40">
-              <span>Press <kbd className="font-mono text-white/60">Enter</kbd> to send</span>
+              <span>กด <kbd className="font-mono text-white/60">Enter</kbd> เพื่อส่งข้อความ</span>
               <span>
                 {graphemeCount(text)}/{MAX_GRAPHEMES}
               </span>
@@ -309,23 +317,15 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
           else setOpen(false)
         }}
         aria-expanded={open}
-        aria-label="Multiplayer Chat (Enter)"
-        title="Multiplayer Chat (Enter)"
+        aria-label="แชทผู้เล่น (Enter)"
+        title="แชทผู้เล่น (Enter)"
         className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl border shadow-2xl backdrop-blur-xl transition hover:scale-110 active:scale-95 ${
           open
             ? 'border-[#f2c879] bg-[#f2c879]/20 text-[#f2c879]'
             : 'border-white/20 bg-[#1c132e]/90 text-white/90 hover:border-[#f2c879]/50'
         }`}
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.8}
-          className="h-5 w-5"
-        >
-          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-        </svg>
+        <ChatBubbleIcon className="h-5 w-5" />
 
         {/* Unread Counter Badge */}
         {!open && unreadCount > 0 && (

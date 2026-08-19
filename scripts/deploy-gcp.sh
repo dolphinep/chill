@@ -45,13 +45,8 @@ IMAGE_TAG="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/chill-demo:latest"
 echo "🔨 Building & Pushing Unified Docker image (Next.js + Multiplayer Relay)..."
 gcloud builds submit \
   --project="$PROJECT_ID" \
-  --config=- . <<EOF
-steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', '$IMAGE_TAG', '.']
-images:
-- '$IMAGE_TAG'
-EOF
+  --tag="$IMAGE_TAG" \
+  .
 
 # 4. Deploy Unified Container to Cloud Run
 echo "🚀 Deploying 'chill-demo' to Cloud Run..."
