@@ -31,7 +31,6 @@ function lanDevOrigins(): string[] {
 }
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   reactStrictMode: true,
   allowedDevOrigins: lanDevOrigins(),
 
