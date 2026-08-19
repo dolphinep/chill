@@ -1,8 +1,418 @@
 import * as THREE from 'three/webgpu'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js'
 import type { ChibiAvatarConfig } from '@/lib/avatar/avatarConfig'
 import { ChibiFaceTexture } from './ChibiFaceTexture'
 import { SpringBone } from './SpringBone'
+
+let padoruCache: THREE.Group | null = null
+let padoruLoadingPromise: Promise<THREE.Group> | null = null
+
+function loadPadoruModel(): Promise<THREE.Group> {
+  if (padoruCache) {
+    return Promise.resolve(SkeletonUtils.clone(padoruCache) as THREE.Group)
+  }
+  if (padoruLoadingPromise) {
+    return padoruLoadingPromise.then((m) => SkeletonUtils.clone(m) as THREE.Group)
+  }
+
+  padoruLoadingPromise = new Promise<THREE.Group>((resolve, reject) => {
+    const loader = new FBXLoader()
+    loader.load(
+      '/models/padoru/Padoru_v3.1.fbx',
+      (fbx) => {
+        const texLoader = new THREE.TextureLoader()
+        const tex = texLoader.load('/models/padoru/Padoru_Tex.png')
+        tex.colorSpace = THREE.SRGBColorSpace
+        const padoruMat = new THREE.MeshStandardMaterial({
+          map: tex,
+          roughness: 0.65,
+          metalness: 0.05,
+          side: THREE.DoubleSide,
+        })
+        fbx.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh
+            mesh.material = padoruMat
+            mesh.castShadow = true
+            mesh.receiveShadow = true
+            mesh.frustumCulled = false
+          }
+        })
+        fbx.scale.setScalar(1.35)
+        // Center the chibi body (X offset centers the bag + character)
+        fbx.position.set(0.095, -0.28, 0)
+        padoruCache = fbx
+        resolve(SkeletonUtils.clone(fbx) as THREE.Group)
+      },
+      undefined,
+      (err) => {
+        console.error('[ChibiAvatarMesh] Failed to load Padoru FBX:', err)
+        reject(err)
+      },
+    )
+  })
+  return padoruLoadingPromise.then((m) => SkeletonUtils.clone(m) as THREE.Group)
+}
+
+function applyHumanoidRestPose(root: THREE.Object3D): void {
+  const leftUpperArm = root.getObjectByName('J_Bip_L_UpperArm') || root.getObjectByName('UpperArm_L')
+  const rightUpperArm = root.getObjectByName('J_Bip_R_UpperArm') || root.getObjectByName('UpperArm_R')
+  const leftLowerArm = root.getObjectByName('J_Bip_L_LowerArm') || root.getObjectByName('LowerArm_L')
+  const rightLowerArm = root.getObjectByName('J_Bip_R_LowerArm') || root.getObjectByName('LowerArm_R')
+
+  if (leftUpperArm) {
+    leftUpperArm.rotation.set(0, 0, 1.25)
+  }
+  if (rightUpperArm) {
+    rightUpperArm.rotation.set(0, 0, -1.25)
+  }
+  if (leftLowerArm) {
+    leftLowerArm.rotation.set(0, 0, 0)
+  }
+  if (rightLowerArm) {
+    rightLowerArm.rotation.set(0, 0, 0)
+  }
+}
+
+let chickCache: THREE.Group | null = null
+let chickLoadingPromise: Promise<THREE.Group> | null = null
+
+function loadChibiChickModel(): Promise<THREE.Group> {
+  if (chickCache) {
+    const clone = SkeletonUtils.clone(chickCache) as THREE.Group
+    return Promise.resolve(clone)
+  }
+  if (chickLoadingPromise) {
+    return chickLoadingPromise.then((m) => {
+      const clone = SkeletonUtils.clone(m) as THREE.Group
+      return clone
+    })
+  }
+
+  chickLoadingPromise = new Promise<THREE.Group>((resolve, reject) => {
+    const loader = new GLTFLoader()
+    loader.load(
+      '/models/vroid/chibi-chick.vrm',
+      (gltf) => {
+        const chickScene = gltf.scene
+        chickScene.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh
+            mesh.castShadow = true
+            mesh.receiveShadow = true
+            mesh.frustumCulled = false
+            if (mesh.material) {
+              if (Array.isArray(mesh.material)) {
+                mesh.material.forEach((m) => (m.side = THREE.DoubleSide))
+              } else {
+                mesh.material.side = THREE.DoubleSide
+              }
+            }
+          }
+        })
+        // Scale Chibi Chick to fit smoothly in the chibi world
+        chickScene.scale.setScalar(1.35)
+        // Chick model naturally faces +Z forward
+        chickScene.rotation.y = 0
+        chickScene.position.set(0, -0.28, 0)
+        chickCache = chickScene
+        const clone = SkeletonUtils.clone(chickScene) as THREE.Group
+        resolve(clone)
+      },
+      undefined,
+      (err) => {
+        console.error('[ChibiAvatarMesh] Failed to load Chibi Chick model:', err)
+        reject(err)
+      },
+    )
+  })
+  return chickLoadingPromise.then((m) => {
+    const clone = SkeletonUtils.clone(m) as THREE.Group
+    return clone
+  })
+}
+
+let chibiGirlCache: THREE.Group | null = null
+let chibiGirlLoadingPromise: Promise<THREE.Group> | null = null
+
+function loadChibiGirlModel(): Promise<THREE.Group> {
+  if (chibiGirlCache) {
+    const clone = SkeletonUtils.clone(chibiGirlCache) as THREE.Group
+    applyHumanoidRestPose(clone)
+    return Promise.resolve(clone)
+  }
+  if (chibiGirlLoadingPromise) {
+    return chibiGirlLoadingPromise.then((m) => {
+      const clone = SkeletonUtils.clone(m) as THREE.Group
+      applyHumanoidRestPose(clone)
+      return clone
+    })
+  }
+
+  chibiGirlLoadingPromise = new Promise<THREE.Group>((resolve, reject) => {
+    const loader = new GLTFLoader()
+    loader.load(
+      '/models/vroid/chibi-girl.glb',
+      (gltf) => {
+        const scene = gltf.scene
+        scene.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh
+            mesh.castShadow = true
+            mesh.receiveShadow = true
+            mesh.frustumCulled = false
+            if (mesh.material) {
+              if (Array.isArray(mesh.material)) {
+                mesh.material.forEach((m) => (m.side = THREE.DoubleSide))
+              } else {
+                mesh.material.side = THREE.DoubleSide
+              }
+            }
+          }
+        })
+        scene.scale.setScalar(0.75)
+        // VRoid faces -Z in bind pose; rotate 180 (Math.PI) to face forward (+Z)
+        scene.rotation.y = Math.PI
+        scene.position.set(0, -0.28, 0)
+        chibiGirlCache = scene
+        const clone = SkeletonUtils.clone(scene) as THREE.Group
+        applyHumanoidRestPose(clone)
+        resolve(clone)
+      },
+      undefined,
+      (err) => {
+        console.error('[ChibiAvatarMesh] Failed to load Chibi Girl GLB:', err)
+        reject(err)
+      },
+    )
+  })
+  return chibiGirlLoadingPromise.then((m) => {
+    const clone = SkeletonUtils.clone(m) as THREE.Group
+    applyHumanoidRestPose(clone)
+    return clone
+  })
+}
+
+let chibiStudentCache: THREE.Group | null = null
+let chibiStudentLoadingPromise: Promise<THREE.Group> | null = null
+
+function loadChibiStudentModel(): Promise<THREE.Group> {
+  if (chibiStudentCache) {
+    const clone = SkeletonUtils.clone(chibiStudentCache) as THREE.Group
+    applyHumanoidRestPose(clone)
+    return Promise.resolve(clone)
+  }
+  if (chibiStudentLoadingPromise) {
+    return chibiStudentLoadingPromise.then((m) => {
+      const clone = SkeletonUtils.clone(m) as THREE.Group
+      applyHumanoidRestPose(clone)
+      return clone
+    })
+  }
+
+  chibiStudentLoadingPromise = new Promise<THREE.Group>((resolve, reject) => {
+    const loader = new GLTFLoader()
+    loader.load(
+      '/models/vroid/chibi-student.glb',
+      (gltf) => {
+        const scene = gltf.scene
+        scene.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh
+            mesh.castShadow = true
+            mesh.receiveShadow = true
+            mesh.frustumCulled = false
+            if (mesh.material) {
+              if (Array.isArray(mesh.material)) {
+                mesh.material.forEach((m) => (m.side = THREE.DoubleSide))
+              } else {
+                mesh.material.side = THREE.DoubleSide
+              }
+            }
+          }
+        })
+        scene.scale.setScalar(1.05)
+        scene.rotation.y = Math.PI
+        scene.position.set(0, -0.28, 0)
+        chibiStudentCache = scene
+        const clone = SkeletonUtils.clone(scene) as THREE.Group
+        applyHumanoidRestPose(clone)
+        resolve(clone)
+      },
+      undefined,
+      (err) => {
+        console.error('[ChibiAvatarMesh] Failed to load Chibi Student GLB:', err)
+        reject(err)
+      },
+    )
+  })
+  return chibiStudentLoadingPromise.then((m) => {
+    const clone = SkeletonUtils.clone(m) as THREE.Group
+    applyHumanoidRestPose(clone)
+    return clone
+  })
+}
+
+let chibiPrincessCache: THREE.Group | null = null
+let chibiPrincessLoadingPromise: Promise<THREE.Group> | null = null
+
+function loadChibiPrincessModel(): Promise<THREE.Group> {
+  if (chibiPrincessCache) {
+    const clone = SkeletonUtils.clone(chibiPrincessCache) as THREE.Group
+    applyHumanoidRestPose(clone)
+    return Promise.resolve(clone)
+  }
+  if (chibiPrincessLoadingPromise) {
+    return chibiPrincessLoadingPromise.then((m) => {
+      const clone = SkeletonUtils.clone(m) as THREE.Group
+      applyHumanoidRestPose(clone)
+      return clone
+    })
+  }
+
+  chibiPrincessLoadingPromise = new Promise<THREE.Group>((resolve, reject) => {
+    const loader = new GLTFLoader()
+    loader.load(
+      '/models/vroid/chibi-princess.glb',
+      (gltf) => {
+        const scene = gltf.scene
+        scene.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh
+            mesh.castShadow = true
+            mesh.receiveShadow = true
+            mesh.frustumCulled = false
+            if (mesh.material) {
+              if (Array.isArray(mesh.material)) {
+                mesh.material.forEach((m) => (m.side = THREE.DoubleSide))
+              } else {
+                mesh.material.side = THREE.DoubleSide
+              }
+            }
+          }
+        })
+        scene.scale.setScalar(0.54)
+        scene.rotation.y = Math.PI
+        scene.position.set(0, -0.28, 0)
+        chibiPrincessCache = scene
+        const clone = SkeletonUtils.clone(scene) as THREE.Group
+        applyHumanoidRestPose(clone)
+        resolve(clone)
+      },
+      undefined,
+      (err) => {
+        console.error('[ChibiAvatarMesh] Failed to load Chibi Princess GLB:', err)
+        reject(err)
+      },
+    )
+  })
+  return chibiPrincessLoadingPromise.then((m) => {
+    const clone = SkeletonUtils.clone(m) as THREE.Group
+    applyHumanoidRestPose(clone)
+    return clone
+  })
+}
+
+export interface HumanoidBones {
+  leftUpperArm?: THREE.Object3D
+  rightUpperArm?: THREE.Object3D
+  leftLowerArm?: THREE.Object3D
+  rightLowerArm?: THREE.Object3D
+  leftUpperLeg?: THREE.Object3D
+  rightUpperLeg?: THREE.Object3D
+  leftLowerLeg?: THREE.Object3D
+  rightLowerLeg?: THREE.Object3D
+  hips?: THREE.Object3D
+  spine?: THREE.Object3D
+  head?: THREE.Object3D
+}
+
+function extractHumanoidBones(root: THREE.Object3D): HumanoidBones {
+  return {
+    leftUpperArm:
+      root.getObjectByName('J_Bip_L_UpperArm') ||
+      root.getObjectByName('UpperArm_L') ||
+      root.getObjectByName('upper_arm.L') ||
+      root.getObjectByName('LeftArm'),
+    rightUpperArm:
+      root.getObjectByName('J_Bip_R_UpperArm') ||
+      root.getObjectByName('UpperArm_R') ||
+      root.getObjectByName('upper_arm.R') ||
+      root.getObjectByName('RightArm'),
+    leftLowerArm:
+      root.getObjectByName('J_Bip_L_LowerArm') ||
+      root.getObjectByName('LowerArm_L') ||
+      root.getObjectByName('lower_arm.L') ||
+      root.getObjectByName('LeftForeArm'),
+    rightLowerArm:
+      root.getObjectByName('J_Bip_R_LowerArm') ||
+      root.getObjectByName('LowerArm_R') ||
+      root.getObjectByName('lower_arm.R') ||
+      root.getObjectByName('RightForeArm'),
+    leftUpperLeg:
+      root.getObjectByName('J_Bip_L_UpperLeg') ||
+      root.getObjectByName('UpperLeg_L') ||
+      root.getObjectByName('upper_leg.L') ||
+      root.getObjectByName('LeftUpLeg'),
+    rightUpperLeg:
+      root.getObjectByName('J_Bip_R_UpperLeg') ||
+      root.getObjectByName('UpperLeg_R') ||
+      root.getObjectByName('upper_leg.R') ||
+      root.getObjectByName('RightUpLeg'),
+    leftLowerLeg:
+      root.getObjectByName('J_Bip_L_LowerLeg') ||
+      root.getObjectByName('LowerLeg_L') ||
+      root.getObjectByName('lower_leg.L') ||
+      root.getObjectByName('LeftLeg'),
+    rightLowerLeg:
+      root.getObjectByName('J_Bip_R_LowerLeg') ||
+      root.getObjectByName('LowerLeg_R') ||
+      root.getObjectByName('lower_leg.R') ||
+      root.getObjectByName('RightLeg'),
+    hips:
+      root.getObjectByName('J_Bip_C_Hips') ||
+      root.getObjectByName('Hips') ||
+      root.getObjectByName('hips'),
+    spine:
+      root.getObjectByName('J_Bip_C_Spine') ||
+      root.getObjectByName('Spine') ||
+      root.getObjectByName('spine'),
+    head:
+      root.getObjectByName('J_Bip_C_Head') ||
+      root.getObjectByName('Head') ||
+      root.getObjectByName('head'),
+  }
+}
+
+function attachSecondarySpringBones(root: THREE.Object3D, springBones: SpringBone[]): void {
+  root.traverse((child) => {
+    const name = child.name.toLowerCase()
+    if (
+      name.includes('hair') ||
+      name.startsWith('j_sec_') ||
+      name.includes('skirt') ||
+      name.includes('ribbon') ||
+      name.includes('hood') ||
+      name.includes('sack') ||
+      name.includes('tail') ||
+      name.includes('ear') ||
+      name.includes('bow') ||
+      name.includes('hat')
+    ) {
+      springBones.push(
+        new SpringBone(child, {
+          stiffness: 140.0,
+          damping: 10.0,
+          maxAngle: 0.65,
+          gravity: 0.05,
+        }),
+      )
+    }
+  })
+}
 
 export interface ChibiRigParts {
   rootGroup: THREE.Group
@@ -14,6 +424,7 @@ export interface ChibiRigParts {
   rightLegPivot: THREE.Group
   faceTexture: ChibiFaceTexture
   springBones: SpringBone[]
+  humanoidBones?: HumanoidBones
   // Roblox-Style Attachment Sockets
   sockets: {
     hat: THREE.Group
@@ -83,6 +494,7 @@ export class ChibiAvatarMesh {
 
     // If geometry styles changed, rebuild sockets/hair/outfit
     if (
+      newConfig.modelType !== undefined ||
       newConfig.hairStyle !== undefined ||
       newConfig.outfitStyle !== undefined ||
       newConfig.accessory !== undefined
@@ -188,78 +600,136 @@ export class ChibiAvatarMesh {
 
     const sockets = { hat: hatSocket, face: faceSocket, neck: neckSocket, back: backSocket, waist: waistSocket }
 
-    // --- Torso & Outfit ---
-    this.#addOutfit(torsoPivot, config.outfitStyle, outfit, accessory)
-
-    // Head Base with Seamless Dynamic Face Texture (Zero Decal/Patch Artifacts)
-    const headGeo = new THREE.SphereGeometry(0.24, 32, 24)
-    headGeo.scale(1.0, 1.06, 0.95)
-    const headMesh = new THREE.Mesh(headGeo, faceMat)
-    headMesh.position.set(0, 0.22, 0)
-    headMesh.castShadow = true
-    headMesh.receiveShadow = true
-    headPivot.add(headMesh)
-
-    // Hair (with Spring Physics where applicable)
-    this.#addHair(headPivot, config.hairStyle, hair, springBones)
-
-    // Accessories (with Spring Physics where applicable)
-    this.#addAccessory(sockets, config.accessory, accessory, springBones)
-
     // --- Left Arm Pivot ---
     const leftArmPivot = new THREE.Group()
     leftArmPivot.position.set(-0.20, 0.27, 0)
-    const armGeo = new THREE.CapsuleGeometry(0.045, 0.18, 4, 8)
-    const leftArm = new THREE.Mesh(armGeo, outfit)
-    leftArm.position.set(0, -0.09, 0)
-    leftArm.castShadow = true
-    const handGeo = new THREE.SphereGeometry(0.04, 10, 8)
-    const leftHand = new THREE.Mesh(handGeo, skin)
-    leftHand.position.set(0, -0.20, 0)
-    leftArmPivot.add(leftArm, leftHand)
     torsoPivot.add(leftArmPivot)
 
     // --- Right Arm Pivot ---
     const rightArmPivot = new THREE.Group()
     rightArmPivot.position.set(0.20, 0.27, 0)
-    const rightArm = new THREE.Mesh(armGeo, outfit)
-    rightArm.position.set(0, -0.09, 0)
-    rightArm.castShadow = true
-    const rightHand = new THREE.Mesh(handGeo, skin)
-    rightHand.position.set(0, -0.20, 0)
-    rightArmPivot.add(rightArm, rightHand)
     torsoPivot.add(rightArmPivot)
 
     // --- Left Leg Pivot ---
     const leftLegPivot = new THREE.Group()
     leftLegPivot.position.set(-0.09, -0.02, 0)
-    const legGeo = new THREE.CapsuleGeometry(0.045, 0.14, 4, 8)
-    const leftLeg = new THREE.Mesh(legGeo, pants)
-    leftLeg.position.set(0, -0.07, 0)
-    leftLeg.castShadow = true
-    const shoeGeo = new THREE.BoxGeometry(0.08, 0.05, 0.12)
-    const leftShoe = new THREE.Mesh(shoeGeo, shoes)
-    leftShoe.position.set(0, -0.18, 0.02)
-    leftLegPivot.add(leftLeg, leftShoe)
     torsoPivot.add(leftLegPivot)
 
     // --- Right Leg Pivot ---
     const rightLegPivot = new THREE.Group()
     rightLegPivot.position.set(0.09, -0.02, 0)
-    const rightLeg = new THREE.Mesh(legGeo, pants)
-    rightLeg.position.set(0, -0.07, 0)
-    rightLeg.castShadow = true
-    const rightShoe = new THREE.Mesh(shoeGeo, shoes)
-    rightShoe.position.set(0, -0.18, 0.02)
-    rightLegPivot.add(rightLeg, rightShoe)
     torsoPivot.add(rightLegPivot)
 
-    // Merge static children per pivot to minimize draw calls
-    this.#mergePivotChildren(torsoPivot)
-    this.#mergePivotChildren(leftArmPivot)
-    this.#mergePivotChildren(rightArmPivot)
-    this.#mergePivotChildren(leftLegPivot)
-    this.#mergePivotChildren(rightLegPivot)
+    const humanoidBones: HumanoidBones = {}
+
+    if (config.modelType === 'padoru') {
+      const padoruContainer = new THREE.Group()
+      torsoPivot.add(padoruContainer)
+      void loadPadoruModel()
+        .then((m) => {
+          padoruContainer.add(m)
+          Object.assign(humanoidBones, extractHumanoidBones(m))
+          attachSecondarySpringBones(m, springBones)
+        })
+        .catch((err) => console.error('[ChibiAvatarMesh] failed to attach Padoru:', err))
+    } else if (config.modelType === 'chibi-chick' || config.modelType === 'vrm-avatar') {
+      const chickContainer = new THREE.Group()
+      torsoPivot.add(chickContainer)
+      void loadChibiChickModel()
+        .then((m) => {
+          chickContainer.add(m)
+          Object.assign(humanoidBones, extractHumanoidBones(m))
+          attachSecondarySpringBones(m, springBones)
+        })
+        .catch((err) => console.error('[ChibiAvatarMesh] failed to attach Chibi Chick:', err))
+    } else if (config.modelType === 'chibi-girl') {
+      const girlContainer = new THREE.Group()
+      torsoPivot.add(girlContainer)
+      void loadChibiGirlModel()
+        .then((m) => {
+          girlContainer.add(m)
+          Object.assign(humanoidBones, extractHumanoidBones(m))
+          attachSecondarySpringBones(m, springBones)
+        })
+        .catch((err) => console.error('[ChibiAvatarMesh] failed to attach Chibi Girl:', err))
+    } else if (config.modelType === 'chibi-student') {
+      const studentContainer = new THREE.Group()
+      torsoPivot.add(studentContainer)
+      void loadChibiStudentModel()
+        .then((m) => {
+          studentContainer.add(m)
+          Object.assign(humanoidBones, extractHumanoidBones(m))
+          attachSecondarySpringBones(m, springBones)
+        })
+        .catch((err) => console.error('[ChibiAvatarMesh] failed to attach Chibi Student:', err))
+    } else if (config.modelType === 'chibi-princess') {
+      const princessContainer = new THREE.Group()
+      torsoPivot.add(princessContainer)
+      void loadChibiPrincessModel()
+        .then((m) => {
+          princessContainer.add(m)
+          Object.assign(humanoidBones, extractHumanoidBones(m))
+          attachSecondarySpringBones(m, springBones)
+        })
+        .catch((err) => console.error('[ChibiAvatarMesh] failed to attach Chibi Princess:', err))
+    } else {
+      // --- Torso & Outfit ---
+      this.#addOutfit(torsoPivot, config.outfitStyle, outfit, accessory)
+
+      // Head Base with Seamless Dynamic Face Texture (Zero Decal/Patch Artifacts)
+      const headGeo = new THREE.SphereGeometry(0.24, 32, 24)
+      headGeo.scale(1.0, 1.06, 0.95)
+      const headMesh = new THREE.Mesh(headGeo, faceMat)
+      headMesh.position.set(0, 0.22, 0)
+      headMesh.castShadow = true
+      headMesh.receiveShadow = true
+      headPivot.add(headMesh)
+
+      // Hair (with Spring Physics where applicable)
+      this.#addHair(headPivot, config.hairStyle, hair, springBones)
+
+      // Accessories (with Spring Physics where applicable)
+      this.#addAccessory(sockets, config.accessory, accessory, springBones)
+
+      const armGeo = new THREE.CapsuleGeometry(0.045, 0.18, 4, 8)
+      const leftArm = new THREE.Mesh(armGeo, outfit)
+      leftArm.position.set(0, -0.09, 0)
+      leftArm.castShadow = true
+      const handGeo = new THREE.SphereGeometry(0.04, 10, 8)
+      const leftHand = new THREE.Mesh(handGeo, skin)
+      leftHand.position.set(0, -0.20, 0)
+      leftArmPivot.add(leftArm, leftHand)
+
+      const rightArm = new THREE.Mesh(armGeo, outfit)
+      rightArm.position.set(0, -0.09, 0)
+      rightArm.castShadow = true
+      const rightHand = new THREE.Mesh(handGeo, skin)
+      rightHand.position.set(0, -0.20, 0)
+      rightArmPivot.add(rightArm, rightHand)
+
+      const legGeo = new THREE.CapsuleGeometry(0.045, 0.14, 4, 8)
+      const leftLeg = new THREE.Mesh(legGeo, pants)
+      leftLeg.position.set(0, -0.07, 0)
+      leftLeg.castShadow = true
+      const shoeGeo = new THREE.BoxGeometry(0.08, 0.05, 0.12)
+      const leftShoe = new THREE.Mesh(shoeGeo, shoes)
+      leftShoe.position.set(0, -0.18, 0.02)
+      leftLegPivot.add(leftLeg, leftShoe)
+
+      const rightLeg = new THREE.Mesh(legGeo, pants)
+      rightLeg.position.set(0, -0.07, 0)
+      rightLeg.castShadow = true
+      const rightShoe = new THREE.Mesh(shoeGeo, shoes)
+      rightShoe.position.set(0, -0.18, 0.02)
+      rightLegPivot.add(rightLeg, rightShoe)
+
+      // Merge static children per pivot to minimize draw calls
+      this.#mergePivotChildren(torsoPivot)
+      this.#mergePivotChildren(leftArmPivot)
+      this.#mergePivotChildren(rightArmPivot)
+      this.#mergePivotChildren(leftLegPivot)
+      this.#mergePivotChildren(rightLegPivot)
+    }
 
     return {
       rootGroup,
@@ -271,6 +741,7 @@ export class ChibiAvatarMesh {
       rightLegPivot,
       faceTexture: this.faceTexture,
       springBones,
+      humanoidBones,
       sockets,
       materials,
     }

@@ -1,9 +1,52 @@
-export type HairStyle = 'bald' | 'bob' | 'spiky' | 'bun' | 'double-buns' | 'curly' | 'floppy' | 'ponytail'
-export type EyeStyle = 'happy' | 'dot' | 'anime' | 'wink'
-export type OutfitStyle = 'cozy-hoodie' | 'beach-robe' | 'sailor-tee' | 'winter-coat' | 'monk-robe'
-export type AccessoryStyle = 'none' | 'cat-ears' | 'bunny-ears' | 'glasses' | 'straw-hat' | 'scarf' | 'angel-wings' | 'backpack' | 'headphones' | 'beret'
+export type AvatarModelType =
+  | 'chibi-classic'
+  | 'padoru'
+  | 'vrm-avatar'
+  | 'chibi-girl'
+  | 'chibi-chick'
+  | 'chibi-student'
+  | 'chibi-princess'
+
+export type HairStyle =
+  | 'twin-tails'
+  | 'hime-cut'
+  | 'double-buns'
+  | 'ponytail'
+  | 'bob'
+  | 'floppy'
+  | 'curly'
+  | 'spiky'
+  | 'bun'
+  | 'bald'
+
+export type EyeStyle = 'anime' | 'happy' | 'wink' | 'dot'
+
+export type OutfitStyle =
+  | 'fairy-dress'
+  | 'miko-shrine'
+  | 'cozy-hoodie'
+  | 'sailor-tee'
+  | 'winter-coat'
+  | 'beach-robe'
+  | 'monk-robe'
+
+export type AccessoryStyle =
+  | 'none'
+  | 'ribbon-bow'
+  | 'fox-ears'
+  | 'cat-ears'
+  | 'bunny-ears'
+  | 'halo'
+  | 'angel-wings'
+  | 'glasses'
+  | 'straw-hat'
+  | 'scarf'
+  | 'backpack'
+  | 'headphones'
+  | 'beret'
 
 export interface ChibiAvatarConfig {
+  modelType?: AvatarModelType
   hairStyle: HairStyle
   hairColor: string
   skinTone: string
@@ -18,6 +61,7 @@ export interface ChibiAvatarConfig {
 }
 
 export const DEFAULT_AVATAR_CONFIG: ChibiAvatarConfig = {
+  modelType: 'chibi-classic',
   hairStyle: 'bun',
   hairColor: '#475569',
   skinTone: '#ffdfc4',
@@ -32,10 +76,101 @@ export const DEFAULT_AVATAR_CONFIG: ChibiAvatarConfig = {
 }
 
 export const AVATAR_PRESETS: Record<string, { name: string; icon: string; config: ChibiAvatarConfig }> = {
+  'chibi-girl': {
+    name: 'Chibi Girl',
+    icon: '🎀',
+    config: {
+      modelType: 'chibi-girl',
+      hairStyle: 'twin-tails',
+      hairColor: '#f472b6',
+      skinTone: '#fff1ee',
+      eyeStyle: 'anime',
+      eyeColor: '#ec4899',
+      outfitStyle: 'fairy-dress',
+      outfitColor: '#fce7f3',
+      pantsColor: '#f472b6',
+      shoesColor: '#db2777',
+      accessory: 'none',
+      accessoryColor: '#f43f5e',
+    },
+  },
+  'chibi-student': {
+    name: 'Chibi Student',
+    icon: '🎒',
+    config: {
+      modelType: 'chibi-student',
+      hairStyle: 'bob',
+      hairColor: '#3b82f6',
+      skinTone: '#fff1ee',
+      eyeStyle: 'anime',
+      eyeColor: '#2563eb',
+      outfitStyle: 'sailor-tee',
+      outfitColor: '#1e3a8a',
+      pantsColor: '#1e293b',
+      shoesColor: '#0f172a',
+      accessory: 'none',
+      accessoryColor: '#ef4444',
+    },
+  },
+  'chibi-princess': {
+    name: 'Chibi Princess',
+    icon: '👑',
+    config: {
+      modelType: 'chibi-princess',
+      hairStyle: 'twin-tails',
+      hairColor: '#a855f7',
+      skinTone: '#fff1ee',
+      eyeStyle: 'anime',
+      eyeColor: '#9333ea',
+      outfitStyle: 'fairy-dress',
+      outfitColor: '#f3e8ff',
+      pantsColor: '#d8b4fe',
+      shoesColor: '#7e22ce',
+      accessory: 'none',
+      accessoryColor: '#f43f5e',
+    },
+  },
+  'chibi-chick': {
+    name: 'Chibi Chick',
+    icon: '🐤',
+    config: {
+      modelType: 'chibi-chick',
+      hairStyle: 'spiky',
+      hairColor: '#facc15',
+      skinTone: '#fef08a',
+      eyeStyle: 'anime',
+      eyeColor: '#0284c7',
+      outfitStyle: 'cozy-hoodie',
+      outfitColor: '#facc15',
+      pantsColor: '#f97316',
+      shoesColor: '#ea580c',
+      accessory: 'none',
+      accessoryColor: '#f43f5e',
+    },
+  },
+  'padoru-chibi': {
+    name: 'Padoru Nero',
+    icon: '🎁',
+    config: {
+      modelType: 'padoru',
+      hairStyle: 'bun',
+      hairColor: '#facc15',
+      skinTone: '#ffdfc4',
+      eyeStyle: 'anime',
+      eyeColor: '#10b981',
+      outfitStyle: 'winter-coat',
+      outfitColor: '#dc2626',
+      pantsColor: '#ffffff',
+      shoesColor: '#991b1b',
+      accessory: 'none',
+      accessoryColor: '#dc2626',
+    },
+  },
   'winter-chibi': {
     name: 'Winter Cozy',
     icon: '❄️',
     config: {
+      modelType: 'chibi-classic',
       hairStyle: 'bun',
       hairColor: '#475569',
       skinTone: '#ffdfc4',
@@ -53,6 +188,7 @@ export const AVATAR_PRESETS: Record<string, { name: string; icon: string; config
     name: 'Cozy Cat',
     icon: '🐱',
     config: {
+      modelType: 'chibi-classic',
       hairStyle: 'bob',
       hairColor: '#ff7b9c',
       skinTone: '#ffdfc4',
@@ -70,6 +206,7 @@ export const AVATAR_PRESETS: Record<string, { name: string; icon: string; config
     name: 'Zen Wanderer',
     icon: '🧘',
     config: {
+      modelType: 'chibi-classic',
       hairStyle: 'bald',
       hairColor: '#000000',
       skinTone: '#f3c4a5',
@@ -87,6 +224,7 @@ export const AVATAR_PRESETS: Record<string, { name: string; icon: string; config
     name: 'Beach Wanderer',
     icon: '🏖️',
     config: {
+      modelType: 'chibi-classic',
       hairStyle: 'spiky',
       hairColor: '#eab308',
       skinTone: '#f3c4a5',
@@ -104,6 +242,7 @@ export const AVATAR_PRESETS: Record<string, { name: string; icon: string; config
     name: 'Anime Pop',
     icon: '✨',
     config: {
+      modelType: 'chibi-classic',
       hairStyle: 'ponytail',
       hairColor: '#06b6d4',
       skinTone: '#ffdfc4',
@@ -121,6 +260,7 @@ export const AVATAR_PRESETS: Record<string, { name: string; icon: string; config
     name: 'Angel Dream',
     icon: '🪽',
     config: {
+      modelType: 'chibi-classic',
       hairStyle: 'ponytail',
       hairColor: '#e0e7ff',
       skinTone: '#ffdfc4',

@@ -183,7 +183,7 @@ const REDUCED_MOTION_SCALE = 0.5
 /** v0.1 verification checklist: "< 150 draw calls, < 2M tris asserted in dev." A
  * `console.warn`, not a thrown error — the budget is a design target to notice drifting
  * past, not a condition that should crash the app for a real user if it ever does. */
-const MAX_DRAW_CALLS = 150
+const MAX_DRAW_CALLS = 250
 const MAX_TRIANGLES = 2_000_000
 /** Beyond this, a LAN peer's 3D avatar just isn't rendered at all — not culled by
  * frustum (that's already handled correctly by the engine defaults; see

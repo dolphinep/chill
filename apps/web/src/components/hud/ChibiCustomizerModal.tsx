@@ -161,24 +161,35 @@ export function StudioPreview({ config }: { config: ChibiAvatarConfig }) {
     let isDragging = false
     let prevX = 0
 
-    const onMouseDown = (e: MouseEvent) => {
+    const dom = renderer.domElement
+    dom.style.touchAction = 'none'
+    dom.style.width = '100%'
+    dom.style.height = '100%'
+
+    const onPointerDown = (e: PointerEvent) => {
       isDragging = true
       prevX = e.clientX
+      try {
+        dom.setPointerCapture(e.pointerId)
+      } catch {}
     }
-    const onMouseMove = (e: MouseEvent) => {
+    const onPointerMove = (e: PointerEvent) => {
       if (!isDragging) return
       const deltaX = e.clientX - prevX
-      avatar.group.rotation.y += deltaX * 0.012
+      avatar.group.rotation.y += deltaX * 0.015
       prevX = e.clientX
     }
-    const onMouseUp = () => {
+    const onPointerUp = (e: PointerEvent) => {
       isDragging = false
+      try {
+        dom.releasePointerCapture(e.pointerId)
+      } catch {}
     }
 
-    const dom = renderer.domElement
-    dom.addEventListener('mousedown', onMouseDown)
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
+    dom.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('pointerup', onPointerUp)
+    window.addEventListener('pointercancel', onPointerUp)
 
     let clock = 0
     const animate = () => {
@@ -191,9 +202,10 @@ export function StudioPreview({ config }: { config: ChibiAvatarConfig }) {
 
     return () => {
       cancelAnimationFrame(frameId)
-      dom.removeEventListener('mousedown', onMouseDown)
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
+      dom.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', onPointerUp)
+      window.removeEventListener('pointercancel', onPointerUp)
       if (container.contains(dom)) container.removeChild(dom)
       avatar.dispose()
       renderer.dispose()
@@ -212,9 +224,9 @@ export function StudioPreview({ config }: { config: ChibiAvatarConfig }) {
   }, [config])
 
   return (
-    <div className="relative w-full h-full rounded-2xl bg-white/5 border border-white/15 overflow-hidden flex flex-col items-center justify-center backdrop-blur-md">
+    <div className="relative w-full h-full rounded-2xl bg-white/5 border border-white/15 overflow-hidden flex flex-col items-center justify-center backdrop-blur-md select-none touch-none">
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[10px] text-white/70 tracking-wider font-mono">
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[10px] text-white/70 tracking-wider font-mono pointer-events-none select-none">
         DRAG TO ROTATE
       </div>
     </div>

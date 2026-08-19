@@ -104,16 +104,38 @@ export class CharacterController {
       this.isGrounded = false
     }
 
-    // Apply vertical gravity & velocity
-    this.verticalVelocity -= 14.0 * FIXED_STEP
-    this.y += this.verticalVelocity * FIXED_STEP
-
-    if (this.y <= groundY) {
-      this.y = groundY
-      this.verticalVelocity = 0
-      this.isGrounded = true
+    if (!this.isGrounded && this.verticalVelocity > 0) {
+      // Ascending during jump
+      this.verticalVelocity -= 16.0 * FIXED_STEP
+      this.y += this.verticalVelocity * FIXED_STEP
+      if (this.y <= groundY) {
+        this.y = groundY
+        this.verticalVelocity = 0
+        this.isGrounded = true
+      }
     } else {
-      this.isGrounded = false
+      // Walking / running / descending
+      // Snap to ground on slopes (step-down snapping up to 0.40m)
+      const distAboveGround = this.y - groundY
+      const isSteppingDown =
+        this.isGrounded && distAboveGround >= 0 && distAboveGround <= (skiMode ? 0.65 : 0.40)
+
+      if (isSteppingDown || distAboveGround <= 0) {
+        this.y = groundY
+        this.verticalVelocity = 0
+        this.isGrounded = true
+      } else {
+        // True airborne falling (off cliffs/ledges)
+        this.verticalVelocity -= 16.0 * FIXED_STEP
+        this.y += this.verticalVelocity * FIXED_STEP
+        if (this.y <= groundY) {
+          this.y = groundY
+          this.verticalVelocity = 0
+          this.isGrounded = true
+        } else {
+          this.isGrounded = false
+        }
+      }
     }
 
     if (this.#velocity.lengthSq() > 0.04) {
