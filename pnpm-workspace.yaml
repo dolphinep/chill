@@ -1,0 +1,9 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+# Both need postinstall to link a native binary:
+#   esbuild        -> backs tsup and vitest
+#   unrs-resolver  -> backs the ESLint import resolver
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true

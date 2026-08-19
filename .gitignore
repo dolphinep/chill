@@ -1,0 +1,21 @@
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+coverage/
+.vitest/
+
+# spike artifacts — measurements are recorded in docs/spikes/, not the raw output
+spikes/**/output/

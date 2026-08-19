@@ -1,0 +1,9 @@
+Constellation illustrations in this directory are by Johan Meuris, created for the
+Stellarium planetarium project (https://stellarium.org), sourced from
+https://github.com/Stellarium/stellarium-skycultures (western sky culture).
+
+License: Free Art License.
+
+Calibration data (which pixel corresponds to which real star) is derived from the
+same source's index.json and vendored separately at
+apps/web/src/engine/sky/data/constellationImages.json.

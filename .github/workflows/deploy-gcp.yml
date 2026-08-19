@@ -1,0 +1,59 @@
+name: Deploy Chill Demo to GCP Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GAR_LOCATION: asia-southeast1
+  REPOSITORY: chill-repo
+
+jobs:
+  deploy:
+    name: Build & Deploy Unified Demo to Cloud Run
+    runs-on: ubuntu-latest
+    if: github.repository != ''
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Google Cloud Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker with Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev --quiet
+
+      - name: Build & Push Unified Image
+        run: |
+          IMAGE="${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/chill-demo:${{ github.sha }}"
+          docker build -t $IMAGE -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/chill-demo:latest .
+          docker push --all-tags ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/chill-demo
+
+      - name: Deploy Unified Demo to Cloud Run
+        run: |
+          IMAGE="${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/chill-demo:${{ github.sha }}"
+          gcloud run deploy chill-demo \
+            --image="$IMAGE" \
+            --region="${{ env.GAR_LOCATION }}" \
+            --platform=managed \
+            --allow-unauthenticated \
+            --session-affinity \
+            --timeout=3600 \
+            --port=8080 \
+            --min-instances=0 \
+            --max-instances=5 \
+            --memory=1Gi \
+            --cpu=1

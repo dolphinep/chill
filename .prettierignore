@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+.next/
+dist/
+node_modules/
+# Next rewrites this file on build, and its formatting is not ours to own
+apps/web/tsconfig.json
+
+apps/web/next-env.d.ts

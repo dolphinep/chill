@@ -1,0 +1,255 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Registered properties, so the glass scalars can be *transitioned*. Plain custom
+ * properties cannot animate — that is why most adaptive-glass attempts snap and
+ * flicker when the scenery or the backdrop luminance changes.
+ */
+@property --glass-polarity {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --glass-alpha {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.54;
+}
+@property --glass-blur-px {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 26;
+}
+@property --glass-brightness {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.78;
+}
+
+:root {
+  --radius: 0.875rem;
+  --glass-radius: 1rem;
+
+  /*
+   * The two poles. A slight blue-violet cast reads as "atmosphere" rather than
+   * "grey", which matters when the panel sits over sky or water.
+   */
+  --glass-ink-dark: oklch(0.17 0.016 258);
+  --glass-ink-light: oklch(0.975 0.007 258);
+
+  /* polarity 0 = dark glass / light text; 1 = light glass / dark text */
+  --glass-tint: color-mix(
+    in oklab,
+    var(--glass-ink-dark),
+    var(--glass-ink-light) calc(var(--glass-polarity) * 100%)
+  );
+
+  --glass-fill: color-mix(in oklab, transparent, var(--glass-tint) calc(var(--glass-alpha) * 100%));
+
+  --glass-fg: color-mix(
+    in oklab,
+    var(--glass-ink-light),
+    var(--glass-ink-dark) calc(var(--glass-polarity) * 100%)
+  );
+  --glass-fg-muted: color-mix(in oklab, transparent, var(--glass-fg) 66%);
+  --glass-fg-faint: color-mix(in oklab, transparent, var(--glass-fg) 40%);
+
+  /* An outer hairline plus an inner top-lit sheen is what reads as a *pane of glass*
+     rather than a translucent rectangle. */
+  --glass-edge: color-mix(in oklab, transparent, var(--glass-fg) 15%);
+  --glass-sheen: rgb(255 255 255 / 0.13);
+  --glass-underline: rgb(255 255 255 / 0.04);
+
+  --glass-shadow-near: rgb(0 0 0 / 0.22);
+  --glass-shadow-far: rgb(0 0 0 / 0.34);
+
+  --glass-sheen-layer: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.11) 0%,
+    rgb(255 255 255 / 0.02) 38%,
+    transparent 70%
+  );
+
+  /* Not decoration: a 26px blur produces visible banding on smooth skies, and the
+     grain is what kills it. Opacity is baked in because background-image has none. */
+  --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+
+  --glass-saturate: 1.42;
+  --glass-contrast: 0.87;
+
+  /* shadcn token retarget — primitives become glass with zero forking. */
+  --background: transparent; /* the WebGPU canvas *is* the background */
+  --foreground: var(--glass-fg);
+  --card: var(--glass-fill);
+  --card-foreground: var(--glass-fg);
+  --popover: var(--glass-fill);
+  --popover-foreground: var(--glass-fg);
+  --muted-foreground: var(--glass-fg-muted);
+  --border: var(--glass-edge);
+  --input: color-mix(in oklab, transparent, var(--glass-fg) 9%);
+  --ring: var(--glass-fg);
+  --primary: var(--glass-fg);
+  --primary-foreground: var(--glass-tint);
+}
+
+/* Tier 1 legibility: the scenery declares its polarity as data. A scenery change
+   should feel like weather, hence the slow ease. */
+html {
+  transition: --glass-polarity 900ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+html[data-ui-polarity='light'] {
+  --glass-polarity: 1;
+  --glass-brightness: 1.38;
+}
+html[data-ui-polarity='dark'] {
+  --glass-polarity: 0;
+  --glass-brightness: 0.72;
+}
+
+@theme inline {
+  --color-glass: var(--glass-fill);
+  --color-glass-foreground: var(--glass-fg);
+  --color-glass-muted: var(--glass-fg-muted);
+  --color-glass-faint: var(--glass-fg-faint);
+  --color-glass-edge: var(--glass-edge);
+  --radius-glass: var(--glass-radius);
+  --font-sans: var(--font-cozy), var(--font-sans), system-ui, sans-serif;
+  --font-cozy: var(--font-cozy), var(--font-sans), system-ui, sans-serif;
+  /* Thoughts render in a different typeface from the UI on purpose — "read as human
+     handwriting, not interface text" (plan). System humanist-serif stack: no font file
+     to ship, no asset pipeline, and it's already installed everywhere real users are. */
+  --font-thought: Iowan Old Style, Palatino Linotype, Palatino, Georgia, serif;
+  /* Constellation names only — see `layout.tsx`'s own comment on why Cinzel (modeled
+     on Roman inscriptional capitals) is scoped to just this one use. */
+  --font-constellation: var(--font-constellation), Georgia, 'Times New Roman', serif;
+}
+
+/*
+ * The one utility. No pseudo-elements — sheen and grain ride as background-image
+ * layers, which paint above background-color and below content. That is what makes
+ * this droppable onto any shadcn primitive without z-index negotiation or fighting
+ * a Radix portal.
+ *
+ * The brightness()/contrast() pair inside backdrop-filter is the underrated part:
+ * blur is a low-pass filter and preserves mean luminance, so it fixes busyness but
+ * does nothing for brightness. Normalising the backdrop toward mid-grey before
+ * compositing costs nothing extra and does most of the legibility work.
+ */
+@utility glass {
+  color: var(--glass-fg);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--glass-radius);
+
+  background-color: var(--glass-fill);
+  background-image: var(--glass-sheen-layer), var(--glass-grain);
+  background-size:
+    auto,
+    120px 120px;
+  background-repeat: no-repeat, repeat;
+
+  backdrop-filter: blur(calc(var(--glass-blur-px) * 1px)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness)) contrast(var(--glass-contrast));
+
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-sheen),
+    inset 0 -1px 0 0 var(--glass-underline),
+    0 1px 2px -1px var(--glass-shadow-near),
+    0 16px 40px -16px var(--glass-shadow-far);
+
+  contain: paint;
+}
+
+/* A single ring is invisible against one polarity or the other. Inner ring in the
+   text colour, outer in the panel colour, so it reads on any backdrop. */
+@utility glass-ring {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--glass-fg),
+    0 0 0 4px var(--glass-tint);
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-cozy), var(--font-sans), system-ui, -apple-system, sans-serif;
+    color: var(--glass-fg);
+    background: var(--glass-ink-dark); /* seen only before the canvas mounts */
+    overscroll-behavior: none;
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--glass-fg),
+      0 0 0 4px var(--glass-tint);
+  }
+}
+
+/*
+ * The proper accessibility answer to glassmorphism, and almost nobody implements it.
+ * Four lines.
+ */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-alpha: 0.94;
+  }
+  .glass {
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --glass-alpha: 1;
+    --glass-edge: var(--glass-fg);
+    --glass-grain: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --glass-alpha: 0.92;
+  }
+}
+
+/* The autoplay pill's speaker icon "breathing" — slow enough to read as ambient, not
+   as a notification asking for attention. Static for anyone who has asked for less
+   motion; a pulsing icon is exactly the kind of thing that setting exists to stop. */
+@media (prefers-reduced-motion: no-preference) {
+  .audio-pill-breathe {
+    animation: audio-pill-breathe 4s ease-in-out infinite;
+  }
+}
+@keyframes audio-pill-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* The sky dial's sun/moon glow — `motion-safe:` on the element itself already gates
+   this on `prefers-reduced-motion: no-preference`, so unlike `audio-pill-breathe` this
+   keyframe needs no matching media query of its own. */
+@keyframes sky-orb-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}

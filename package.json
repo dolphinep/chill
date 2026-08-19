@@ -1,0 +1,34 @@
+{
+  "name": "chill",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @chill/web dev",
+    "lan:host": "tsx scripts/lan-relay.ts",
+    "build": "pnpm --filter @chill/protocol build && pnpm --filter @chill/web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "tsc --noEmit && pnpm -r typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm format:check && pnpm typecheck && pnpm lint",
+    "knip": "knip"
+  },
+  "dependencies": {
+    "@chill/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/ws": "^8.18.1",
+    "knip": "^6.32.0",
+    "next": "^16.3.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.7.0",
+    "tsx": "^4.23.12",
+    "typescript": "~5.9.3",
+    "ws": "^8.21.3"
+  }
+}
