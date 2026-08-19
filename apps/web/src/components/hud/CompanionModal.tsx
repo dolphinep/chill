@@ -89,7 +89,17 @@ export function CompanionModal({
 
   if (!isOpen) return null
 
+  const handleHideCompanion = () => {
+    setSpecies('none')
+    command?.({ type: 'setCompanion', species: 'none' })
+  }
+
   const handleSelectSpecies = (info: CompanionSpeciesInfo) => {
+    if (species === info.id) {
+      // Clicking the already selected pet unselects & hides it
+      handleHideCompanion()
+      return
+    }
     setSpecies(info.id)
     void warmUpCompanionAi(info.id)
     command?.({ type: 'setCompanion', species: info.id })
@@ -107,6 +117,7 @@ export function CompanionModal({
   }
 
   const handlePetAction = () => {
+    if (species === 'none') return
     command?.({ type: 'petCompanion' })
     addMessage({
       sender: 'user',
@@ -137,7 +148,7 @@ export function CompanionModal({
 
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend ?? inputVal).trim()
-    if (!text || isThinking) return
+    if (!text || isThinking || species === 'none') return
 
     addMessage({ sender: 'user', text })
     setInputVal('')
@@ -170,6 +181,8 @@ export function CompanionModal({
     }
   }
 
+  const isHidden = species === 'none'
+
   return (
     <div className="fixed bottom-24 right-6 z-40 flex flex-col items-end animate-in fade-in slide-in-from-bottom-3 duration-200">
       {/* Floating Bottom-Right Widget Card */}
@@ -178,13 +191,23 @@ export function CompanionModal({
         <div className="border-glass-edge flex items-center justify-between border-b px-5 py-3.5 bg-black/20">
           <div className="flex items-center gap-3">
             <div
-              className={`flex h-10 w-10 items-center justify-center rounded-2xl border ${activePetInfo.cardBorder} ${activePetInfo.cardBg} p-1.5 shadow-inner ring-1 ring-white/10`}
+              className={`flex h-10 w-10 items-center justify-center rounded-2xl border ${
+                isHidden ? 'border-white/10 bg-white/5' : `${activePetInfo.cardBorder} ${activePetInfo.cardBg}`
+              } p-1.5 shadow-inner ring-1 ring-white/10`}
             >
-              {renderCompanionIcon(species, 'h-7 w-7')}
+              {isHidden ? (
+                <span className="text-lg">🚫</span>
+              ) : (
+                renderCompanionIcon(species, 'h-7 w-7')
+              )}
             </div>
             <div>
-              {/* Pet Name with inline edit */}
-              {isEditingName ? (
+              {isHidden ? (
+                <div>
+                  <h2 className="text-sm font-bold text-white tracking-wide">No Companion Active</h2>
+                  <p className="text-glass-muted text-[10px]">Pet is currently hidden</p>
+                </div>
+              ) : isEditingName ? (
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -240,7 +263,7 @@ export function CompanionModal({
                   </svg>
                 </div>
               )}
-              <p className="text-glass-muted text-[10px]">{activePetInfo.title}</p>
+              {!isHidden && <p className="text-glass-muted text-[10px]">{activePetInfo.title}</p>}
             </div>
           </div>
 
@@ -295,9 +318,37 @@ export function CompanionModal({
         {activeTab === 'select' ? (
           /* Species Selector List */
           <div className="flex-1 space-y-2 overflow-y-auto p-4 custom-scrollbar">
-            <p className="text-white/70 text-xs font-medium tracking-wide mb-1">
-              Choose your companion pet
-            </p>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-white/70 text-xs font-medium tracking-wide">
+                Choose or hide your companion pet
+              </p>
+            </div>
+
+            {/* Option to Hide Companion */}
+            <div
+              onClick={handleHideCompanion}
+              className={`group relative flex cursor-pointer items-center justify-between rounded-2xl border p-3 transition-all ${
+                isHidden
+                  ? 'border-amber-400 bg-amber-500/15 shadow-md ring-1 ring-amber-400/30'
+                  : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 p-1 shadow-inner text-lg">
+                  🚫
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-white group-hover:text-amber-200 transition">
+                    No Companion (Hide Pet)
+                  </span>
+                  <p className="text-[11px] text-white/60 line-clamp-1 mt-0.5">
+                    Explore the world quietly without a companion pet.
+                  </p>
+                </div>
+              </div>
+              {isHidden && <span className="text-xs font-bold text-amber-400">✓</span>}
+            </div>
+
             {COMPANION_SPECIES_LIST.map((info) => {
               const isSelected = species === info.id
               return (
@@ -334,6 +385,27 @@ export function CompanionModal({
                 </div>
               )
             })}
+          </div>
+        ) : isHidden ? (
+          /* Empty State when Companion is Hidden */
+          <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-white/10 bg-white/5 text-3xl shadow-inner mb-3">
+              🚫
+            </div>
+            <h3 className="text-sm font-bold text-white mb-1">Companion is Hidden</h3>
+            <p className="text-xs text-white/60 max-w-xs mb-5 leading-relaxed">
+              You do not have an active pet with you right now. Choose a companion pet to walk with you and chat!
+            </p>
+            <button
+              type="button"
+              onClick={() => setActiveTab('select')}
+              className="flex items-center gap-2 rounded-2xl bg-amber-400 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg hover:bg-amber-300 transition"
+            >
+              <span>Choose Companion</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5">
+                <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
         ) : (
           /* Interactive AI Chat Tab */

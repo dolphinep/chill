@@ -140,14 +140,14 @@ function getRelayUrl(hostAddress?: string): string {
       !isLocalHost ||
       isHttps
     ) {
-      return `${proto}://${window.location.host}`
+      return `${proto}://${window.location.host}/api/relay`
     }
     return `${proto}://${cleanHost}:${LAN_RELAY_PORT}`
   }
 
   // Deployed production mode on standard web ports (Cloud Run, reverse proxies, etc.)
   if (!isLocalHost || isHttps) {
-    return `${proto}://${window.location.host}`
+    return `${proto}://${window.location.host}/api/relay`
   }
 
   return `${proto}://${window.location.hostname}:${LAN_RELAY_PORT}`

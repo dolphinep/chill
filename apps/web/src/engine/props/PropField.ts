@@ -921,11 +921,17 @@ export class PropField {
     const rocketMesh = new THREE.Mesh(rocketGeo, rocketMat)
     rocketMesh.position.set(x, startY, z)
 
-    // Launch forward away from player at 60 degrees elevation (Math.PI / 3 from ground)
-    const elevation = Math.PI / 3 // 60 degrees
-    const speed = 28.0 + Math.random() * 6.0
-    const fx = Math.sin(yaw)
-    const fz = Math.cos(yaw)
+    // Launch trajectory: Centered at 60° elevation with random 5° cone spread from center
+    const SPREAD_RAD = (5 * Math.PI) / 180 // 5 degrees in radians
+    const yawOffset = (Math.random() - 0.5) * 2 * SPREAD_RAD
+    const elevationOffset = (Math.random() - 0.5) * 2 * SPREAD_RAD
+
+    const actualYaw = yaw + yawOffset
+    const elevation = Math.PI / 3 + elevationOffset
+    const speed = 22.0 + Math.random() * 4.0
+
+    const fx = Math.sin(actualYaw)
+    const fz = Math.cos(actualYaw)
     const vx = speed * Math.cos(elevation) * fx
     const vy = speed * Math.sin(elevation)
     const vz = speed * Math.cos(elevation) * fz
@@ -940,7 +946,7 @@ export class PropField {
     trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3))
     const trailMat = new THREE.PointsMaterial({
       color: 0xffe088,
-      size: 0.28,
+      size: 0.32,
       transparent: true,
       opacity: 0.9,
       blending: THREE.AdditiveBlending,
@@ -948,7 +954,8 @@ export class PropField {
     const trail = new THREE.Points(trailGeo, trailMat)
     this.group.add(trail)
 
-    const targetHeight = startY + 28 + Math.random() * 8
+    // Explode closer to the ground & viewer (16m - 20m height for maximum visual impact)
+    const targetHeight = startY + 16 + Math.random() * 4
     this.#rockets.push({
       mesh: rocketMesh,
       x,
@@ -958,7 +965,7 @@ export class PropField {
       vy,
       vz,
       flightTimeS: 0,
-      maxFlightTimeS: 1.45 + Math.random() * 0.3,
+      maxFlightTimeS: 0.92 + Math.random() * 0.2,
       targetY: targetHeight,
       color,
       trail,
@@ -969,7 +976,8 @@ export class PropField {
   }
 
   #explodeFirework(x: number, y: number, z: number, color: THREE.Color): void {
-    const particleCount = 280
+    // 2x Bigger burst radius with 400 sparkling particles
+    const particleCount = 400
     const particles: SparkParticle[] = []
     const positions = new Float32Array(particleCount * 3)
     const colors = new Float32Array(particleCount * 3)
@@ -987,16 +995,16 @@ export class PropField {
     ]
 
     for (let i = 0; i < particleCount; i++) {
-      // Golden Spiral Spherical Distribution for perfectly even, grand spherical bloom
+      // Golden Spiral Spherical Distribution for perfectly even, 2x grand spherical bloom
       const phi = Math.acos(1 - (2 * (i + 0.5)) / particleCount)
       const theta = Math.PI * (1 + 5 ** 0.5) * i
 
-      // Outer Shell (70%) & Inner Core (30%)
+      // Outer Shell (70%) & Inner Core (30%) - 2x speed for 2x wider diameter
       const isOuter = i < particleCount * 0.7
-      const speed = isOuter ? 15.0 + Math.random() * 18.0 : 6.0 + Math.random() * 8.0
+      const speed = isOuter ? 32.0 + Math.random() * 36.0 : 14.0 + Math.random() * 18.0
 
       const vx = speed * Math.sin(phi) * Math.cos(theta)
-      const vy = speed * Math.cos(phi) * 0.95 + (isOuter ? 1.5 : 0.8)
+      const vy = speed * Math.cos(phi) * 0.95 + (isOuter ? 2.5 : 1.2)
       const vz = speed * Math.sin(phi) * Math.sin(theta)
 
       const partColor = isOuter
@@ -1015,7 +1023,7 @@ export class PropField {
         color: partColor,
         alpha: 1.0,
         lifeS: 0,
-        maxLifeS: (isOuter ? 2.8 : 2.0) + Math.random() * 1.0,
+        maxLifeS: (isOuter ? 3.2 : 2.2) + Math.random() * 1.0,
       })
 
       positions[i * 3] = x
@@ -1031,7 +1039,7 @@ export class PropField {
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
 
     const material = new THREE.PointsMaterial({
-      size: 0.68,
+      size: 0.92,
       vertexColors: true,
       transparent: true,
       opacity: 1.0,

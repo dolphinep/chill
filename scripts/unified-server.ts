@@ -25,6 +25,11 @@ app.prepare().then(() => {
       res.end(JSON.stringify({ status: 'ok', time: Date.now() }))
       return
     }
+    if (req.url === '/api/relay' || req.url === '/api/ws') {
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ status: 'ready', service: 'WebSocket Relay' }))
+      return
+    }
     handle(req, res)
   })
 
