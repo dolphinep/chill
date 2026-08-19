@@ -87,6 +87,7 @@ export type LanClientMessage =
        * process still only ever holds the one room; a guest still needs the host's
        * actual address to reach it at all. */
       roomName?: string
+      passkey?: string
     }
   | { t: 'input'; x: number; y: number; z: number; yaw: number; anim: AnimState; flags: number }
   | { t: 'thought'; text: string }
@@ -134,6 +135,11 @@ export type SkeetActionPayload = SkeetEvent
 
 /** Relay -> client. */
 export type LanServerMessage =
+  | {
+      t: 'error'
+      reason: 'invalid_passkey' | 'room_not_found' | 'room_full' | string
+      message?: string
+    }
   /** Sent once, only to the client that just joined — the rest of the session is
    * ongoing `snapshot`/`roster`/`thought` broadcasts. */
   | {

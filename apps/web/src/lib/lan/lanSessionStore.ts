@@ -49,15 +49,9 @@ export type LanSessionState = {
   mode: LanMode
   connectionState: ConnectionState
   roster: LanPeer[]
-  /** Host-authoritative once connected. `null` means "no override" — `EngineCanvas`
-   * falls back to the local player's own persisted `sceneryStore` choice, exactly the
-   * solo-mode behavior today. */
   sceneryId: string | null
-  /** Relay-confirmed once connected — `null` until `welcome` arrives, or if nobody
-   * (including the host) ever set one. Purely a display/confirmation label; joining
-   * still rides on the host's actual address, not this name (see `LanRoomClient`'s
-   * `getRoomName()` doc comment). */
   roomName: string | null
+  passkey: string | null
   roomClient: RoomClient | null
   chatMessages: ChatMessage[]
 }
@@ -68,6 +62,7 @@ const INITIAL_STATE: LanSessionState = {
   roster: [],
   sceneryId: null,
   roomName: null,
+  passkey: null,
   roomClient: null,
   chatMessages: [],
 }
@@ -104,11 +99,6 @@ function wireCommon(client: LanRoomClient, mode: LanMode): void {
     })
   })
   client.onSceneryChange((sceneryId) => set({ sceneryId }))
-  // Deliberately NOT mirrored into this store's state — unlike `sceneryId` (which
-  // `EngineCanvas` reads to decide whether to remount the engine), time-of-day is a
-  // continuous, frequent value with nothing here that needs to react to it. `Engine.ts`
-  // subscribes to `onTimeOfDayChange` directly instead, the same way it owns
-  // `onThrow`/`onTargetHit` without routing them through this store.
   client.onThought((thought) => {
     const isLocal = thought.sid === client.sid
     const name = isLocal
@@ -123,7 +113,6 @@ function wireCommon(client: LanRoomClient, mode: LanMode): void {
     }
     set({ chatMessages: [...state.chatMessages, message].slice(-MAX_CHAT_HISTORY) })
   })
-  // Deliberately NOT setting `roomClient` here yet — see the two call sites below.
   set({ mode })
 }
 
@@ -145,7 +134,6 @@ function getRelayUrl(hostAddress?: string): string {
     if (cleanHost.includes(':')) {
       return `${proto}://${cleanHost}`
     }
-    // If the hostAddress matches the current page hostname or origin, or if on HTTPS / Cloud Run (production):
     if (
       cleanHost === window.location.hostname ||
       cleanHost === window.location.host ||
@@ -154,7 +142,6 @@ function getRelayUrl(hostAddress?: string): string {
     ) {
       return `${proto}://${window.location.host}`
     }
-    // Local dev on plain HTTP and localhost/LAN IP
     return `${proto}://${cleanHost}:${LAN_RELAY_PORT}`
   }
 
@@ -172,6 +159,7 @@ export async function startHosting(
   avatarConfig: ChibiAvatarConfig,
   currentSceneryId: string,
   roomName: string,
+  passkey?: string,
 ): Promise<void> {
   const url = getRelayUrl()
   const client = new LanRoomClient({
@@ -179,11 +167,17 @@ export async function startHosting(
     name,
     avatarConfig: avatarConfig as unknown as Record<string, string>,
     roomName,
+    passkey: passkey?.trim() || undefined,
   })
   wireCommon(client, 'hosting')
   await client.connect({ kind: 'public', sceneryId: currentSceneryId })
-  set({ roomClient: client, roomName: client.getRoomName() })
-  saveResumeInfo({ mode: 'hosting', name, roomName: client.getRoomName() ?? roomName })
+  set({ roomClient: client, roomName: client.getRoomName(), passkey: passkey?.trim() || null })
+  saveResumeInfo({
+    mode: 'hosting',
+    name,
+    roomName: client.getRoomName() ?? roomName,
+    passkey: passkey?.trim(),
+  })
 }
 
 export async function joinLan(
@@ -192,18 +186,25 @@ export async function joinLan(
   avatarConfig: ChibiAvatarConfig,
   currentSceneryId: string,
   roomName?: string,
+  passkey?: string,
 ): Promise<void> {
   const client = new LanRoomClient({
     url: getRelayUrl(hostAddress),
     name,
     avatarConfig: avatarConfig as unknown as Record<string, string>,
     roomName,
+    passkey: passkey?.trim() || undefined,
   })
   wireCommon(client, 'guest')
   await client.connect({ kind: 'public', sceneryId: currentSceneryId })
-  // See the matching comment in `startHosting` above.
-  set({ roomClient: client, roomName: client.getRoomName() })
-  saveResumeInfo({ mode: 'guest', name, hostAddress, roomName: client.getRoomName() ?? roomName })
+  set({ roomClient: client, roomName: client.getRoomName(), passkey: passkey?.trim() || null })
+  saveResumeInfo({
+    mode: 'guest',
+    name,
+    hostAddress,
+    roomName: client.getRoomName() ?? roomName,
+    passkey: passkey?.trim(),
+  })
 }
 
 if (typeof window !== 'undefined') {
@@ -226,34 +227,16 @@ export function announceLanScenery(sceneryId: string): void {
   }
 }
 
-/**
- * Enough to reconnect to the SAME session after a page refresh — deliberately not the
- * `roomClient`/roster/chat state itself (that's still gone; see this file's own doc
- * comment on why a LAN session isn't otherwise persisted). `sessionStorage`, not
- * `localStorage`: this should survive a reload of this tab but not linger into a
- * brand-new tab or a future day the way a comfort setting should.
- *
- * This exists because `lan-relay.ts` already anticipates the host's own tab
- * reloading — a fresh connection that arrives while `hostSid` is `null` (the previous
- * host's socket just closed) is granted host status again, no different from any
- * other reconnect (see its own `HOST_GRACE_MS`/`sessionEnded` comments). Without this,
- * that server-side support went unused: the host's tab landed back in solo mode on
- * refresh with nothing prompting it to reconnect at all, and guests were left talking
- * to a relay with no host — which is what read as "stuck."
- */
 const RESUME_KEY = 'chill:lanResume'
 
 type ResumeInfo =
-  | { mode: 'hosting'; name: string; roomName: string }
-  | { mode: 'guest'; name: string; hostAddress: string; roomName?: string }
+  | { mode: 'hosting'; name: string; roomName: string; passkey?: string }
+  | { mode: 'guest'; name: string; hostAddress: string; roomName?: string; passkey?: string }
 
 function saveResumeInfo(info: ResumeInfo): void {
   try {
     sessionStorage.setItem(RESUME_KEY, JSON.stringify(info))
-  } catch {
-    // Private browsing / storage disabled — resuming after a refresh just silently
-    // won't work; starting or joining a session in the first place is unaffected.
-  }
+  } catch {}
 }
 
 /** Exported so `LanAutoJoin` can clear it when a resume attempt itself fails (the

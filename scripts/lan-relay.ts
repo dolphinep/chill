@@ -40,6 +40,7 @@ type Client = {
 type RoomState = {
   key: string
   name: string
+  passkey?: string
   sceneryId: string
   currentTimeOfDay: number
   hostSid: Sid | null
@@ -55,7 +56,11 @@ const rooms = new Map<string, RoomState>()
 let nextSid = 1
 const HOST_GRACE_MS = 120_000
 
-function getOrCreateRoom(rawName?: string, sceneryId = 'frostholm-ridge'): RoomState {
+function getOrCreateRoom(
+  rawName?: string,
+  sceneryId = 'frostholm-ridge',
+  passkey?: string,
+): RoomState {
   const name = rawName?.trim() || 'Lobby'
   const key = name.toLowerCase()
 
@@ -64,6 +69,7 @@ function getOrCreateRoom(rawName?: string, sceneryId = 'frostholm-ridge'): RoomS
     room = {
       key,
       name,
+      passkey: passkey?.trim() || undefined,
       sceneryId,
       currentTimeOfDay: 0.5,
       hostSid: null,
@@ -75,7 +81,7 @@ function getOrCreateRoom(rawName?: string, sceneryId = 'frostholm-ridge'): RoomS
       nextThoughtId: 1,
     }
     rooms.set(key, room)
-    console.log(`[lan-relay] created room "${name}" (key="${key}")`)
+    console.log(`[lan-relay] created room "${name}" (key="${key}", passkey=${room.passkey ? 'yes' : 'no'})`)
   }
   return room
 }
@@ -115,7 +121,28 @@ export function attachLanRelay(wss: WebSocketServer): WebSocketServer {
       if (msg.t === 'join') {
         if (clientSid !== null) return // already joined on this socket
 
-        const room = getOrCreateRoom(msg.roomName, msg.sceneryId || 'frostholm-ridge')
+        const roomKey = (msg.roomName?.trim() || 'Lobby').toLowerCase()
+        const existingRoom = rooms.get(roomKey)
+        if (existingRoom && existingRoom.passkey) {
+          if (msg.passkey?.trim() !== existingRoom.passkey) {
+            console.log(`[lan-relay] join rejected: invalid passkey for room "${existingRoom.name}"`)
+            send(ws, {
+              t: 'error',
+              reason: 'invalid_passkey',
+              message: 'รหัสผ่านห้อง (Passkey) ไม่ถูกต้อง',
+            })
+            try {
+              ws.close(4001, 'Invalid Passkey')
+            } catch {}
+            return
+          }
+        }
+
+        const room = getOrCreateRoom(
+          msg.roomName,
+          msg.sceneryId || 'frostholm-ridge',
+          msg.passkey,
+        )
         currentRoom = room
 
         // Anti-ghost: If a client with the same name already exists in this room (e.g. from previous tab/refresh),

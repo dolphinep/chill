@@ -3,16 +3,19 @@
 import { useState } from 'react'
 import { getAvatarConfig } from '@/lib/avatar/avatarStore'
 import { randomDisplayName } from '@/lib/avatar/randomName'
-import { joinLan, useLanSession } from '@/lib/lan/lanSessionStore'
+import { joinLan, startHosting, leaveLan, useLanSession } from '@/lib/lan/lanSessionStore'
 import { useSceneryId } from '@/lib/scenery/sceneryStore'
 
-function getWebShareUrl(roomName: string | null): string {
+function getWebShareUrl(roomName: string | null, passkey: string | null): string {
   if (typeof window === 'undefined') return ''
   const base = window.location.origin
-  if (!roomName || roomName.toLowerCase() === 'lobby') {
-    return base
+  if (!roomName) return base
+  const params = new URLSearchParams()
+  params.set('room', roomName)
+  if (passkey) {
+    params.set('passkey', passkey)
   }
-  return `${base}/?room=${encodeURIComponent(roomName)}`
+  return `${base}/?${params.toString()}`
 }
 
 function ShareIcon() {
@@ -28,12 +31,9 @@ function ShareIcon() {
 
 export function LanDockIcon({ onClick }: { onClick: () => void }) {
   const lanSession = useLanSession()
-  const isLobby = !lanSession.roomName || lanSession.roomName.toLowerCase() === 'lobby'
   const isConnected = lanSession.mode !== 'solo'
   const label = isConnected
-    ? isLobby
-      ? 'ห้องสาธารณะ Lobby (L)'
-      : `ห้องส่วนตัว "${lanSession.roomName}" (L)`
+    ? `ห้อง "${lanSession.roomName || 'Multiplayer'}" (L)`
     : 'ห้องผู้เล่น Multiplayer (L)'
 
   return (
@@ -53,13 +53,7 @@ export function LanDockIcon({ onClick }: { onClick: () => void }) {
           L
         </span>
         {isConnected && (
-          <span
-            className={`absolute top-1.5 right-1.5 h-2 w-2 rounded-full ${
-              isLobby
-                ? 'bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.9)] animate-pulse'
-                : 'bg-sky-400 shadow-[0_0_4px_rgba(56,189,248,0.9)]'
-            }`}
-          />
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.9)] animate-pulse" />
         )}
       </button>
     </div>
@@ -69,31 +63,73 @@ export function LanDockIcon({ onClick }: { onClick: () => void }) {
 export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const lanSession = useLanSession()
   const sceneryId = useSceneryId()
+  const [tab, setTab] = useState<'create' | 'join'>('create')
   const [displayName, setDisplayName] = useState(randomDisplayName)
-  const [roomInput, setRoomInput] = useState('')
+  const [createRoomName, setCreateRoomName] = useState(
+    () => `room-${Math.floor(1000 + Math.random() * 9000)}`,
+  )
+  const [createPasskey, setCreatePasskey] = useState('')
+  const [joinRoomName, setJoinRoomName] = useState('')
+  const [joinPasskey, setJoinPasskey] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [copiedWeb, setCopiedWeb] = useState(false)
-  const [showJoinCustom, setShowJoinCustom] = useState(false)
+  const [showPasskey, setShowPasskey] = useState(false)
 
   if (!isOpen) return null
 
-  const isLobby = !lanSession.roomName || lanSession.roomName.toLowerCase() === 'lobby'
   const isConnected = lanSession.mode !== 'solo'
   const totalPlayers = lanSession.roster.length + 1
 
-  function updateBrowserUrl(roomName?: string) {
+  function updateBrowserUrl(roomName?: string, passkey?: string) {
     if (typeof window === 'undefined') return
     const url = new URL(window.location.href)
-    if (!roomName || roomName.toLowerCase() === 'lobby') {
+    if (!roomName) {
       url.searchParams.delete('room')
+      url.searchParams.delete('passkey')
+      url.searchParams.delete('key')
     } else {
       url.searchParams.set('room', roomName)
+      if (passkey) {
+        url.searchParams.set('passkey', passkey)
+      } else {
+        url.searchParams.delete('passkey')
+        url.searchParams.delete('key')
+      }
     }
     window.history.replaceState(null, '', url.toString())
   }
 
-  async function handleJoinRoom(targetRoom: string): Promise<void> {
+  async function handleCreateRoom(): Promise<void> {
+    const targetRoom = createRoomName.trim()
+    if (!targetRoom) {
+      setError('กรุณาระบุชื่อหรือรหัสห้อง')
+      return
+    }
+    setBusy(true)
+    setError(null)
+    try {
+      await startHosting(
+        displayName.trim() || randomDisplayName(),
+        getAvatarConfig(),
+        sceneryId,
+        targetRoom,
+        createPasskey.trim() || undefined,
+      )
+      updateBrowserUrl(targetRoom, createPasskey.trim() || undefined)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'ไม่สามารถสร้างห้องได้')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleJoinRoom(): Promise<void> {
+    const targetRoom = joinRoomName.trim()
+    if (!targetRoom) {
+      setError('กรุณาระบุชื่อหรือรหัสห้องที่จะเข้าร่วม')
+      return
+    }
     setBusy(true)
     setError(null)
     try {
@@ -104,10 +140,9 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
         getAvatarConfig(),
         sceneryId,
         targetRoom,
+        joinPasskey.trim() || undefined,
       )
-      updateBrowserUrl(targetRoom)
-      setShowJoinCustom(false)
-      setRoomInput('')
+      updateBrowserUrl(targetRoom, joinPasskey.trim() || undefined)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'ไม่สามารถเข้าร่วมห้องได้')
     } finally {
@@ -115,13 +150,9 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
     }
   }
 
-  function handleCreatePrivateRoom(): void {
-    const code = `room-${Math.floor(1000 + Math.random() * 9000)}`
-    void handleJoinRoom(code)
-  }
-
-  function handleReturnToLobby(): void {
-    void handleJoinRoom('Lobby')
+  function handleLeaveRoom(): void {
+    leaveLan()
+    updateBrowserUrl()
   }
 
   function copyText(text: string): boolean {
@@ -147,7 +178,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
   }
 
   function handleCopyWebLink(): void {
-    const url = getWebShareUrl(lanSession.roomName)
+    const url = getWebShareUrl(lanSession.roomName, lanSession.passkey)
     copyText(url)
     setCopiedWeb(true)
     setTimeout(() => setCopiedWeb(false), 2000)
@@ -170,7 +201,9 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
             </div>
             <div>
               <h2 className="text-sm font-bold text-white tracking-wide">ห้องผู้เล่น (Multiplayer)</h2>
-              <p className="text-[10px] text-white/50">เล่นร่วมกันแบบ Real-time ในโลก 3D</p>
+              <p className="text-[10px] text-white/50">
+                {isConnected ? 'กำลังออนไลน์อยู่ในห้อง' : 'สร้างหรือเข้าห้องด้วย Passkey'}
+              </p>
             </div>
           </div>
           <button
@@ -185,149 +218,200 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
           </button>
         </div>
 
-        {/* Current Room Status Card */}
-        <div className="flex flex-col gap-2.5 rounded-2xl bg-white/5 p-3.5 border border-white/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span
-                className={`h-2.5 w-2.5 rounded-full shrink-0 ${
-                  isConnected
-                    ? isLobby
-                      ? 'bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.8)]'
-                      : 'bg-sky-400 shadow-[0_0_6px_rgba(56,189,248,0.8)]'
-                    : 'bg-white/30'
-                }`}
-              />
-              <span className="text-xs font-bold text-white">
-                {isConnected
-                  ? isLobby
-                    ? 'ห้องสาธารณะ (Public Lobby)'
-                    : `ห้องส่วนตัว "${lanSession.roomName}"`
-                  : 'โหมดเล่นคนเดียว (Solo)'}
-              </span>
-            </div>
-            <span className="text-[11px] text-emerald-300 font-mono font-medium">
-              {isConnected ? `${totalPlayers} คนในห้อง` : 'Solo'}
-            </span>
-          </div>
-
-          <p className="text-[11px] text-white/60 leading-relaxed">
-            {isLobby
-              ? 'ทุกคนที่เปิดเว็บจะเข้ามาเจอกันในห้องนี้โดยอัตโนมัติ'
-              : 'คุณกำลังอยู่ในห้องส่วนตัว สามารถส่งลิงก์ด้านล่างเพื่อชวนเพื่อนมาเล่นด้วยกันได้'}
-          </p>
-
-          {/* 1-Click Copy Invite Link */}
-          {isConnected && (
-            <div className="flex items-center gap-2 pt-1">
-              <code className="flex-1 min-w-0 truncate rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-[11px] text-white/90 font-mono">
-                {getWebShareUrl(lanSession.roomName)}
-              </code>
-              <button
-                type="button"
-                onClick={handleCopyWebLink}
-                className="shrink-0 px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 hover:text-white transition active:scale-95 shadow"
-              >
-                {copiedWeb ? 'คัดลอกแล้ว!' : 'คัดลอกลิงก์'}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Room Switch & Creation Controls */}
-        <div className="flex flex-col gap-2">
-          {/* If currently in private room, provide button to return to Lobby */}
-          {!isLobby && isConnected && (
-            <button
-              type="button"
-              onClick={handleReturnToLobby}
-              disabled={busy}
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 transition active:scale-95 shadow-md"
-            >
-              <span>กลับสู่ห้องสาธารณะ (Public Lobby)</span>
-            </button>
-          )}
-
-          {/* If currently in Lobby, provide button to create private room */}
-          {isLobby && (
-            <button
-              type="button"
-              onClick={handleCreatePrivateRoom}
-              disabled={busy}
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl bg-[#f2c879]/20 hover:bg-[#f2c879]/30 border border-[#f2c879]/40 text-[#f2c879] transition active:scale-95 shadow-md"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
-                <path d="M12 5v14M5 12h14" strokeLinecap="round" />
-              </svg>
-              <span>สร้างห้องส่วนตัวสำหรับเล่นกับเพื่อน</span>
-            </button>
-          )}
-
-          {/* Toggle Custom Room Input */}
-          {!showJoinCustom ? (
-            <button
-              type="button"
-              onClick={() => setShowJoinCustom(true)}
-              className="text-[11px] text-white/50 hover:text-white/90 py-1 transition text-center"
-            >
-              + เข้าร่วมห้องอื่นด้วยรหัสห้อง (Join Room Code)
-            </button>
-          ) : (
-            <div className="flex flex-col gap-2 rounded-2xl bg-white/5 p-3 border border-white/10 animate-in fade-in duration-150">
+        {/* CONNECTED VIEW */}
+        {isConnected ? (
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5 rounded-2xl bg-white/5 p-3.5 border border-white/10">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] text-white/70 font-medium">ระบุชื่อหรือรหัสห้อง:</span>
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.8)] shrink-0" />
+                  <span className="text-xs font-bold text-white">
+                    ห้อง: &ldquo;{lanSession.roomName || 'Private Room'}&rdquo;
+                  </span>
+                </div>
+                <span className="text-[11px] text-emerald-300 font-mono font-medium">
+                  {totalPlayers} คนในห้อง
+                </span>
+              </div>
+
+              {lanSession.passkey && (
+                <div className="flex items-center justify-between rounded-xl bg-black/40 px-3 py-1.5 border border-white/10 text-[11px]">
+                  <span className="text-white/60">รหัสผ่านห้อง (Passkey):</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-amber-300">
+                      {showPasskey ? lanSession.passkey : '••••••'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowPasskey((v) => !v)}
+                      className="text-[10px] text-white/50 hover:text-white"
+                    >
+                      {showPasskey ? 'ซ่อน' : 'ดู'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <p className="text-[11px] text-white/60 leading-relaxed">
+                ส่งลิงก์ด้านล่างให้เพื่อนเพื่อชวนเข้าห้องนี้ได้ทันที
+              </p>
+
+              {/* 1-Click Copy Invite Link */}
+              <div className="flex items-center gap-2 pt-1">
+                <code className="flex-1 min-w-0 truncate rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-[11px] text-white/90 font-mono">
+                  {getWebShareUrl(lanSession.roomName, lanSession.passkey)}
+                </code>
                 <button
                   type="button"
-                  onClick={() => setShowJoinCustom(false)}
-                  className="text-[10px] text-white/40 hover:text-white"
+                  onClick={handleCopyWebLink}
+                  className="shrink-0 px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 hover:text-white transition active:scale-95 shadow"
                 >
-                  ยกเลิก
+                  {copiedWeb ? 'คัดลอกแล้ว!' : 'คัดลอกลิงก์'}
                 </button>
               </div>
+            </div>
 
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-white/70 font-medium">ชื่อของคุณ (Display Name):</span>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="ชื่อที่ต้องการแสดง"
-                  className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
-                />
-              </div>
+            <button
+              type="button"
+              onClick={handleLeaveRoom}
+              className="mt-1 flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl bg-white/10 hover:bg-red-500/20 border border-white/15 hover:border-red-400/40 text-white/80 hover:text-red-200 transition active:scale-95 shadow"
+            >
+              <span>ออกจากห้อง (กลับสู่โหมดคนเดียว)</span>
+            </button>
+          </div>
+        ) : (
+          /* SOLO VIEW: CREATE OR JOIN TABS */
+          <div className="flex flex-col gap-3">
+            {/* Tab switcher */}
+            <div className="flex rounded-xl bg-black/30 p-1 border border-white/10">
+              <button
+                type="button"
+                onClick={() => {
+                  setTab('create')
+                  setError(null)
+                }}
+                className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${
+                  tab === 'create'
+                    ? 'bg-white/20 text-white shadow'
+                    : 'text-white/50 hover:text-white/80'
+                }`}
+              >
+                สร้างห้องใหม่
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTab('join')
+                  setError(null)
+                }}
+                className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${
+                  tab === 'join'
+                    ? 'bg-white/20 text-white shadow'
+                    : 'text-white/50 hover:text-white/80'
+                }`}
+              >
+                เข้าร่วมห้อง
+              </button>
+            </div>
 
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-white/70 font-medium">ระบุชื่อหรือรหัสห้อง:</span>
-                <div className="flex items-center gap-2">
+            {/* Display Name Input */}
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                ชื่อของคุณ (Display Name)
+              </span>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="ชื่อของคุณ"
+                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+              />
+            </div>
+
+            {tab === 'create' ? (
+              /* CREATE ROOM FORM */
+              <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                    ชื่อหรือรหัสห้อง (Room Code)
+                  </span>
                   <input
                     type="text"
-                    value={roomInput}
-                    onChange={(e) => setRoomInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && roomInput.trim()) {
-                        void handleJoinRoom(roomInput.trim())
-                      }
-                    }}
-                    placeholder="เช่น room-101, chill-room"
-                    className="flex-1 rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                    value={createRoomName}
+                    onChange={(e) => setCreateRoomName(e.target.value)}
+                    placeholder="เช่น chill-88, room-101"
+                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (roomInput.trim()) void handleJoinRoom(roomInput.trim())
-                    }}
-                    disabled={!roomInput.trim() || busy}
-                    className="shrink-0 px-3.5 py-2 text-xs font-semibold rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-200 hover:text-white transition active:scale-95 disabled:opacity-40"
-                  >
-                    เข้าห้อง
-                  </button>
                 </div>
-              </div>
-            </div>
-          )}
-        </div>
 
-        {error && <p className="text-[11px] text-red-300 text-center">{error}</p>}
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                      รหัสผ่านห้อง (Passkey)
+                    </span>
+                    <span className="text-[9px] text-white/40">(ไม่บังคับ / เว้นว่างได้)</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={createPasskey}
+                    onChange={(e) => setCreatePasskey(e.target.value)}
+                    placeholder="เช่น 1234, chill (เพื่อนต้องใส่ก่อนเข้า)"
+                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => void handleCreateRoom()}
+                  disabled={busy || !createRoomName.trim()}
+                  className="mt-1 flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 hover:text-white transition active:scale-95 disabled:opacity-50 shadow-md"
+                >
+                  <span>{busy ? 'กำลังสร้างห้อง…' : 'สร้างห้อง'}</span>
+                </button>
+              </div>
+            ) : (
+              /* JOIN ROOM FORM */
+              <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                    ชื่อหรือรหัสห้องที่ต้องการเข้า
+                  </span>
+                  <input
+                    type="text"
+                    value={joinRoomName}
+                    onChange={(e) => setJoinRoomName(e.target.value)}
+                    placeholder="เช่น chill-88, room-101"
+                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                    รหัสผ่านห้อง (Passkey)
+                  </span>
+                  <input
+                    type="text"
+                    value={joinPasskey}
+                    onChange={(e) => setJoinPasskey(e.target.value)}
+                    placeholder="ใส่รหัสผ่านหากห้องนั้นมีการตั้งไว้"
+                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => void handleJoinRoom()}
+                  disabled={busy || !joinRoomName.trim()}
+                  className="mt-1 flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-100 hover:text-white transition active:scale-95 disabled:opacity-50 shadow-md"
+                >
+                  <span>{busy ? 'กำลังเข้าร่วมห้อง…' : 'เข้าร่วมห้อง'}</span>
+                </button>
+              </div>
+            )}
+
+            {error && <p className="text-[11px] text-red-300 text-center">{error}</p>}
+          </div>
+        )}
       </div>
     </div>
   )

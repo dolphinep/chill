@@ -53,16 +53,16 @@ export function LanAutoJoin() {
     // same as other fire-and-forget engine-side logging in this app.
     const resume = getResumeInfo()
     if (resume?.mode === 'hosting') {
-      void startHosting(resume.name, getAvatarConfig(), sceneryId, resume.roomName).catch(
-        (e: unknown) => {
-          // The relay this was resuming is genuinely gone (not just a same-process
-          // refresh) — without clearing this, every future reload in this tab would
-          // retry and fail against the same dead session forever instead of falling
-          // back to solo.
-          clearResumeInfo()
-          console.error('[lan] resume-hosting failed:', e)
-        },
-      )
+      void startHosting(
+        resume.name,
+        getAvatarConfig(),
+        sceneryId,
+        resume.roomName,
+        resume.passkey,
+      ).catch((e: unknown) => {
+        clearResumeInfo()
+        console.error('[lan] resume-hosting failed:', e)
+      })
       return
     }
     if (resume?.mode === 'guest') {
@@ -72,6 +72,7 @@ export function LanAutoJoin() {
         getAvatarConfig(),
         sceneryId,
         resume.roomName,
+        resume.passkey,
       ).catch((e: unknown) => {
         clearResumeInfo()
         console.error('[lan] resume-join failed:', e)
@@ -81,25 +82,25 @@ export function LanAutoJoin() {
 
     const searchParams = new URLSearchParams(window.location.search)
     const roomParam = searchParams.get('room')
+    const passkeyParam = searchParams.get('passkey') || searchParams.get('key') || undefined
     const hostname = window.location.hostname
 
-    // If room query param is explicitly provided in URL (e.g. ?room=xyz), auto-join that room
+    // If room query param is explicitly provided in URL (e.g. ?room=xyz&passkey=123), auto-join that room
     if (roomParam) {
-      void joinLan(hostname, randomDisplayName(), getAvatarConfig(), sceneryId, roomParam).catch(
-        (e: unknown) => {
-          console.error('[lan] auto-join room failed:', e)
-        },
-      )
+      void joinLan(
+        hostname,
+        randomDisplayName(),
+        getAvatarConfig(),
+        sceneryId,
+        roomParam,
+        passkeyParam,
+      ).catch((e: unknown) => {
+        console.error('[lan] auto-join room failed:', e)
+      })
       return
     }
 
-    // Default: Auto-join public "Lobby" room so all players meet together seamlessly
-    void joinLan(hostname, randomDisplayName(), getAvatarConfig(), sceneryId, 'Lobby').catch(
-      (e: unknown) => {
-        // Safe offline fallback in solo mode if local relay isn't running
-        console.log('[lan] auto-join lobby (offline/solo mode):', e)
-      },
-    )
+    // Default: Client-side only (Solo mode). No WebSocket connection is made until player creates or joins a room.
   }, [lanSession.mode, sceneryId])
 
   return null

@@ -35,6 +35,7 @@ export type LanRoomClientOptions = {
    * `'join'` doc comment. Ignored (and irrelevant) for a guest; whoever's actually
    * hosting is echoed back to everyone via `welcome`/`getRoomName()` regardless. */
   roomName?: string
+  passkey?: string
 }
 
 /**
@@ -60,6 +61,7 @@ export class LanRoomClient implements RoomClient {
   #name: string
   #avatarConfig: AvatarConfigPayload
   #requestedRoomName?: string
+  #passkey?: string
   /** Whatever the relay actually confirmed via `welcome` — for the host this should
    * just echo `#requestedRoomName` back; for a guest, this is the only way they ever
    * learn it. `null` until the first `welcome` arrives. */
@@ -95,6 +97,7 @@ export class LanRoomClient implements RoomClient {
    * spawn point needs `getInitialAvatars()` to already be populated the instant
    * `connect()` resolves. */
   #connectResolve: (() => void) | null = null
+  #connectReject: ((err: Error) => void) | null = null
 
   #snapshotCbs = new Set<(s: Snapshot) => void>()
   #thoughtCbs = new Set<(t: Thought) => void>()
@@ -118,6 +121,7 @@ export class LanRoomClient implements RoomClient {
     this.#name = opts.name
     this.#avatarConfig = opts.avatarConfig
     this.#requestedRoomName = opts.roomName
+    this.#passkey = opts.passkey
   }
 
   get state(): ConnectionState {
@@ -362,6 +366,12 @@ export class LanRoomClient implements RoomClient {
         clearTimeout(welcomeTimeout)
         resolve()
       }
+      this.#connectReject = (err: Error) => {
+        if (settled) return
+        settled = true
+        clearTimeout(welcomeTimeout)
+        reject(err)
+      }
 
       ws.addEventListener('open', () => {
         this.#retryAttempt = 0
@@ -371,6 +381,7 @@ export class LanRoomClient implements RoomClient {
           avatarConfig: this.#avatarConfig,
           sceneryId: this.#lastConnectOpts?.sceneryId,
           roomName: this.#requestedRoomName,
+          passkey: this.#passkey,
         })
         if (this.#lastConnectOpts?.sceneryId) this.announceScenery(this.#lastConnectOpts.sceneryId)
       })
@@ -383,7 +394,7 @@ export class LanRoomClient implements RoomClient {
       // mode (never opened at all, dropped mid-session, rejected by the relay) — so
       // settling this promise here, once, covers all of them instead of splitting the
       // logic between 'error' and 'close'.
-      ws.addEventListener('close', () => {
+      ws.addEventListener('close', (e) => {
         this.#ws = null
         this.#sid = null
         if (this.#closedByUser) {
@@ -395,7 +406,8 @@ export class LanRoomClient implements RoomClient {
         if (!settled) {
           settled = true
           clearTimeout(welcomeTimeout)
-          reject(new Error('LanRoomClient: connection closed before welcome'))
+          const reason = e.reason || 'connection closed before welcome'
+          reject(new Error(`LanRoomClient: ${reason}`))
         }
       })
 
@@ -412,14 +424,6 @@ export class LanRoomClient implements RoomClient {
     const delay = LAN_RETRY_DELAYS_MS[Math.min(this.#retryAttempt, LAN_RETRY_DELAYS_MS.length - 1)]!
     this.#retryAttempt++
     this.#retryTimer = setTimeout(() => {
-      // Deliberately swallowed, not left unhandled: this retry's own promise (which
-      // rejects if it, too, never gets a `welcome`) is nobody's to await — the
-      // original `connect()` call already settled long ago on the *first* attempt.
-      // `onStateChange` is the correct way to observe ongoing reconnection health;
-      // an unhandled rejection here would otherwise surface as an uncaught error on
-      // every failed background retry, which is exactly what was happening before
-      // this existed (see `scripts/lan-relay.ts`'s host-grace-period fix — the actual
-      // bug, this is just the retry path not compounding it with a crash on top).
       this.#openSocket().catch(() => {})
     }, delay)
   }
@@ -433,6 +437,17 @@ export class LanRoomClient implements RoomClient {
     }
 
     switch (msg.t) {
+      case 'error': {
+        this.#closedByUser = true
+        const errText =
+          msg.reason === 'invalid_passkey'
+            ? 'รหัสผ่านห้อง (Passkey) ไม่ถูกต้อง'
+            : msg.message || msg.reason
+        this.#connectReject?.(new Error(errText))
+        this.#connectReject = null
+        this.disconnect()
+        break
+      }
       case 'welcome': {
         this.#sid = msg.sid
         this.#roomName = msg.roomName
