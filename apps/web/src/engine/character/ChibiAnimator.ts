@@ -41,8 +41,8 @@ export class ChibiAnimator {
 
     if (state === 'sit') {
       // --- Natural Sitting Posture (Bench / Chair / Ground) & Gentle Breathing ---
-      const breath = Math.sin(time * 2.0) * 0.005
-      torsoPivot.position.set(0, 0.22 + breath, 0)
+      const breath = Math.sin(time * 2.0) * 0.004
+      torsoPivot.position.set(0, 0.06 + breath, 0)
       torsoPivot.rotation.set(0.02, 0, 0)
 
       headPivot.position.set(0, 0.34, 0)
@@ -53,24 +53,24 @@ export class ChibiAnimator {
       )
 
       // Procedural limbs
-      leftArmPivot.rotation.set(0.42, 0.10, 0.18)
-      rightArmPivot.rotation.set(0.42, -0.10, -0.18)
-      leftLegPivot.rotation.set(-1.42, 0.10, 0)
-      rightLegPivot.rotation.set(-1.42, -0.10, 0)
+      leftArmPivot.rotation.set(-0.35, 0.08, 0.12)
+      rightArmPivot.rotation.set(-0.35, -0.08, -0.12)
+      leftLegPivot.rotation.set(-1.42, 0.08, 0)
+      rightLegPivot.rotation.set(-1.42, -0.08, 0)
 
       // Humanoid 3D Skeletal Sitting Posture
       if (bones) {
-        // Thighs extend forward horizontally
-        if (bones.leftUpperLeg) bones.leftUpperLeg.rotation.set(-1.45, 0.08, -0.04)
-        if (bones.rightUpperLeg) bones.rightUpperLeg.rotation.set(-1.45, -0.08, 0.04)
+        // Thighs extend forward horizontally over the bench
+        if (bones.leftUpperLeg) bones.leftUpperLeg.rotation.set(1.45, 0.06, -0.04)
+        if (bones.rightUpperLeg) bones.rightUpperLeg.rotation.set(1.45, -0.06, 0.04)
         // Knees bend down 90 degrees naturally hanging over the bench edge
-        if (bones.leftLowerLeg) bones.leftLowerLeg.rotation.set(1.45, 0, 0)
-        if (bones.rightLowerLeg) bones.rightLowerLeg.rotation.set(1.45, 0, 0)
+        if (bones.leftLowerLeg) bones.leftLowerLeg.rotation.set(-1.45, 0, 0)
+        if (bones.rightLowerLeg) bones.rightLowerLeg.rotation.set(-1.45, 0, 0)
         // Arms & hands resting neatly on thighs/lap
-        if (bones.leftUpperArm) bones.leftUpperArm.rotation.set(0.35, 0.05, 0.95)
-        if (bones.rightUpperArm) bones.rightUpperArm.rotation.set(0.35, -0.05, -0.95)
-        if (bones.leftLowerArm) bones.leftLowerArm.rotation.set(0.45, 0, 0)
-        if (bones.rightLowerArm) bones.rightLowerArm.rotation.set(0.45, 0, 0)
+        if (bones.leftUpperArm) bones.leftUpperArm.rotation.set(-0.35, 0.05, 1.1)
+        if (bones.rightUpperArm) bones.rightUpperArm.rotation.set(-0.35, -0.05, -1.1)
+        if (bones.leftLowerArm) bones.leftLowerArm.rotation.set(-0.45, 0, 0)
+        if (bones.rightLowerArm) bones.rightLowerArm.rotation.set(-0.45, 0, 0)
       }
     } else if (isSkiing) {
       // --- Alpine Ski: Clean, stable upright standing posture on skiboard ---
@@ -143,8 +143,10 @@ export class ChibiAnimator {
           if (bones.rightUpperLeg) bones.rightUpperLeg.rotation.set(0, 0, 0)
           if (bones.leftLowerLeg) bones.leftLowerLeg.rotation.set(0, 0, 0)
           if (bones.rightLowerLeg) bones.rightLowerLeg.rotation.set(0, 0, 0)
-          if (bones.leftUpperArm) bones.leftUpperArm.rotation.set(Math.sin(time * 1.8) * 0.02, 0, 1.25)
-          if (bones.rightUpperArm) bones.rightUpperArm.rotation.set(-Math.sin(time * 1.8) * 0.02, 0, -1.25)
+          if (bones.leftUpperArm)
+            bones.leftUpperArm.rotation.set(Math.sin(time * 1.8) * 0.02, 0, 1.25)
+          if (bones.rightUpperArm)
+            bones.rightUpperArm.rotation.set(-Math.sin(time * 1.8) * 0.02, 0, -1.25)
           if (bones.leftLowerArm) bones.leftLowerArm.rotation.set(0, 0, 0)
           if (bones.rightLowerArm) bones.rightLowerArm.rotation.set(0, 0, 0)
         }
@@ -158,8 +160,8 @@ export class ChibiAnimator {
         const legAmp = isRun ? 0.75 : 0.52
         const armAmp = isRun ? 0.65 : 0.42
         const kneeAmp = isRun ? 0.85 : 0.55
-        const bounceAmp = isRun ? 0.018 : 0.010
-        const lean = isRun ? -0.10 : -0.03
+        const bounceAmp = isRun ? 0.018 : 0.01
+        const lean = isRun ? -0.1 : -0.03
 
         const legRot = Math.sin(this.#walkPhase) * legAmp
         const armRot = Math.sin(this.#walkPhase) * armAmp
@@ -232,7 +234,7 @@ export class ChibiAnimator {
       // Fluid dynamic hair sway derived from locomotion velocity, stride bounce, centrifugal turning, and wind
       const isMoving = speed > 0.2
       const walkFactor = isMoving ? Math.min(speed / 3.5, 1.6) : 0.15
-      const swayForce = Math.sin(this.#walkPhase) * 0.20 * walkFactor
+      const swayForce = Math.sin(this.#walkPhase) * 0.2 * walkFactor
       const stepBounce = Math.cos(this.#walkPhase * 2.0) * 0.12 * walkFactor
       const centrifugalSway = -turnRate * 0.18
       const windBreeze = Math.sin(time * 2.6) * 0.05

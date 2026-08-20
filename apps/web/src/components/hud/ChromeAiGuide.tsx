@@ -72,9 +72,12 @@ export function ChromeAiGuide({
               <code className="rounded bg-black/40 px-1 py-0.5 text-[10px] text-amber-200">
                 chrome://components
               </code>{' '}
-              and click <strong>Check for update</strong> on <em>Optimization Guide On Device Model</em>.
+              and click <strong>Check for update</strong> on{' '}
+              <em>Optimization Guide On Device Model</em>.
             </li>
-            <li><strong>5. Relaunch:</strong> Restart Google Chrome and refresh this page.</li>
+            <li>
+              <strong>5. Relaunch:</strong> Restart Google Chrome and refresh this page.
+            </li>
           </ol>
         </div>
       )}

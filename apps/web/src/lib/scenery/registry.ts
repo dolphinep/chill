@@ -63,13 +63,7 @@ const skySchema = z.object({
 })
 
 const scenerySchema = z.object({
-  id: z.enum([
-    'kamakura-bay',
-    'frostholm-ridge',
-    'aki-highlands',
-    'sports-arena',
-    'observatory',
-  ]),
+  id: z.enum(['kamakura-bay', 'frostholm-ridge', 'aki-highlands', 'sports-arena', 'observatory']),
   place: z.string(),
   terrain: terrainSchema,
   sky: skySchema,

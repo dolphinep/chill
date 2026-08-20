@@ -97,26 +97,32 @@ flowchart TD
 ## ⚙️ 3. Subsystem Breakdown
 
 ### 1. 3D Engine Core (`engine/core/`)
+
 - **`Engine.ts`**: The central coordinator owning the scene graph, camera rig, avatar controllers, celestial sky dome, terrain clipmaps, interactive props, and mini-game states.
 - **`FrameScheduler.ts`**: WebGPU frame queue orchestrator that handles asynchronous submit pipelines, requestAnimationFrame throttling, and graceful frame error recovery.
 - **`QualityTier.ts`**: Dynamic adaptive performance scaling (`high`, `medium`, `low`) adjusting shadow map resolution, SSAO, bloom, and remote avatar detail tiers based on device FPS.
 
 ### 2. Celestial & Astronomy Engine (`engine/sky/`)
+
 - **`ConstellationField.ts`**: Real-time celestial sphere rendering 5,044 Hipparcos catalog stars, 88 IAU constellation stick figures, and 85 Johan Meuris mythological illustrations projected using barycentric affine grid warping.
 - **`MoonPhase.ts`**: Real-time lunar phase calculation using `astronomy-engine` for exact celestial phase angles, astronomical terminator curve geometry, and ethereal atmospheric glow.
 
 ### 3. Terrain & TSL Shaders (`engine/terrain/`, `engine/tsl/`)
+
 - **GPU Clipmap**: Concentric nested terrain mesh rings centered around the player, reducing polygon overhead while preserving high near-camera geometric detail.
 - **TSL Shaders**: Three.js Shading Language nodes for real-time atmosphere scattering, day/night transitions, procedural ocean water reflection, and ping-pong depth buffers for dynamic footprints on sand and snow.
 
 ### 4. Interactive Props & Dynamic Canvas Textures (`engine/props/`)
+
 - **Dynamic HTML5 Canvas Textures**: 2560x1024 ultra-crisp resolution text rendering on 3D billboards and wooden signs, updated and synchronized across peers in real-time.
 - **Interactive Props**: Campfire, lanterns, tea table, tent, radio, fireworks launcher, zen stones, and full volleyball court.
 
 ### 5. In-Browser AI Engine (`lib/ai/`)
+
 - **100% In-Browser & Private**: Leverages Chrome Built-in AI (Prompt API / Gemini Nano on device) alongside client-side creative generation heuristics. Zero server LLM or external GPU dependencies required.
 
 ### 6. Multiplayer & Networking (`packages/protocol/`, `scripts/lan-relay.ts`, `scripts/unified-server.ts`)
+
 - **Unified Single-Port Deployment**: Next.js HTTP server and WebSocket Relay server listen on the same port (`8080`), enabling seamless deployment to Google Cloud Run as a single container without CORS or dual-domain overhead.
 - **Multi-Room Isolated Relay**: In-memory WebSocket hub that strictly routes snapshots, thoughts, props, billboards, and sports match states per `roomName`.
 - **Anti-Ghost Eviction**: Connection deduplication that immediately kicks old tabs and broadcasts clean `leave` events upon page reload.

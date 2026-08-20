@@ -109,9 +109,7 @@ export class LanRoomClient implements RoomClient {
   #sceneryCbs = new Set<(sceneryId: string) => void>()
   #timeOfDayCbs = new Set<(progress: number) => void>()
   #propCbs = new Set<(prop: PlacedPropPayload) => void>()
-  #propTextCbs = new Set<
-    (data: { propId: string; text: string; authorName?: string }) => void
-  >()
+  #propTextCbs = new Set<(data: { propId: string; text: string; authorName?: string }) => void>()
   #propInteractCbs = new Set<
     (data: { propId: string; action: 'toggle' | 'firework'; active?: boolean }) => void
   >()

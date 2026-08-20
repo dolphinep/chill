@@ -91,7 +91,10 @@ export function ConstellationModal({
   if (!isOpen) return null
 
   const allNames = names && names.length > 0 ? names : FALLBACK_CONSTELLATIONS
-  const q = query.trim().replace(/[\u2000-\u200F\u00A0]/g, ' ').toLowerCase()
+  const q = query
+    .trim()
+    .replace(/[\u2000-\u200F\u00A0]/g, ' ')
+    .toLowerCase()
 
   const filtered = q
     ? allNames.filter((n) => {
@@ -141,7 +144,7 @@ export function ConstellationModal({
 
       {/* Modal Card floating above bottom dock */}
       <div
-        className="animate-in fade-in zoom-in-95 fixed bottom-24 left-1/2 z-40 flex max-h-[calc(100vh-120px)] sm:max-h-145 w-110 max-w-[calc(100vw-32px)] -translate-x-1/2 flex-col gap-3.5 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/90 p-4 text-white shadow-2xl backdrop-blur-xl duration-150"
+        className="animate-in fade-in zoom-in-95 fixed bottom-24 left-1/2 z-40 flex max-h-[calc(100vh-120px)] w-110 max-w-[calc(100vw-32px)] -translate-x-1/2 flex-col gap-3.5 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/90 p-4 text-white shadow-2xl backdrop-blur-xl duration-150 sm:max-h-145"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -162,32 +165,38 @@ export function ConstellationModal({
                 <path d="M12 12L6 7M12 12l6-6M12 12l5 4" strokeLinecap="round" />
               </svg>
             </div>
-            <h2 className="text-sm font-bold text-white tracking-wide">Real Constellations</h2>
+            <h2 className="text-sm font-bold tracking-wide text-white">Real Constellations</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-white/60 transition hover:bg-white/10 hover:text-white"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-4 w-4"
+            >
               <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
             </svg>
           </button>
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex flex-1 flex-col gap-3 overflow-y-auto pr-0.5 custom-scrollbar">
+        <div className="custom-scrollbar flex flex-1 flex-col gap-3 overflow-y-auto pr-0.5">
           {/* Date picker — Defaults to today in local time */}
           <div className="flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-2.5">
-            <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">
+            <span className="text-[10px] font-semibold tracking-wider text-white/60 uppercase">
               Sky Date & Observation Time
             </span>
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => handleDateChange(e.target.value)}
-              className="rounded-lg border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white outline-none scheme-dark transition focus:border-white/30"
+              className="rounded-lg border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white scheme-dark transition outline-none focus:border-white/30"
             />
             <span className="text-[10px] text-white/40">
               Star positions calculated for 20:00 local time
@@ -236,8 +245,9 @@ export function ConstellationModal({
           </div>
 
           {activeIsBelowHorizon && (
-            <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200/90 leading-relaxed">
-              ⭐ This constellation is currently below the horizon tonight. Try changing the date above to view other seasons.
+            <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-3 py-2 text-[11px] leading-relaxed text-amber-200/90">
+              ⭐ This constellation is currently below the horizon tonight. Try changing the date
+              above to view other seasons.
             </div>
           )}
 
@@ -248,12 +258,14 @@ export function ConstellationModal({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search constellations (e.g. Orion, Leo, Ursa Major)..."
-              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white outline-none placeholder:text-white/40 transition focus:border-white/30"
+              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white transition outline-none placeholder:text-white/40 focus:border-white/30"
             />
 
-            <div className="grid grid-cols-1 gap-1.5 max-h-48 overflow-y-auto pr-0.5 custom-scrollbar">
+            <div className="custom-scrollbar grid max-h-48 grid-cols-1 gap-1.5 overflow-y-auto pr-0.5">
               {filtered.length === 0 ? (
-                <p className="text-[11px] text-white/40 px-1 py-2 text-center">No constellations found matching &ldquo;{query}&rdquo;</p>
+                <p className="px-1 py-2 text-center text-[11px] text-white/40">
+                  No constellations found matching &ldquo;{query}&rdquo;
+                </p>
               ) : (
                 filtered.map((c) => {
                   const active = activeId === c.id
@@ -263,10 +275,10 @@ export function ConstellationModal({
                       key={c.id}
                       type="button"
                       onClick={() => handleSelect(c.id)}
-                      className={`flex items-center justify-between p-2.5 rounded-xl transition text-left border ${
+                      className={`flex items-center justify-between rounded-xl border p-2.5 text-left transition ${
                         active
-                          ? 'bg-emerald-500/20 border-emerald-400/60 text-white font-semibold shadow-md ring-1 ring-emerald-400/40'
-                          : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-white'
+                          ? 'border-emerald-400/60 bg-emerald-500/20 font-semibold text-white shadow-md ring-1 ring-emerald-400/40'
+                          : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
                       }`}
                     >
                       <span className="text-xs font-medium">{cleanName}</span>
@@ -280,14 +292,14 @@ export function ConstellationModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+        <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2">
           <p className="text-[10px] leading-tight text-white/35">
             Stellarium Data · Free Art License
           </p>
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 px-4 py-1.5 text-xs font-medium rounded-xl bg-white/15 hover:bg-white/25 text-white transition"
+            className="shrink-0 rounded-xl bg-white/15 px-4 py-1.5 text-xs font-medium text-white transition hover:bg-white/25"
           >
             Done
           </button>

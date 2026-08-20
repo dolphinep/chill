@@ -76,9 +76,18 @@ export function observatoryDateFromInput(dateString: string): Date {
 const PARK_POSITION: [number, number, number] = [0, -1e6, 0]
 
 type StarTuple = [raHours: number, decDeg: number, mag: number]
-type ConstellationLineData = { id: string; name: string; segments: [number, number, number, number][] }
+type ConstellationLineData = {
+  id: string
+  name: string
+  segments: [number, number, number, number][]
+}
 type ImageAnchor = { px: number; py: number; ra: number; dec: number }
-type ConstellationImageData = { id: string; file: string; size: [number, number]; anchors: ImageAnchor[] }
+type ConstellationImageData = {
+  id: string
+  file: string
+  size: [number, number]
+  anchors: ImageAnchor[]
+}
 
 const STARS = starsData as StarTuple[]
 const CONSTELLATIONS = constellationLineData as ConstellationLineData[]
@@ -118,7 +127,11 @@ function magnitudeToBrightness(mag: number): number {
  * altitude/azimuth. Scene convention (arbitrary, since this terrain has no real-world
  * geographic alignment): -Z is north, +X is east, +Y is up — azimuth is measured
  * clockwise from north per `astronomy-engine`'s own convention, matching this. */
-function altAzToDirection(altitudeDeg: number, azimuthDeg: number, out: THREE.Vector3): THREE.Vector3 {
+function altAzToDirection(
+  altitudeDeg: number,
+  azimuthDeg: number,
+  out: THREE.Vector3,
+): THREE.Vector3 {
   const alt = THREE.MathUtils.degToRad(altitudeDeg)
   const az = THREE.MathUtils.degToRad(azimuthDeg)
   const horizontal = Math.cos(alt)
@@ -243,7 +256,10 @@ export class ConstellationField {
     this.group.add(this.#starPoints)
 
     const allGeo = new THREE.BufferGeometry()
-    allGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(TOTAL_SEGMENTS * 6), 3))
+    allGeo.setAttribute(
+      'position',
+      new THREE.BufferAttribute(new Float32Array(TOTAL_SEGMENTS * 6), 3),
+    )
     const allMat = new THREE.LineBasicMaterial({
       color: 0x5580c0,
       transparent: true,
@@ -419,7 +435,6 @@ export class ConstellationField {
     anchor.divideScalar(visible.length * 2)
     return anchor
   }
-
 
   #rebuildActiveMesh(): void {
     const segments = this.#activeId ? this.#cachedSegments.get(this.#activeId) : undefined

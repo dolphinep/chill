@@ -41,7 +41,10 @@ export async function runGoldenHeightCheck(
   const { height, mask } = buildHeightNode(spec)
   const half = spec.halfExtentM
   const f = spec.octaves[0]!.frequency
-  const cpuMask = spec.kind === 'coastal' ? (x: number, z: number) => islandMask(spec, x, z) : (x: number, z: number) => valleyMask(spec, x, z)
+  const cpuMask =
+    spec.kind === 'coastal'
+      ? (x: number, z: number) => islandMask(spec, x, z)
+      : (x: number, z: number) => valleyMask(spec, x, z)
 
   const common = { resolution, halfExtent: half }
 

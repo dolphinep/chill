@@ -81,7 +81,9 @@ export function createSky(opts: SkyOptions = {}) {
     const isStar1 = smoothstep(0.965, 0.992, n1) as F
     const dist1 = f1.length() as F
     const shape1 = pow(clamp(float(1).sub(dist1.mul(2.2)), 0, 1), 5) as F
-    const twinkle1 = sin(n1.mul(120).add(time.mul(3.5))).mul(0.35).add(0.65) as F
+    const twinkle1 = sin(n1.mul(120).add(time.mul(3.5)))
+      .mul(0.35)
+      .add(0.65) as F
     const color1 = mix(vec3(1.0, 0.98, 0.9), vec3(0.75, 0.92, 1.0), n1) as V3
     const layer1 = color1.mul(isStar1.mul(shape1).mul(twinkle1).mul(4.5))
 
@@ -92,10 +94,12 @@ export function createSky(opts: SkyOptions = {}) {
     const f2 = fract(st2).sub(0.5) as V3
     const dot2 = cell2.x.mul(269.5).add(cell2.y.mul(183.3)).add(cell2.z.mul(246.1))
     const n2 = fract(sin(dot2).mul(43758.5453)) as F
-    const isStar2 = smoothstep(0.960, 0.990, n2) as F
+    const isStar2 = smoothstep(0.96, 0.99, n2) as F
     const dist2 = f2.length() as F
     const shape2 = pow(clamp(float(1).sub(dist2.mul(2.4)), 0, 1), 4) as F
-    const twinkle2 = sin(n2.mul(90).add(time.mul(4.5))).mul(0.4).add(0.6) as F
+    const twinkle2 = sin(n2.mul(90).add(time.mul(4.5)))
+      .mul(0.4)
+      .add(0.6) as F
     const color2 = mix(vec3(0.9, 0.95, 1.0), vec3(1.0, 0.9, 0.8), n2) as V3
     const layer2 = color2.mul(isStar2.mul(shape2).mul(twinkle2).mul(3.0))
 

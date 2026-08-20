@@ -11,13 +11,7 @@ import { useEffect } from 'react'
  * read it. The click affordance is the fallback for someone who lands and just watches.
  */
 
-export function AutoplayPill({
-  unlocked,
-  onUnlock,
-}: {
-  unlocked: boolean
-  onUnlock: () => void
-}) {
+export function AutoplayPill({ unlocked, onUnlock }: { unlocked: boolean; onUnlock: () => void }) {
   useEffect(() => {
     if (unlocked) return
     window.addEventListener('pointerdown', onUnlock, { once: true })
@@ -34,7 +28,7 @@ export function AutoplayPill({
       onClick={onUnlock}
       aria-hidden={unlocked}
       tabIndex={unlocked ? -1 : 0}
-      className="glass absolute bottom-6 right-6 flex items-center gap-2 px-4 py-2.5 text-xs text-glass-foreground transition-opacity duration-500 ease-out"
+      className="glass text-glass-foreground absolute right-6 bottom-6 flex items-center gap-2 px-4 py-2.5 text-xs transition-opacity duration-500 ease-out"
       style={{ opacity: unlocked ? 0 : 1, pointerEvents: unlocked ? 'none' : 'auto' }}
     >
       <svg

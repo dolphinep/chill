@@ -63,18 +63,35 @@ const ACCESSORY_STYLES: { id: AccessoryStyle; label: string }[] = [
 ]
 
 const COLOR_SWATCHES = [
-  '#ff7b9c', '#f72585', '#7209b7', '#3f37c9', '#4361ee',
-  '#4895ef', '#560bad', '#06b6d4', '#10b981', '#84cc16',
-  '#eab308', '#f97316', '#ef4444', '#475569', '#1e293b',
+  '#ff7b9c',
+  '#f72585',
+  '#7209b7',
+  '#3f37c9',
+  '#4361ee',
+  '#4895ef',
+  '#560bad',
+  '#06b6d4',
+  '#10b981',
+  '#84cc16',
+  '#eab308',
+  '#f97316',
+  '#ef4444',
+  '#475569',
+  '#1e293b',
 ]
 
 const EYE_SWATCHES = [
-  '#2b2d42', '#0284c7', '#ec4899', '#10b981', '#7209b7', '#eab308', '#ef4444', '#475569',
+  '#2b2d42',
+  '#0284c7',
+  '#ec4899',
+  '#10b981',
+  '#7209b7',
+  '#eab308',
+  '#ef4444',
+  '#475569',
 ]
 
-const SKIN_SWATCHES = [
-  '#ffdfc4', '#f3c4a5', '#e0ac69', '#c68642', '#8d5524',
-]
+const SKIN_SWATCHES = ['#ffdfc4', '#f3c4a5', '#e0ac69', '#c68642', '#8d5524']
 
 function ColorSection({
   label,
@@ -89,17 +106,17 @@ function ColorSection({
 }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <label className="text-xs font-medium text-white/70">{label}</label>
-        <div className="flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded-md border border-white/15 hover:bg-white/20 transition">
+        <div className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/10 px-2 py-0.5 transition hover:bg-white/20">
           <input
             type="color"
             value={value.startsWith('#') ? value : '#ffffff'}
             onChange={(e) => onChange(e.target.value)}
-            className="w-4 h-4 rounded cursor-pointer bg-transparent border-0 p-0"
+            className="h-4 w-4 cursor-pointer rounded border-0 bg-transparent p-0"
             title="Custom Color Wheel"
           />
-          <span className="text-[10px] font-mono text-white/80 uppercase">{value}</span>
+          <span className="font-mono text-[10px] text-white/80 uppercase">{value}</span>
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -109,7 +126,9 @@ function ColorSection({
             onClick={() => onChange(color)}
             style={{ backgroundColor: color }}
             className={`h-6 w-6 rounded-full border-2 transition ${
-              value === color ? 'border-white scale-110 shadow' : 'border-transparent hover:scale-105'
+              value === color
+                ? 'scale-110 border-white shadow'
+                : 'border-transparent hover:scale-105'
             }`}
           />
         ))}
@@ -224,9 +243,9 @@ export function StudioPreview({ config }: { config: ChibiAvatarConfig }) {
   }, [config])
 
   return (
-    <div className="relative w-full h-full rounded-2xl bg-white/5 border border-white/15 overflow-hidden flex flex-col items-center justify-center backdrop-blur-md select-none touch-none">
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[10px] text-white/70 tracking-wider font-mono pointer-events-none select-none">
+    <div className="relative flex h-full w-full touch-none flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/15 bg-white/5 backdrop-blur-md select-none">
+      <div ref={containerRef} className="h-full w-full cursor-grab active:cursor-grabbing" />
+      <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 font-mono text-[10px] tracking-wider text-white/70 backdrop-blur-md select-none">
         DRAG TO ROTATE
       </div>
     </div>
@@ -237,12 +256,42 @@ export function StudioPreview({ config }: { config: ChibiAvatarConfig }) {
  * the manual page's standalone demo can generate a random look the same way. */
 export function randomizeAvatarConfig(): Partial<ChibiAvatarConfig> {
   const randomItem = <T,>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)]!
-  const randomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
+  const randomColor = () =>
+    '#' +
+    Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, '0')
 
-  const hairStyles: HairStyle[] = ['bald', 'bob', 'spiky', 'bun', 'double-buns', 'ponytail', 'curly', 'floppy']
+  const hairStyles: HairStyle[] = [
+    'bald',
+    'bob',
+    'spiky',
+    'bun',
+    'double-buns',
+    'ponytail',
+    'curly',
+    'floppy',
+  ]
   const eyeStyles: EyeStyle[] = ['happy', 'anime', 'wink', 'dot']
-  const outfitStyles: OutfitStyle[] = ['cozy-hoodie', 'beach-robe', 'sailor-tee', 'winter-coat', 'monk-robe']
-  const accessoryStyles: AccessoryStyle[] = ['none', 'cat-ears', 'bunny-ears', 'glasses', 'straw-hat', 'scarf', 'beret', 'headphones', 'backpack', 'angel-wings']
+  const outfitStyles: OutfitStyle[] = [
+    'cozy-hoodie',
+    'beach-robe',
+    'sailor-tee',
+    'winter-coat',
+    'monk-robe',
+  ]
+  const accessoryStyles: AccessoryStyle[] = [
+    'none',
+    'cat-ears',
+    'bunny-ears',
+    'glasses',
+    'straw-hat',
+    'scarf',
+    'beret',
+    'headphones',
+    'backpack',
+    'angel-wings',
+  ]
 
   return {
     hairStyle: randomItem(hairStyles),
@@ -281,14 +330,14 @@ export function AvatarStudioPanel({
   return (
     <div className="grid h-105 grid-cols-1 gap-6 md:grid-cols-12">
       {/* Left Column: 3D Live Studio Viewport */}
-      <div className="md:col-span-5 h-full">
+      <div className="h-full md:col-span-5">
         <StudioPreview config={config} />
       </div>
 
       {/* Right Column: Customization Controls */}
-      <div className="md:col-span-7 flex flex-col h-full overflow-hidden">
+      <div className="flex h-full flex-col overflow-hidden md:col-span-7">
         {/* Tabs */}
-        <div className="flex gap-1.5 p-1 rounded-xl bg-white/5 border border-white/10 mb-4">
+        <div className="mb-4 flex gap-1.5 rounded-xl border border-white/10 bg-white/5 p-1">
           {(
             [
               { id: 'presets', label: 'Presets' },
@@ -300,10 +349,10 @@ export function AvatarStudioPanel({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+              className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-white/20 text-white shadow-md'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
+                  : 'text-white/60 hover:bg-white/10 hover:text-white'
               }`}
             >
               {tab.label}
@@ -312,7 +361,7 @@ export function AvatarStudioPanel({
         </div>
 
         {/* Scrollable Control Body */}
-        <div className="flex-1 overflow-y-auto pr-1 space-y-5 custom-scrollbar">
+        <div className="custom-scrollbar flex-1 space-y-5 overflow-y-auto pr-1">
           {/* Presets Tab */}
           {activeTab === 'presets' && (
             <div className="grid grid-cols-2 gap-3">
@@ -320,12 +369,12 @@ export function AvatarStudioPanel({
                 <button
                   key={key}
                   onClick={() => onChange(preset.config)}
-                  className="flex flex-col p-3.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/15 transition-all text-left group"
+                  className="group flex flex-col rounded-xl border border-white/10 bg-white/5 p-3.5 text-left transition-all hover:bg-white/15"
                 >
-                  <div className="font-semibold text-sm text-white/90 group-hover:text-white">
+                  <div className="text-sm font-semibold text-white/90 group-hover:text-white">
                     {preset.name}
                   </div>
-                  <div className="text-[11px] text-white/50 mt-1 capitalize">
+                  <div className="mt-1 text-[11px] text-white/50 capitalize">
                     {preset.config.hairStyle} • {preset.config.outfitStyle}
                   </div>
                 </button>
@@ -338,15 +387,15 @@ export function AvatarStudioPanel({
             <div className="space-y-4">
               {/* Hair Style */}
               <div>
-                <label className="text-xs font-medium text-white/70 block mb-2">Hair Style</label>
+                <label className="mb-2 block text-xs font-medium text-white/70">Hair Style</label>
                 <div className="grid grid-cols-4 gap-2">
                   {HAIR_STYLES.map((style) => (
                     <button
                       key={style.id}
                       onClick={() => onChange({ hairStyle: style.id })}
-                      className={`py-2 px-2 text-[11px] rounded-lg border transition text-center ${
+                      className={`rounded-lg border px-2 py-2 text-center text-[11px] transition ${
                         config.hairStyle === style.id
-                          ? 'border-sky-400 bg-sky-500/20 text-white font-medium'
+                          ? 'border-sky-400 bg-sky-500/20 font-medium text-white'
                           : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
                       }`}
                     >
@@ -374,15 +423,17 @@ export function AvatarStudioPanel({
 
               {/* Eye Style */}
               <div>
-                <label className="text-xs font-medium text-white/70 block mb-2">Eye Expression</label>
+                <label className="mb-2 block text-xs font-medium text-white/70">
+                  Eye Expression
+                </label>
                 <div className="grid grid-cols-2 gap-2">
                   {EYE_STYLES.map((eye) => (
                     <button
                       key={eye.id}
                       onClick={() => onChange({ eyeStyle: eye.id })}
-                      className={`py-2 px-3 text-xs rounded-lg border transition ${
+                      className={`rounded-lg border px-3 py-2 text-xs transition ${
                         config.eyeStyle === eye.id
-                          ? 'border-sky-400 bg-sky-500/20 text-white font-medium'
+                          ? 'border-sky-400 bg-sky-500/20 font-medium text-white'
                           : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
                       }`}
                     >
@@ -407,15 +458,15 @@ export function AvatarStudioPanel({
             <div className="space-y-4">
               {/* Outfit Style */}
               <div>
-                <label className="text-xs font-medium text-white/70 block mb-2">Top Style</label>
+                <label className="mb-2 block text-xs font-medium text-white/70">Top Style</label>
                 <div className="grid grid-cols-2 gap-2">
                   {OUTFIT_STYLES.map((outfit) => (
                     <button
                       key={outfit.id}
                       onClick={() => onChange({ outfitStyle: outfit.id })}
-                      className={`py-2 px-3 text-xs rounded-lg border transition ${
+                      className={`rounded-lg border px-3 py-2 text-xs transition ${
                         config.outfitStyle === outfit.id
-                          ? 'border-sky-400 bg-sky-500/20 text-white font-medium'
+                          ? 'border-sky-400 bg-sky-500/20 font-medium text-white'
                           : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
                       }`}
                     >
@@ -448,15 +499,17 @@ export function AvatarStudioPanel({
             <div className="space-y-4">
               {/* Accessory Type */}
               <div>
-                <label className="text-xs font-medium text-white/70 block mb-2">Head / Body Accessory</label>
+                <label className="mb-2 block text-xs font-medium text-white/70">
+                  Head / Body Accessory
+                </label>
                 <div className="grid grid-cols-3 gap-2">
                   {ACCESSORY_STYLES.map((acc) => (
                     <button
                       key={acc.id}
                       onClick={() => onChange({ accessory: acc.id })}
-                      className={`py-2 px-3 text-xs rounded-lg border transition ${
+                      className={`rounded-lg border px-3 py-2 text-xs transition ${
                         config.accessory === acc.id
-                          ? 'border-sky-400 bg-sky-500/20 text-white font-medium'
+                          ? 'border-sky-400 bg-sky-500/20 font-medium text-white'
                           : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
                       }`}
                     >
@@ -518,18 +571,24 @@ export function ChibiCustomizerModal({ isOpen, onClose, command }: ChibiCustomiz
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 transition-all">
-      <div className="glass relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/15 p-6 shadow-2xl backdrop-blur-2xl text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-all">
+      <div className="glass relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/15 p-6 text-white shadow-2xl backdrop-blur-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <h2 className="text-lg font-bold tracking-tight text-white/90">Avatar Studio</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopyStyle}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium text-white/90 hover:text-white border border-white/15 transition active:scale-95"
+              className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 transition hover:bg-white/20 hover:text-white active:scale-95"
               title="Copy current style as JSON code"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="h-3.5 w-3.5"
+              >
                 <rect x="9" y="9" width="13" height="13" rx="2" />
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
               </svg>
@@ -537,29 +596,55 @@ export function ChibiCustomizerModal({ isOpen, onClose, command }: ChibiCustomiz
             </button>
             <button
               onClick={() => setIsImporting(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium text-white/90 hover:text-white border border-white/15 transition active:scale-95"
+              className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 transition hover:bg-white/20 hover:text-white active:scale-95"
               title="Import style code"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="h-3.5 w-3.5"
+              >
+                <path
+                  d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               Import
             </button>
             <button
               onClick={() => handleUpdate(randomizeAvatarConfig())}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium text-white/90 hover:text-white border border-white/15 transition active:scale-95"
+              className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 transition hover:bg-white/20 hover:text-white active:scale-95"
               title="Generate random character"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5">
-                <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="h-3.5 w-3.5"
+              >
+                <path
+                  d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               Random
             </button>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/70 transition hover:bg-white/20 hover:text-white"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="h-4 w-4"
+              >
                 <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
@@ -572,11 +657,11 @@ export function ChibiCustomizerModal({ isOpen, onClose, command }: ChibiCustomiz
         </div>
 
         {/* Footer */}
-        <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
+        <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
           <span className="text-[11px] text-white/40">Customizations saved locally in browser</span>
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-white/15 hover:bg-white/25 font-medium text-xs text-white transition active:scale-95"
+            className="rounded-xl bg-white/15 px-5 py-2 text-xs font-medium text-white transition hover:bg-white/25 active:scale-95"
           >
             Done
           </button>
@@ -584,29 +669,31 @@ export function ChibiCustomizerModal({ isOpen, onClose, command }: ChibiCustomiz
 
         {/* Import Dialog Overlay */}
         {isImporting && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-md p-6">
-            <div className="glass flex w-full max-w-md flex-col gap-3 p-5 rounded-2xl border border-white/20 text-white shadow-2xl">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 p-6 backdrop-blur-md">
+            <div className="glass flex w-full max-w-md flex-col gap-3 rounded-2xl border border-white/20 p-5 text-white shadow-2xl">
               <h3 className="text-sm font-semibold text-white">Import Avatar Style Code</h3>
-              <p className="text-xs text-white/60">Paste your avatar JSON style code below to apply it instantly:</p>
+              <p className="text-xs text-white/60">
+                Paste your avatar JSON style code below to apply it instantly:
+              </p>
               <textarea
                 value={importText}
                 onChange={(e) => setImportText(e.target.value)}
                 placeholder='{"hairStyle": "bun", "hairColor": "#475569", ...}'
-                className="w-full h-32 p-3 text-xs font-mono rounded-xl bg-white/10 border border-white/15 focus:outline-none focus:border-white/40 text-white placeholder-white/30 resize-none"
+                className="h-32 w-full resize-none rounded-xl border border-white/15 bg-white/10 p-3 font-mono text-xs text-white placeholder-white/30 focus:border-white/40 focus:outline-none"
               />
               {importError && <p className="text-xs text-rose-400">{importError}</p>}
-              <div className="flex justify-end gap-2 mt-2">
+              <div className="mt-2 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsImporting(false)}
-                  className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium text-white transition"
+                  className="rounded-xl bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-white/20"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleImportStyle}
-                  className="px-4 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-xs font-medium text-white transition"
+                  className="rounded-xl bg-white/20 px-4 py-1.5 text-xs font-medium text-white transition hover:bg-white/30"
                 >
                   Apply Style
                 </button>

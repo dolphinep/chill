@@ -41,7 +41,7 @@ function loadPadoruModel(): Promise<THREE.Group> {
             mesh.frustumCulled = false
           }
         })
-        fbx.scale.setScalar(1.50)
+        fbx.scale.setScalar(1.5)
         // Center the chibi body (X offset centers the bag + character)
         fbx.position.set(0.095, -0.28, 0)
         padoruCache = fbx
@@ -58,10 +58,14 @@ function loadPadoruModel(): Promise<THREE.Group> {
 }
 
 function applyHumanoidRestPose(root: THREE.Object3D): void {
-  const leftUpperArm = root.getObjectByName('J_Bip_L_UpperArm') || root.getObjectByName('UpperArm_L')
-  const rightUpperArm = root.getObjectByName('J_Bip_R_UpperArm') || root.getObjectByName('UpperArm_R')
-  const leftLowerArm = root.getObjectByName('J_Bip_L_LowerArm') || root.getObjectByName('LowerArm_L')
-  const rightLowerArm = root.getObjectByName('J_Bip_R_LowerArm') || root.getObjectByName('LowerArm_R')
+  const leftUpperArm =
+    root.getObjectByName('J_Bip_L_UpperArm') || root.getObjectByName('UpperArm_L')
+  const rightUpperArm =
+    root.getObjectByName('J_Bip_R_UpperArm') || root.getObjectByName('UpperArm_R')
+  const leftLowerArm =
+    root.getObjectByName('J_Bip_L_LowerArm') || root.getObjectByName('LowerArm_L')
+  const rightLowerArm =
+    root.getObjectByName('J_Bip_R_LowerArm') || root.getObjectByName('LowerArm_R')
 
   if (leftUpperArm) {
     leftUpperArm.rotation.set(0, 0, 1.25)
@@ -598,16 +602,22 @@ export class ChibiAvatarMesh {
     waistSocket.position.set(0, 0.02, 0)
     torsoPivot.add(waistSocket)
 
-    const sockets = { hat: hatSocket, face: faceSocket, neck: neckSocket, back: backSocket, waist: waistSocket }
+    const sockets = {
+      hat: hatSocket,
+      face: faceSocket,
+      neck: neckSocket,
+      back: backSocket,
+      waist: waistSocket,
+    }
 
     // --- Left Arm Pivot ---
     const leftArmPivot = new THREE.Group()
-    leftArmPivot.position.set(-0.20, 0.27, 0)
+    leftArmPivot.position.set(-0.2, 0.27, 0)
     torsoPivot.add(leftArmPivot)
 
     // --- Right Arm Pivot ---
     const rightArmPivot = new THREE.Group()
-    rightArmPivot.position.set(0.20, 0.27, 0)
+    rightArmPivot.position.set(0.2, 0.27, 0)
     torsoPivot.add(rightArmPivot)
 
     // --- Left Leg Pivot ---
@@ -697,14 +707,14 @@ export class ChibiAvatarMesh {
       leftArm.castShadow = true
       const handGeo = new THREE.SphereGeometry(0.04, 10, 8)
       const leftHand = new THREE.Mesh(handGeo, skin)
-      leftHand.position.set(0, -0.20, 0)
+      leftHand.position.set(0, -0.2, 0)
       leftArmPivot.add(leftArm, leftHand)
 
       const rightArm = new THREE.Mesh(armGeo, outfit)
       rightArm.position.set(0, -0.09, 0)
       rightArm.castShadow = true
       const rightHand = new THREE.Mesh(handGeo, skin)
-      rightHand.position.set(0, -0.20, 0)
+      rightHand.position.set(0, -0.2, 0)
       rightArmPivot.add(rightArm, rightHand)
 
       const legGeo = new THREE.CapsuleGeometry(0.045, 0.14, 4, 8)
@@ -789,7 +799,12 @@ export class ChibiAvatarMesh {
     }
   }
 
-  #addOutfit(torsoPivot: THREE.Group, style: ChibiAvatarConfig['outfitStyle'], outfitMat: THREE.Material, accMat: THREE.Material): void {
+  #addOutfit(
+    torsoPivot: THREE.Group,
+    style: ChibiAvatarConfig['outfitStyle'],
+    outfitMat: THREE.Material,
+    accMat: THREE.Material,
+  ): void {
     if (style === 'cozy-hoodie') {
       const hoodieGeo = new THREE.CylinderGeometry(0.14, 0.17, 0.32, 16)
       const hoodieMesh = new THREE.Mesh(hoodieGeo, outfitMat)
@@ -799,13 +814,13 @@ export class ChibiAvatarMesh {
 
       const pocketGeo = new THREE.BoxGeometry(0.18, 0.09, 0.03)
       const pocket = new THREE.Mesh(pocketGeo, outfitMat)
-      pocket.position.set(0, 0.10, 0.15)
+      pocket.position.set(0, 0.1, 0.15)
       torsoPivot.add(pocket)
 
       const hoodBackGeo = new THREE.SphereGeometry(0.12, 12, 12)
       hoodBackGeo.scale(1.1, 0.8, 0.6)
       const hoodBack = new THREE.Mesh(hoodBackGeo, outfitMat)
-      hoodBack.position.set(0, 0.30, -0.12)
+      hoodBack.position.set(0, 0.3, -0.12)
       torsoPivot.add(hoodBack)
     } else if (style === 'beach-robe') {
       const robeGeo = new THREE.CylinderGeometry(0.13, 0.18, 0.34, 16)
@@ -820,13 +835,13 @@ export class ChibiAvatarMesh {
       sash.rotation.x = Math.PI / 2
       torsoPivot.add(sash)
     } else if (style === 'sailor-tee') {
-      const teeGeo = new THREE.CylinderGeometry(0.13, 0.15, 0.30, 16)
+      const teeGeo = new THREE.CylinderGeometry(0.13, 0.15, 0.3, 16)
       const teeMesh = new THREE.Mesh(teeGeo, outfitMat)
       teeMesh.position.set(0, 0.15, 0)
       teeMesh.castShadow = true
       torsoPivot.add(teeMesh)
 
-      const collarGeo = new THREE.BoxGeometry(0.34, 0.02, 0.20)
+      const collarGeo = new THREE.BoxGeometry(0.34, 0.02, 0.2)
       const collar = new THREE.Mesh(collarGeo, accMat)
       collar.position.set(0, 0.29, -0.06)
       collar.rotation.x = -0.15
@@ -834,11 +849,11 @@ export class ChibiAvatarMesh {
 
       const tieGeo = new THREE.ConeGeometry(0.045, 0.12, 4)
       const tie = new THREE.Mesh(tieGeo, accMat)
-      tie.position.set(0, 0.20, 0.14)
+      tie.position.set(0, 0.2, 0.14)
       tie.rotation.x = Math.PI
       torsoPivot.add(tie)
     } else if (style === 'winter-coat') {
-      const coatGeo = new THREE.CylinderGeometry(0.16, 0.20, 0.34, 16)
+      const coatGeo = new THREE.CylinderGeometry(0.16, 0.2, 0.34, 16)
       const coatMesh = new THREE.Mesh(coatGeo, outfitMat)
       coatMesh.position.set(0, 0.16, 0)
       coatMesh.castShadow = true
@@ -846,7 +861,7 @@ export class ChibiAvatarMesh {
 
       const furGeo = new THREE.TorusGeometry(0.18, 0.06, 12, 20)
       const fur = new THREE.Mesh(furGeo, accMat)
-      fur.position.set(0, 0.30, 0)
+      fur.position.set(0, 0.3, 0)
       fur.rotation.x = Math.PI / 2
       torsoPivot.add(fur)
 
@@ -874,7 +889,7 @@ export class ChibiAvatarMesh {
       const necklaceGeo = new THREE.TorusGeometry(0.16, 0.02, 10, 20)
       const malaMat = new THREE.MeshStandardMaterial({ color: '#5c3a21', roughness: 0.8 })
       const necklace = new THREE.Mesh(necklaceGeo, malaMat)
-      necklace.position.set(0, 0.30, 0)
+      necklace.position.set(0, 0.3, 0)
       necklace.rotation.x = Math.PI / 2
       torsoPivot.add(necklace)
 
@@ -902,19 +917,27 @@ export class ChibiAvatarMesh {
     headPivot.add(capMesh)
 
     if (style === 'bob') {
-      const bobCurtainGeo = new THREE.SphereGeometry(0.266, 28, 20, Math.PI * 0.60, Math.PI * 1.80, 0.25, Math.PI * 0.45)
+      const bobCurtainGeo = new THREE.SphereGeometry(
+        0.266,
+        28,
+        20,
+        Math.PI * 0.6,
+        Math.PI * 1.8,
+        0.25,
+        Math.PI * 0.45,
+      )
       const bobCurtain = new THREE.Mesh(bobCurtainGeo, hairMat)
       bobCurtain.position.set(0, 0.22, -0.01)
       headPivot.add(bobCurtain)
 
-      const lockGeo = new THREE.CapsuleGeometry(0.048, 0.20, 4, 10)
+      const lockGeo = new THREE.CapsuleGeometry(0.048, 0.2, 4, 10)
       const leftLock = new THREE.Mesh(lockGeo, hairMat)
       leftLock.position.set(-0.21, 0.15, 0.05)
-      leftLock.rotation.z = -0.10
+      leftLock.rotation.z = -0.1
       leftLock.rotation.x = 0.08
       const rightLock = new THREE.Mesh(lockGeo, hairMat)
       rightLock.position.set(0.21, 0.15, 0.05)
-      rightLock.rotation.z = 0.10
+      rightLock.rotation.z = 0.1
       rightLock.rotation.x = 0.08
       headPivot.add(leftLock, rightLock)
     } else if (style === 'bun') {
@@ -979,8 +1002,8 @@ export class ChibiAvatarMesh {
         [-0.18, 0.16, -0.04],
         [0.18, 0.16, -0.04],
         [0, 0.46, -0.06],
-        [-0.10, 0.47, -0.02],
-        [0.10, 0.47, -0.02],
+        [-0.1, 0.47, -0.02],
+        [0.1, 0.47, -0.02],
       ]
       curlPositions.forEach(([x, y, z]) => {
         const curl = new THREE.Mesh(curlGeo, hairMat)
@@ -988,11 +1011,11 @@ export class ChibiAvatarMesh {
         headPivot.add(curl)
       })
     } else if (style === 'spiky') {
-      const spikeGeo = new THREE.ConeGeometry(0.075, 0.20, 6)
+      const spikeGeo = new THREE.ConeGeometry(0.075, 0.2, 6)
       const positions: [number, number, number, number, number][] = [
         [-0.14, 0.46, 0.05, 0.35, -0.2],
         [0.14, 0.46, 0.05, -0.35, -0.2],
-        [0, 0.50, -0.04, 0, -0.3],
+        [0, 0.5, -0.04, 0, -0.3],
         [-0.19, 0.39, -0.08, 0.6, 0],
         [0.19, 0.39, -0.08, -0.6, 0],
       ]
@@ -1004,7 +1027,7 @@ export class ChibiAvatarMesh {
         headPivot.add(spike)
       })
     } else if (style === 'floppy') {
-      const strandGeo = new THREE.CapsuleGeometry(0.06, 0.40, 4, 10)
+      const strandGeo = new THREE.CapsuleGeometry(0.06, 0.4, 4, 10)
 
       // Spring-driven floppy strands
       const leftPivot = new THREE.Group()
@@ -1094,7 +1117,7 @@ export class ChibiAvatarMesh {
       const brimGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.02, 24)
       const brim = new THREE.Mesh(brimGeo, accMat)
       brim.position.set(0, 0, 0)
-      const crownGeo = new THREE.CylinderGeometry(0.18, 0.20, 0.12, 24)
+      const crownGeo = new THREE.CylinderGeometry(0.18, 0.2, 0.12, 24)
       const crown = new THREE.Mesh(crownGeo, accMat)
       crown.position.set(0, 0.06, 0)
       sockets.hat.add(brim, crown)
@@ -1158,11 +1181,11 @@ export class ChibiAvatarMesh {
         // Primary feather tip to notch 1
         shape.bezierCurveTo(0.19, 0.19, 0.21, 0.17, 0.26, 0.15)
         // Mid feather tip to notch 2
-        shape.bezierCurveTo(0.20, 0.09, 0.21, 0.07, 0.23, 0.03)
+        shape.bezierCurveTo(0.2, 0.09, 0.21, 0.07, 0.23, 0.03)
         // Lower feather tip to notch 3
         shape.bezierCurveTo(0.17, -0.02, 0.15, -0.04, 0.17, -0.07)
         // Bottom smooth return curve to base
-        shape.bezierCurveTo(0.10, -0.05, 0.04, -0.03, 0, 0)
+        shape.bezierCurveTo(0.1, -0.05, 0.04, -0.03, 0, 0)
         return shape
       }
 
@@ -1172,8 +1195,8 @@ export class ChibiAvatarMesh {
         bevelEnabled: true,
         bevelSegments: 4,
         steps: 1,
-        bevelSize: 0.010,
-        bevelThickness: 0.010,
+        bevelSize: 0.01,
+        bevelThickness: 0.01,
       }
       const wingGeo = new THREE.ExtrudeGeometry(wingShape, extrudeSettings)
       wingGeo.center()
@@ -1181,16 +1204,16 @@ export class ChibiAvatarMesh {
       const leftWingPivot = new THREE.Group()
       leftWingPivot.position.set(-0.09, 0.08, 0)
       const leftWing = new THREE.Mesh(wingGeo, accMat)
-      leftWing.position.set(-0.10, 0.04, -0.04)
-      leftWing.rotation.set(-0.25, -0.35, 0.20)
+      leftWing.position.set(-0.1, 0.04, -0.04)
+      leftWing.rotation.set(-0.25, -0.35, 0.2)
       leftWingPivot.add(leftWing)
 
       const rightWingPivot = new THREE.Group()
       rightWingPivot.position.set(0.09, 0.08, 0)
       const rightWing = new THREE.Mesh(wingGeo, accMat)
-      rightWing.position.set(0.10, 0.04, -0.04)
+      rightWing.position.set(0.1, 0.04, -0.04)
       rightWing.scale.set(-1, 1, 1)
-      rightWing.rotation.set(-0.25, 0.35, -0.20)
+      rightWing.rotation.set(-0.25, 0.35, -0.2)
       rightWingPivot.add(rightWing)
 
       sockets.back.add(leftWingPivot, rightWingPivot)
@@ -1204,7 +1227,7 @@ export class ChibiAvatarMesh {
   disposeGeometries(): void {
     this.group.traverse((obj) => {
       if ('geometry' in obj && obj.geometry) {
-        (obj.geometry as THREE.BufferGeometry).dispose()
+        ;(obj.geometry as THREE.BufferGeometry).dispose()
       }
     })
   }

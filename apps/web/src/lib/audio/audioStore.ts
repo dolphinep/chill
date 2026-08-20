@@ -40,8 +40,7 @@ export function loadPersistedAudioState(): AudioState {
           ? parsed.ambienceVolume
           : DEFAULT_STATE.ambienceVolume,
       ambiencePreset: parsed.ambiencePreset ?? DEFAULT_STATE.ambiencePreset,
-      sfxVolume:
-        typeof parsed.sfxVolume === 'number' ? parsed.sfxVolume : DEFAULT_STATE.sfxVolume,
+      sfxVolume: typeof parsed.sfxVolume === 'number' ? parsed.sfxVolume : DEFAULT_STATE.sfxVolume,
       muted: typeof parsed.muted === 'boolean' ? parsed.muted : DEFAULT_STATE.muted,
     }
   } catch {

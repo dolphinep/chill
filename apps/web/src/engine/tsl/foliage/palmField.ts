@@ -138,7 +138,10 @@ function frondGeometry(): THREE.BufferGeometry {
   // no texture map). `computeVertexNormals` must run here, per-part, before merging —
   // the merged tree's own final `computeVertexNormals` call can't retroactively add an
   // attribute that isn't already present and consistent across every input.
-  geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((positions.length / 3) * 2), 2))
+  geometry.setAttribute(
+    'uv',
+    new THREE.BufferAttribute(new Float32Array((positions.length / 3) * 2), 2),
+  )
   geometry.computeVertexNormals()
   return geometry
 }
@@ -196,7 +199,9 @@ function createPalmGeometry(): { geometry: THREE.BufferGeometry; topY: number } 
   shaft.translate(tipPos.x, tipPos.y, tipPos.z)
   withVertexColor(shaft, CROWN_SHAFT_COLOR)
 
-  const crownPos = tipPos.clone().add(new THREE.Vector3(0, CROWN_SHAFT_LENGTH, 0).applyQuaternion(tipQuat))
+  const crownPos = tipPos
+    .clone()
+    .add(new THREE.Vector3(0, CROWN_SHAFT_LENGTH, 0).applyQuaternion(tipQuat))
 
   const parts: THREE.BufferGeometry[] = [trunk, shaft]
 

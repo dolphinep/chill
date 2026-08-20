@@ -140,7 +140,7 @@ export class ChibiFaceTexture {
     }
 
     // --- Cute Petite Smile ---
-    this.#drawMouth(ctx, faceCenterX, h * 0.70)
+    this.#drawMouth(ctx, faceCenterX, h * 0.7)
 
     this.texture.needsUpdate = true
   }
@@ -302,8 +302,14 @@ export class ChibiFaceTexture {
     ctx.translate(cx, cy)
     ctx.beginPath()
     for (let i = 0; i < 4; i++) {
-      ctx.lineTo(Math.cos(((18 + i * 90) * Math.PI) / 180) * r, -Math.sin(((18 + i * 90) * Math.PI) / 180) * r)
-      ctx.lineTo(Math.cos(((63 + i * 90) * Math.PI) / 180) * (r * 0.4), -Math.sin(((63 + i * 90) * Math.PI) / 180) * (r * 0.4))
+      ctx.lineTo(
+        Math.cos(((18 + i * 90) * Math.PI) / 180) * r,
+        -Math.sin(((18 + i * 90) * Math.PI) / 180) * r,
+      )
+      ctx.lineTo(
+        Math.cos(((63 + i * 90) * Math.PI) / 180) * (r * 0.4),
+        -Math.sin(((63 + i * 90) * Math.PI) / 180) * (r * 0.4),
+      )
     }
     ctx.closePath()
     ctx.fill()

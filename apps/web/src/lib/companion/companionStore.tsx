@@ -27,7 +27,13 @@ export interface CompanionSpeciesInfo {
 
 export function PawIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      className={className}
+    >
       <circle cx="12" cy="14.5" r="3.5" fill="currentColor" fillOpacity={0.25} />
       <ellipse cx="7" cy="10" rx="1.8" ry="2.2" fill="currentColor" />
       <ellipse cx="17" cy="10" rx="1.8" ry="2.2" fill="currentColor" />
@@ -78,7 +84,8 @@ export const COMPANION_SPECIES_LIST: CompanionSpeciesInfo[] = [
     accentColor: 'text-amber-300',
     description: 'Loyal and cheerful Shiba puppy radiating positive energy.',
     personality: 'Playful, loyal, energetic',
-    greeting: '*Wags tail excitedly and rests chin on your knee* Woof! Shiba is always here for you!',
+    greeting:
+      '*Wags tail excitedly and rests chin on your knee* Woof! Shiba is always here for you!',
     quickPrompts: [
       'ไปวิ่งแข่งกันไหม!',
       'ใครเป็นเด็กดีของเจ้านายนะ',
@@ -116,7 +123,8 @@ export const COMPANION_SPECIES_LIST: CompanionSpeciesInfo[] = [
     accentColor: 'text-cyan-300',
     description: 'Chubby little penguin waddling happily by your side.',
     personality: 'Cheerful, curious, waddly',
-    greeting: '*Flaps flippers with joy and waddles over to lean on your leg* Peep! Let us rest together!',
+    greeting:
+      '*Flaps flippers with joy and waddles over to lean on your leg* Peep! Let us rest together!',
     quickPrompts: [
       'เดินเตาะแตะไปด้วยกันนะ',
       'หนาวไหมเปนเปน',
@@ -135,7 +143,8 @@ export const COMPANION_SPECIES_LIST: CompanionSpeciesInfo[] = [
     accentColor: 'text-emerald-300',
     description: 'Friendly miniature dragon breathing warm gentle puffs to protect you.',
     personality: 'Brave, warm, guardian',
-    greeting: '*Flutters wings, lands on your shoulder, and breathes a tiny warm puff* Purr~ Ryuu will protect you!',
+    greeting:
+      '*Flutters wings, lands on your shoulder, and breathes a tiny warm puff* Purr~ Ryuu will protect you!',
     quickPrompts: [
       'พ่นลูกไฟจิ๋วให้ดูหน่อย',
       'บินวนรอบๆ ให้ดูหน่อย',
@@ -152,7 +161,7 @@ export function renderCompanionIcon(species: CompanionSpecies, className = 'h-6 
     <img
       src={info.iconSrc}
       alt={info.name}
-      className={`select-none object-contain drop-shadow ${className}`}
+      className={`object-contain drop-shadow select-none ${className}`}
       draggable={false}
     />
   )
@@ -205,7 +214,8 @@ export type CompanionStore = CompanionStoreState & CompanionStoreActions
 
 const initialSpecies = loadPersistedSpecies()
 const initialName = loadPersistedPetName(initialSpecies)
-const initialInfo = COMPANION_SPECIES_LIST.find((s) => s.id === initialSpecies) || COMPANION_SPECIES_LIST[0]!
+const initialInfo =
+  COMPANION_SPECIES_LIST.find((s) => s.id === initialSpecies) || COMPANION_SPECIES_LIST[0]!
 
 let state: CompanionStoreState = {
   species: initialSpecies,
@@ -322,9 +332,7 @@ export const companionActions: CompanionStoreActions = {
   },
 }
 
-export function useCompanionStore<T = CompanionStore>(
-  selector?: (s: CompanionStore) => T,
-): T {
+export function useCompanionStore<T = CompanionStore>(selector?: (s: CompanionStore) => T): T {
   const current = useSyncExternalStore(subscribe, getSnapshot, () => state)
   const fullStore: CompanionStore = {
     ...current,

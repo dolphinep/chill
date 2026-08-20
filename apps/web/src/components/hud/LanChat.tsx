@@ -16,12 +16,12 @@ const QUICK_PHRASES = [
 
 const PLAYER_COLORS = [
   'text-[#f2c879]', // Warm Gold
-  'text-cyan-300',   // Sky Cyan
-  'text-pink-300',   // Sakura Pink
-  'text-emerald-300',// Mint Green
+  'text-cyan-300', // Sky Cyan
+  'text-pink-300', // Sakura Pink
+  'text-emerald-300', // Mint Green
   'text-purple-300', // Lavender
-  'text-amber-300',  // Warm Amber
-  'text-rose-300',   // Coral Rose
+  'text-amber-300', // Warm Amber
+  'text-rose-300', // Coral Rose
 ]
 
 function getPlayerColor(sid: number): string {
@@ -35,8 +35,18 @@ function formatTime(epochMs: number): string {
 
 function ChatBubbleIcon({ className = 'h-4 w-4' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
-      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      className={className}
+    >
+      <path
+        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -54,7 +64,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
   const [text, setText] = useState('')
   const [unreadCount, setUnreadCount] = useState(0)
   const [latestToast, setLatestToast] = useState<ChatMessage | null>(null)
-  
+
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const lastMsgCountRef = useRef(lanSession.chatMessages.length)
@@ -136,7 +146,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
   }
 
   return (
-    <div className="fixed right-4 bottom-24 z-40 flex flex-col items-end gap-2.5 select-none font-sans">
+    <div className="fixed right-4 bottom-24 z-40 flex flex-col items-end gap-2.5 font-sans select-none">
       {/* Floating Toast Notification Preview when Chat is Closed */}
       {!open && latestToast && (
         <div
@@ -144,49 +154,51 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
             setOpen(true)
             setLatestToast(null)
           }}
-          className="flex cursor-pointer items-start gap-2 max-w-xs rounded-2xl border border-[#f2c879]/40 bg-[#1c132e]/95 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl transition hover:scale-105 active:scale-95 animate-in fade-in slide-in-from-bottom-2 duration-200"
+          className="animate-in fade-in slide-in-from-bottom-2 flex max-w-xs cursor-pointer items-start gap-2 rounded-2xl border border-[#f2c879]/40 bg-[#1c132e]/95 px-3.5 py-2.5 shadow-2xl backdrop-blur-xl transition duration-200 hover:scale-105 active:scale-95"
         >
           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f2c879]/20 text-[#f2c879]">
             <ChatBubbleIcon className="h-3.5 w-3.5" />
           </div>
-          <div className="flex-1 min-w-0 text-left">
+          <div className="min-w-0 flex-1 text-left">
             <div className="flex items-center justify-between gap-1">
-              <span className={`text-xs font-semibold truncate ${getPlayerColor(latestToast.sid)}`}>
+              <span className={`truncate text-xs font-semibold ${getPlayerColor(latestToast.sid)}`}>
                 {latestToast.name}
               </span>
               <span className="text-[10px] text-white/40">{formatTime(latestToast.atMs)}</span>
             </div>
-            <p className="text-xs text-white/90 truncate">{latestToast.text}</p>
+            <p className="truncate text-xs text-white/90">{latestToast.text}</p>
           </div>
         </div>
       )}
 
       {/* Main Expanded Chat Panel */}
       {open && (
-        <div className="flex h-96 w-80 sm:w-92 flex-col rounded-3xl border border-white/15 bg-[#181126]/95 p-4 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="animate-in fade-in zoom-in-95 flex h-96 w-80 flex-col rounded-3xl border border-white/15 bg-[#181126]/95 p-4 shadow-2xl backdrop-blur-2xl duration-200 sm:w-92">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-2.5 px-1">
+          <div className="flex items-center justify-between border-b border-white/10 px-1 pb-2.5">
             <div className="flex items-center gap-2">
               <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#f2c879]/20 text-[#f2c879]">
                 <ChatBubbleIcon className="h-3.5 w-3.5" />
               </div>
               <div>
                 <h3 className="text-xs font-bold tracking-wide text-white">Live Chat</h3>
-                <span className="text-[10px] text-[#f2c879]/80 font-mono">
-                  {peerCount} {peerCount === 1 ? 'player' : 'players'} in {lanSession.roomName || 'Room'}
+                <span className="font-mono text-[10px] text-[#f2c879]/80">
+                  {peerCount} {peerCount === 1 ? 'player' : 'players'} in{' '}
+                  {lanSession.roomName || 'Room'}
                 </span>
               </div>
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-white/40 font-mono hidden sm:inline">
-                <kbd className="rounded border border-white/20 bg-white/10 px-1 py-0.5">Esc</kbd> Close
+              <span className="hidden font-mono text-[10px] text-white/40 sm:inline">
+                <kbd className="rounded border border-white/20 bg-white/10 px-1 py-0.5">Esc</kbd>{' '}
+                Close
               </span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close chat"
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-white/50 transition hover:bg-white/10 hover:text-white"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -204,16 +216,18 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
           {/* Messages Scroll List */}
           <div
             ref={listRef}
-            className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-1 py-3 custom-scrollbar text-xs"
+            className="custom-scrollbar flex flex-1 flex-col gap-2.5 overflow-y-auto px-1 py-3 text-xs"
           >
             {lanSession.chatMessages.length === 0 ? (
-              <div className="flex flex-1 flex-col items-center justify-center text-center p-4 text-white/40">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 mb-2 text-white/40">
+              <div className="flex flex-1 flex-col items-center justify-center p-4 text-center text-white/40">
+                <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/40">
                   <ChatBubbleIcon className="h-4 w-4" />
                 </div>
                 <p className="text-xs font-medium text-white/60">No messages yet</p>
-                <p className="text-[11px] mt-0.5 text-white/40">
-                  {lanSession.roster.length === 0 ? 'Say hello to the world!' : 'Say hi to everyone in the room!'}
+                <p className="mt-0.5 text-[11px] text-white/40">
+                  {lanSession.roster.length === 0
+                    ? 'Say hello to the world!'
+                    : 'Say hi to everyone in the room!'}
                 </p>
               </div>
             ) : (
@@ -240,8 +254,8 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                     <div
                       className={`max-w-[85%] rounded-2xl px-3 py-1.5 text-xs leading-relaxed wrap-break-word shadow-md ${
                         isYou
-                          ? 'bg-[#f2c879]/20 text-white border border-[#f2c879]/35 rounded-tr-xs'
-                          : 'bg-white/10 text-white/95 border border-white/10 rounded-tl-xs'
+                          ? 'rounded-tr-xs border border-[#f2c879]/35 bg-[#f2c879]/20 text-white'
+                          : 'rounded-tl-xs border border-white/10 bg-white/10 text-white/95'
                       }`}
                     >
                       {m.text}
@@ -253,13 +267,13 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
           </div>
 
           {/* Quick Emote / Action Bar */}
-          <div className="flex items-center gap-1.5 overflow-x-auto py-1.5 px-1 border-t border-white/10 no-scrollbar">
+          <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto border-t border-white/10 px-1 py-1.5">
             {QUICK_PHRASES.map((phrase, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => submitMessage(phrase)}
-                className="shrink-0 rounded-full border border-white/15 bg-white/5 hover:bg-white/15 px-2.5 py-0.5 text-[10px] font-medium text-white/80 transition active:scale-95"
+                className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[10px] font-medium text-white/80 transition hover:bg-white/15 active:scale-95"
               >
                 {phrase}
               </button>
@@ -277,7 +291,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                   if (e.key === 'Enter') submitMessage()
                 }}
                 placeholder="Type a message... (Press Enter to send)"
-                className="w-full rounded-2xl border border-white/15 bg-black/40 pl-3 pr-10 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-[#f2c879]/60 transition"
+                className="w-full rounded-2xl border border-white/15 bg-black/40 py-2 pr-10 pl-3 text-xs text-white placeholder-white/40 transition outline-none focus:border-[#f2c879]/60"
               />
 
               <button
@@ -285,7 +299,7 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
                 onClick={() => submitMessage()}
                 disabled={!text.trim()}
                 title="Send message"
-                className="absolute right-1.5 flex h-7 w-7 items-center justify-center rounded-xl bg-[#f2c879] text-slate-950 transition hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none shadow"
+                className="absolute right-1.5 flex h-7 w-7 items-center justify-center rounded-xl bg-[#f2c879] text-slate-950 shadow transition hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-30"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -300,7 +314,9 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
             </div>
 
             <div className="flex items-center justify-between px-1.5 pt-1 text-[10px] text-white/40">
-              <span>Press <kbd className="font-mono text-white/60">Enter</kbd> to send</span>
+              <span>
+                Press <kbd className="font-mono text-white/60">Enter</kbd> to send
+              </span>
               <span>
                 {graphemeCount(text)}/{MAX_GRAPHEMES}
               </span>
@@ -329,13 +345,13 @@ export function LanChat({ command }: { command: (cmd: EngineCommand) => void }) 
 
         {/* Unread Counter Badge */}
         {!open && unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white shadow-lg animate-bounce">
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 animate-bounce items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white shadow-lg">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
 
         {/* Keybinding Indicator */}
-        <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-md border border-white/20 bg-slate-900 text-[8px] font-mono font-bold text-[#f2c879]">
+        <span className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-md border border-white/20 bg-slate-900 font-mono text-[8px] font-bold text-[#f2c879]">
           ↵
         </span>
       </button>

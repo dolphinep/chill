@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import type { EngineEvents, QualityTierName } from '@/engine/core/EngineEventBus'
 import type { Engine, EngineCommand, MinimapSnapshot } from '@/engine/core/Engine'
 import type { LanternProjection } from '@/engine/thoughts/ThoughtField'
-import type { ConstellationLabelProjection, ConstellationSummary } from '@/engine/sky/ConstellationField'
+import type {
+  ConstellationLabelProjection,
+  ConstellationSummary,
+} from '@/engine/sky/ConstellationField'
 import { appConfig } from '@/configs/appConfig'
 import { BootDissolve } from '@/components/boot/BootDissolve'
 import { useLanSession } from '@/lib/lan/lanSessionStore'
@@ -124,7 +127,9 @@ export function EngineCanvas({ sceneryId, children }: EngineCanvasProps) {
       setCommand(() => (cmd: EngineCommand) => instance.command(cmd))
       setGetLanternProjections(() => (w: number, h: number) => instance.getLanternProjections(w, h))
       setGetMinimapSnapshot(() => () => instance.getMinimapSnapshot())
-      setGetConstellationLabels(() => (w: number, h: number) => instance.getConstellationLabels(w, h))
+      setGetConstellationLabels(
+        () => (w: number, h: number) => instance.getConstellationLabels(w, h),
+      )
       setGetConstellationNames(() => () => instance.getConstellationNames())
       setIsConstellationVisible(() => (id: string) => instance.isConstellationVisible(id))
 

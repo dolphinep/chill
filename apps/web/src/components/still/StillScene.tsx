@@ -126,7 +126,10 @@ export function StillScene() {
       </p>
 
       <StillLanternLayer thoughts={thoughts} />
-      <ThoughtComposer cooldownS={cooldownS} onSubmit={(text) => thoughtsRef.current.post(text, 0, 0)} />
+      <ThoughtComposer
+        cooldownS={cooldownS}
+        onSubmit={(text) => thoughtsRef.current.post(text, 0, 0)}
+      />
       <AutoplayPill unlocked={audioUnlocked} onUnlock={() => void audioRef.current?.unlock()} />
       <ComfortSettings />
     </div>

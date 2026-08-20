@@ -14,7 +14,7 @@ import { windOffset } from './wind'
 type F = Node<'float'>
 type V3 = Node<'vec3'>
 
-const TRUNK_COLOR = new THREE.Color(0.24, 0.16, 0.10)
+const TRUNK_COLOR = new THREE.Color(0.24, 0.16, 0.1)
 const AUTUMN_COLORS = [
   new THREE.Color(0xd9480f), // Crimson red maple
   new THREE.Color(0xf08c00), // Rich amber orange
@@ -43,7 +43,9 @@ function withVertexColor(geometry: THREE.BufferGeometry, color: THREE.Color): TH
 function createAutumnTreeGeometry(): THREE.BufferGeometry {
   const trunkHeight = 2.4
   const trunkRadius = 0.14
-  const trunk = ensureNonIndexed(new THREE.CylinderGeometry(trunkRadius * 0.65, trunkRadius, trunkHeight, 6))
+  const trunk = ensureNonIndexed(
+    new THREE.CylinderGeometry(trunkRadius * 0.65, trunkRadius, trunkHeight, 6),
+  )
   trunk.translate(0, trunkHeight / 2, 0)
   withVertexColor(trunk, TRUNK_COLOR)
 
@@ -104,7 +106,7 @@ export function createAutumnTreeField(spec: RidgeTerrainSpec): AutumnTreeField {
     maxPerCell: 2,
     minAboveSea: 0.6,
     maxAboveSea: spec.treeLineM + 2,
-    minSlope: 0.60,
+    minSlope: 0.6,
     patchFrequency: 0.035,
     patchThreshold: 0.45,
     seedSalt: 0x7b21,
@@ -151,7 +153,7 @@ function fillInstances(mesh: THREE.InstancedMesh, instances: ScatterInstance[]):
     // Rich color distribution across autumn palette
     const colorIdx = Math.floor(inst.variant * AUTUMN_COLORS.length) % AUTUMN_COLORS.length
     const baseColor = AUTUMN_COLORS[colorIdx]!
-    const v = 0.88 + (inst.variant * 0.24)
+    const v = 0.88 + inst.variant * 0.24
     color.copy(baseColor).multiplyScalar(v)
     mesh.setColorAt(i, color)
   })

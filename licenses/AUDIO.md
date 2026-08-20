@@ -11,13 +11,13 @@ support across browsers. Re-encoding does not change the licence.
 **Prototype-only per the project plan**: fine for local dev and internal review; get Balerion
 sign-off on provenance before this ships past prototype. _(Not legal advice.)_
 
-| Local file(s) | Source | Original title | Licence | URL | Date pulled |
-| --- | --- | --- | --- | --- | --- |
-| `audio/ambience/wave-01.mp3` … `wave-04.mp3` | OpenGameArt.org (uploader: jasinski) | Beach Ocean Waves | CC0 | https://opengameart.org/content/beach-ocean-waves | 2026-08-09 |
-| `audio/ambience/wind-loop.mp3` | OpenGameArt.org | Wind Whoosh Loop | CC0 | https://opengameart.org/content/wind-whoosh-loop | 2026-08-09 |
-| `audio/footsteps/sand-01.mp3` … `sand-06.mp3` | OpenGameArt.org (uploader: Fantozzi, via freesound.org) | Fantozzi's Footsteps (Grass/Sand & Stone) — Sand L1–3/R1–3 only | CC0 | https://opengameart.org/content/fantozzis-footsteps-grasssand-stone | 2026-08-09 |
-| `audio/birds/gull-01.mp3` … `gull-04.mp3` | OpenGameArt.org | Solo Seagull Sound Effects — "Ambient" cuts 1–4 (skipped the hit/death cuts, not relevant here) | CC0 | https://opengameart.org/content/solo-seagull-sound-effects | 2026-08-09 |
-| `audio/footsteps/snow-01.mp3` … `snow-04.mp3` | OpenGameArt.org (recorded by Iwan "qubodup" Gabovitch) | 4 dry snow steps | CC0 | https://opengameart.org/content/4-dry-snow-steps | 2026-08-10 |
+| Local file(s)                                 | Source                                                  | Original title                                                                                  | Licence | URL                                                                 | Date pulled |
+| --------------------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------- | ----------- |
+| `audio/ambience/wave-01.mp3` … `wave-04.mp3`  | OpenGameArt.org (uploader: jasinski)                    | Beach Ocean Waves                                                                               | CC0     | https://opengameart.org/content/beach-ocean-waves                   | 2026-08-09  |
+| `audio/ambience/wind-loop.mp3`                | OpenGameArt.org                                         | Wind Whoosh Loop                                                                                | CC0     | https://opengameart.org/content/wind-whoosh-loop                    | 2026-08-09  |
+| `audio/footsteps/sand-01.mp3` … `sand-06.mp3` | OpenGameArt.org (uploader: Fantozzi, via freesound.org) | Fantozzi's Footsteps (Grass/Sand & Stone) — Sand L1–3/R1–3 only                                 | CC0     | https://opengameart.org/content/fantozzis-footsteps-grasssand-stone | 2026-08-09  |
+| `audio/birds/gull-01.mp3` … `gull-04.mp3`     | OpenGameArt.org                                         | Solo Seagull Sound Effects — "Ambient" cuts 1–4 (skipped the hit/death cuts, not relevant here) | CC0     | https://opengameart.org/content/solo-seagull-sound-effects          | 2026-08-09  |
+| `audio/footsteps/snow-01.mp3` … `snow-04.mp3` | OpenGameArt.org (recorded by Iwan "qubodup" Gabovitch)  | 4 dry snow steps                                                                                | CC0     | https://opengameart.org/content/4-dry-snow-steps                    | 2026-08-10  |
 
 ## Usage in the engine
 

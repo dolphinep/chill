@@ -86,7 +86,7 @@ export function ThoughtComposer({
               if (e.key === 'Enter') submit()
             }}
             placeholder="Leave a thought…"
-            className="font-thought text-glass-foreground w-full bg-transparent text-sm outline-none placeholder:text-glass-faint"
+            className="font-thought text-glass-foreground placeholder:text-glass-faint w-full bg-transparent text-sm outline-none"
           />
           <div className="flex items-center justify-between text-[11px]">
             <span className="text-glass-faint">

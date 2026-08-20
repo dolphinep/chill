@@ -14,12 +14,7 @@ import { createGradientNoise } from '@/engine/tsl/noise/gradientNoise'
 
 type F = Node<'float'>
 
-function rawOctaveSum(
-  noise2D: (x: F, z: F) => F,
-  spec: HeightSpec,
-  x: F,
-  z: F,
-): F {
+function rawOctaveSum(noise2D: (x: F, z: F) => F, spec: HeightSpec, x: F, z: F): F {
   let h: F = float(0)
   for (const octave of spec.octaves) {
     const n = noise2D(x.mul(octave.frequency), z.mul(octave.frequency))

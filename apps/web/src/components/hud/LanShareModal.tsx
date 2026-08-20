@@ -20,7 +20,13 @@ function getWebShareUrl(roomName: string | null, passkey: string | null): string
 
 function ShareIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-5 w-5">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      className="h-5 w-5"
+    >
       <circle cx="18" cy="5" r="3" />
       <circle cx="6" cy="12" r="3" />
       <circle cx="18" cy="19" r="3" />
@@ -38,22 +44,22 @@ export function LanDockIcon({ onClick }: { onClick: () => void }) {
 
   return (
     <div className="group relative flex flex-col items-center">
-      <div className="absolute -top-10 left-1/2 -translate-x-1/2 translate-y-1 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-150 pointer-events-none px-3 py-1 text-xs font-medium text-white bg-slate-950/90 backdrop-blur-md rounded-lg whitespace-nowrap shadow-2xl border border-white/20 z-50 after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-slate-950/90">
+      <div className="pointer-events-none absolute -top-10 left-1/2 z-50 -translate-x-1/2 translate-y-1 rounded-lg border border-white/20 bg-slate-950/90 px-3 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-2xl backdrop-blur-md transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100 after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-slate-950/90 after:content-['']">
         {label}
       </div>
       <button
         type="button"
         title={label}
         onClick={onClick}
-        className="relative flex flex-col items-center justify-center pt-2 pb-1.5 px-2.5 rounded-xl text-white/80 hover:text-white hover:bg-white/15 active:scale-95 transition min-w-10.5"
+        className="relative flex min-w-10.5 flex-col items-center justify-center rounded-xl px-2.5 pt-2 pb-1.5 text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
         aria-label={label}
       >
         <ShareIcon />
-        <span className="text-[9px] font-mono font-medium tracking-tight text-white/50 group-hover:text-white/90 transition-colors mt-1 leading-none">
+        <span className="mt-1 font-mono text-[9px] leading-none font-medium tracking-tight text-white/50 transition-colors group-hover:text-white/90">
           L
         </span>
         {isConnected && (
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.9)] animate-pulse" />
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.9)]" />
         )}
       </button>
     </div>
@@ -185,12 +191,12 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
       {/* Click outside to close */}
       <div className="fixed inset-0" onClick={onClose} />
 
       <div
-        className="glass relative z-10 flex w-full max-w-sm flex-col gap-4 p-5 text-white shadow-2xl rounded-3xl border border-white/15 animate-in fade-in zoom-in-95 duration-150"
+        className="glass animate-in fade-in zoom-in-95 relative z-10 flex w-full max-w-sm flex-col gap-4 rounded-3xl border border-white/15 p-5 text-white shadow-2xl duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -200,7 +206,9 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
               <ShareIcon />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white tracking-wide">ห้องผู้เล่น (Multiplayer)</h2>
+              <h2 className="text-sm font-bold tracking-wide text-white">
+                ห้องผู้เล่น (Multiplayer)
+              </h2>
               <p className="text-[10px] text-white/50">
                 {isConnected ? 'กำลังออนไลน์อยู่ในห้อง' : 'สร้างหรือเข้าห้องด้วย Passkey'}
               </p>
@@ -210,9 +218,15 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition"
+            className="rounded-lg p-1.5 text-white/60 transition hover:bg-white/10 hover:text-white"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-4 w-4"
+            >
               <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
             </svg>
           </button>
@@ -221,21 +235,21 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
         {/* CONNECTED VIEW */}
         {isConnected ? (
           <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-2.5 rounded-2xl bg-white/5 p-3.5 border border-white/10">
+            <div className="flex flex-col gap-2.5 rounded-2xl border border-white/10 bg-white/5 p-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.8)] shrink-0" />
+                  <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
                   <span className="text-xs font-bold text-white">
                     ห้อง: &ldquo;{lanSession.roomName || 'Private Room'}&rdquo;
                   </span>
                 </div>
-                <span className="text-[11px] text-emerald-300 font-mono font-medium">
+                <span className="font-mono text-[11px] font-medium text-emerald-300">
                   {totalPlayers} คนในห้อง
                 </span>
               </div>
 
               {lanSession.passkey && (
-                <div className="flex items-center justify-between rounded-xl bg-black/40 px-3 py-1.5 border border-white/10 text-[11px]">
+                <div className="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-[11px]">
                   <span className="text-white/60">รหัสผ่านห้อง (Passkey):</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-amber-300">
@@ -252,19 +266,19 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                 </div>
               )}
 
-              <p className="text-[11px] text-white/60 leading-relaxed">
+              <p className="text-[11px] leading-relaxed text-white/60">
                 ส่งลิงก์ด้านล่างให้เพื่อนเพื่อชวนเข้าห้องนี้ได้ทันที
               </p>
 
               {/* 1-Click Copy Invite Link */}
               <div className="flex items-center gap-2 pt-1">
-                <code className="flex-1 min-w-0 truncate rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-[11px] text-white/90 font-mono">
+                <code className="min-w-0 flex-1 truncate rounded-xl border border-white/10 bg-black/40 px-3 py-2 font-mono text-[11px] text-white/90">
                   {getWebShareUrl(lanSession.roomName, lanSession.passkey)}
                 </code>
                 <button
                   type="button"
                   onClick={handleCopyWebLink}
-                  className="shrink-0 px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 hover:text-white transition active:scale-95 shadow"
+                  className="shrink-0 rounded-xl border border-emerald-400/40 bg-emerald-500/20 px-3.5 py-2 text-xs font-semibold text-emerald-200 shadow transition hover:bg-emerald-500/30 hover:text-white active:scale-95"
                 >
                   {copiedWeb ? 'คัดลอกแล้ว!' : 'คัดลอกลิงก์'}
                 </button>
@@ -274,7 +288,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
             <button
               type="button"
               onClick={handleLeaveRoom}
-              className="mt-1 flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl bg-white/10 hover:bg-red-500/20 border border-white/15 hover:border-red-400/40 text-white/80 hover:text-red-200 transition active:scale-95 shadow"
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-xs font-semibold text-white/80 shadow transition hover:border-red-400/40 hover:bg-red-500/20 hover:text-red-200 active:scale-95"
             >
               <span>ออกจากห้อง (กลับสู่โหมดคนเดียว)</span>
             </button>
@@ -283,14 +297,14 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
           /* SOLO VIEW: CREATE OR JOIN TABS */
           <div className="flex flex-col gap-3">
             {/* Tab switcher */}
-            <div className="flex rounded-xl bg-black/30 p-1 border border-white/10">
+            <div className="flex rounded-xl border border-white/10 bg-black/30 p-1">
               <button
                 type="button"
                 onClick={() => {
                   setTab('create')
                   setError(null)
                 }}
-                className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${
+                className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition ${
                   tab === 'create'
                     ? 'bg-white/20 text-white shadow'
                     : 'text-white/50 hover:text-white/80'
@@ -304,7 +318,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                   setTab('join')
                   setError(null)
                 }}
-                className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${
+                className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition ${
                   tab === 'join'
                     ? 'bg-white/20 text-white shadow'
                     : 'text-white/50 hover:text-white/80'
@@ -316,7 +330,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
 
             {/* Display Name Input */}
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+              <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase">
                 ชื่อของคุณ (Display Name)
               </span>
               <input
@@ -324,7 +338,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="ชื่อของคุณ"
-                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 transition outline-none focus:border-white/40"
               />
             </div>
 
@@ -332,7 +346,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
               /* CREATE ROOM FORM */
               <div className="flex flex-col gap-2.5">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                  <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase">
                     ชื่อหรือรหัสห้อง (Room Code)
                   </span>
                   <input
@@ -340,13 +354,13 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                     value={createRoomName}
                     onChange={(e) => setCreateRoomName(e.target.value)}
                     placeholder="เช่น chill-88, room-101"
-                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 transition outline-none focus:border-white/40"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                    <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase">
                       รหัสผ่านห้อง (Passkey)
                     </span>
                     <span className="text-[9px] text-white/40">(ไม่บังคับ / เว้นว่างได้)</span>
@@ -356,7 +370,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                     value={createPasskey}
                     onChange={(e) => setCreatePasskey(e.target.value)}
                     placeholder="เช่น 1234, chill (เพื่อนต้องใส่ก่อนเข้า)"
-                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 transition outline-none focus:border-white/40"
                   />
                 </div>
 
@@ -364,7 +378,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                   type="button"
                   onClick={() => void handleCreateRoom()}
                   disabled={busy || !createRoomName.trim()}
-                  className="mt-1 flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 hover:text-white transition active:scale-95 disabled:opacity-50 shadow-md"
+                  className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/20 px-3 py-2.5 text-xs font-semibold text-emerald-100 shadow-md transition hover:bg-emerald-500/30 hover:text-white active:scale-95 disabled:opacity-50"
                 >
                   <span>{busy ? 'กำลังสร้างห้อง…' : 'สร้างห้อง'}</span>
                 </button>
@@ -373,7 +387,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
               /* JOIN ROOM FORM */
               <div className="flex flex-col gap-2.5">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                  <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase">
                     ชื่อหรือรหัสห้องที่ต้องการเข้า
                   </span>
                   <input
@@ -381,12 +395,12 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                     value={joinRoomName}
                     onChange={(e) => setJoinRoomName(e.target.value)}
                     placeholder="เช่น chill-88, room-101"
-                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 transition outline-none focus:border-white/40"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                  <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase">
                     รหัสผ่านห้อง (Passkey)
                   </span>
                   <input
@@ -394,7 +408,7 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                     value={joinPasskey}
                     onChange={(e) => setJoinPasskey(e.target.value)}
                     placeholder="ใส่รหัสผ่านหากห้องนั้นมีการตั้งไว้"
-                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 outline-none focus:border-white/40 transition"
+                    className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white placeholder-white/40 transition outline-none focus:border-white/40"
                   />
                 </div>
 
@@ -402,18 +416,17 @@ export function LanShareModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                   type="button"
                   onClick={() => void handleJoinRoom()}
                   disabled={busy || !joinRoomName.trim()}
-                  className="mt-1 flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-100 hover:text-white transition active:scale-95 disabled:opacity-50 shadow-md"
+                  className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-sky-400/40 bg-sky-500/20 px-3 py-2.5 text-xs font-semibold text-sky-100 shadow-md transition hover:bg-sky-500/30 hover:text-white active:scale-95 disabled:opacity-50"
                 >
                   <span>{busy ? 'กำลังเข้าร่วมห้อง…' : 'เข้าร่วมห้อง'}</span>
                 </button>
               </div>
             )}
 
-            {error && <p className="text-[11px] text-red-300 text-center">{error}</p>}
+            {error && <p className="text-center text-[11px] text-red-300">{error}</p>}
           </div>
         )}
       </div>
     </div>
   )
 }
-

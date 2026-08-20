@@ -57,4 +57,3 @@ export class FootfallTracker {
     this.#idleAccumS = 0
   }
 }
-

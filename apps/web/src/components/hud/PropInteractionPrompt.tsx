@@ -209,7 +209,8 @@ export function PropInteractionPrompt({
 
   // 2. Large Daily Quote Billboard Modal
   if (billboardOpen) {
-    const currentQuote = billboardOpen.text || 'ทำงานเต็มที่ แล้วอย่าลืมพักผ่อนสูดอากาศบริสุทธิ์ให้เต็มปอด'
+    const currentQuote =
+      billboardOpen.text || 'ทำงานเต็มที่ แล้วอย่าลืมพักผ่อนสูดอากาศบริสุทธิ์ให้เต็มปอด'
 
     const categories: { key: QuoteCategory; label: string }[] = [
       { key: 'all', label: 'ทั้งหมด' },
@@ -407,11 +408,7 @@ export function PropInteractionPrompt({
                   />
                 </svg>
                 <span>
-                  {isGeneratingQuote
-                    ? 'กำลังสร้าง…'
-                    : isAiReady
-                      ? 'สร้างคำคม AI'
-                      : 'สุ่มคำคมใหม่'}
+                  {isGeneratingQuote ? 'กำลังสร้าง…' : isAiReady ? 'สร้างคำคม AI' : 'สุ่มคำคมใหม่'}
                 </span>
               </button>
 

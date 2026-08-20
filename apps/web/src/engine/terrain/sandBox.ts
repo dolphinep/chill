@@ -66,6 +66,6 @@ export function halfToFloat(h: number): number {
   const exponent = (h & 0x7c00) >> 10
   const fraction = h & 0x03ff
   if (exponent === 0) return (sign ? -1 : 1) * 2 ** -14 * (fraction / 1024)
-  if (exponent === 0x1f) return fraction ? NaN : (sign ? -Infinity : Infinity)
+  if (exponent === 0x1f) return fraction ? NaN : sign ? -Infinity : Infinity
   return (sign ? -1 : 1) * 2 ** (exponent - 15) * (1 + fraction / 1024)
 }

@@ -105,7 +105,7 @@ export function SkyClock({ command, locked }: SkyClockProps) {
   const cy = 90 - 74 * Math.sin(orbAngleRad)
 
   return (
-    <div className="group fixed top-3 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center select-none">
+    <div className="group fixed top-3 left-1/2 z-40 flex -translate-x-1/2 flex-col items-center select-none">
       <div className="relative rounded-full p-2">
         {/* The day-cycle ring: a warm-to-cool conic gradient standing in for the SVG's
             8-icon zodiac before it — one continuous sweep reads as "the arc of a day"
@@ -156,7 +156,7 @@ export function SkyClock({ command, locked }: SkyClockProps) {
         <svg
           ref={svgRef}
           viewBox="0 0 180 180"
-          className="relative h-40 w-40 touch-none cursor-pointer outline-none"
+          className="relative h-40 w-40 cursor-pointer touch-none outline-none"
           role="slider"
           aria-label="Time of day"
           aria-valuemin={0}
@@ -217,7 +217,7 @@ export function SkyClock({ command, locked }: SkyClockProps) {
             <circle
               r="13"
               fill={isNight ? 'url(#moonGlow)' : 'url(#sunGlow)'}
-              className="motion-safe:animate-[sky-orb-breathe_4s_ease-in-out_infinite] opacity-90"
+              className="opacity-90 motion-safe:animate-[sky-orb-breathe_4s_ease-in-out_infinite]"
             />
             <circle
               r="7"
@@ -226,7 +226,10 @@ export function SkyClock({ command, locked }: SkyClockProps) {
               strokeWidth="1.25"
             />
             {isNight ? (
-              <path d="M 2.2 -4.4 A 4.4 4.4 0 1 1 -3.8 3.3 A 3.5 3.5 0 0 0 2.2 -4.4 Z" fill="#eef2ff" />
+              <path
+                d="M 2.2 -4.4 A 4.4 4.4 0 1 1 -3.8 3.3 A 3.5 3.5 0 0 0 2.2 -4.4 Z"
+                fill="#eef2ff"
+              />
             ) : (
               <circle r="2.6" fill="#78350f" />
             )}

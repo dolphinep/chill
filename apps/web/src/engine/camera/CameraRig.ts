@@ -101,7 +101,11 @@ export class CameraRig {
   /** One fixed step. `pivotX/Y/Z` is the character's current eye position. */
   step(input: InputFrame, pivotX: number, pivotY: number, pivotZ: number): void {
     this.#targetYaw -= input.lookDX * LOOK_SENSITIVITY
-    this.#targetPitch = clamp(this.#targetPitch - input.lookDY * LOOK_SENSITIVITY, MIN_PITCH, MAX_PITCH)
+    this.#targetPitch = clamp(
+      this.#targetPitch - input.lookDY * LOOK_SENSITIVITY,
+      MIN_PITCH,
+      MAX_PITCH,
+    )
 
     if (this.#damping <= 0) {
       this.yaw = this.#targetYaw

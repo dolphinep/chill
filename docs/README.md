@@ -1,14 +1,14 @@
-# 🍃 Chill Documentation Index
+# Chill Documentation Index
 
-Welcome to the documentation for **Chill** — a 3D relaxation, stargazing, companion pets, and casual sports space built with Three.js WebGPU, Next.js, Web Audio API, and In-Browser AI.
+Welcome to the technical documentation for **Chill** — an ambient 3D haven, celestial stargazing simulator, and spatial relaxation space built with Three.js (WebGPU/TSL), Next.js, Web Audio API, and local on-device AI.
 
 ---
 
-## 📚 Documentation Sections
+## Documentation Sections
 
-- 🏛️ **[System Architecture](./architecture.md)**: รายละเอียดสถาปัตยกรรมระบบ, โครงสร้าง Monorepo, แผนภาพ Data Flow, Subsystems ใน 3D Engine, และ Unified Server บน Google Cloud Run
-- 💻 **[Technology Stack & Rationale](./technologies.md)**: เจาะลึกเทคโนโลยีที่เลือกใช้ (Three.js WebGPU, Next.js 16, Web Audio API, Astronomy Engine, In-Browser AI, และ Cloud Run Single Container)
-- ✨ **[Features Specification](./features.md)**: รายละเอียดฟีเจอร์ทั้งหมด ทิวทัศน์ 5 สไตล์, ระบบดูดาวและพระจันทร์จริง, สัตว์เลี้ยง 6 ชนิด, ของตกแต่งและบิลบอร์ดคำคม Real-time, วอลเลย์บอล, และยิงเป้าบิน
-- 📖 **[User Manual & Controls](./user-manual.md)**: คู่มือการใช้งานสำหรับผู้เล่น ตารางปุ่มกด, วิธีการดูดาว, การเลือกและลูบหัวสัตว์เลี้ยง, การวางของตกแต่ง, วิธีการเล่นกีฬา, และการเปิดห้องเล่นพร้อมเพื่อน
-- ⭐ **[Constellations & Illustration Warping](./constellations.md)**: Library และข้อมูลที่ใช้ทำกลุ่มดาวจริง (astronomy-engine, d3-celestial, Stellarium) และวิธีคำนวณตำแหน่งจริง + warp ภาพประกอบเทพปกรณัมให้ตรงกับดาว
-
+- **[System Architecture](./architecture.md)**: Monorepo architecture, data flow diagrams, 3D engine subsystems, and unified containerized deployment on Google Cloud Run.
+- **[Technology Stack & Rationale](./technologies.md)**: In-depth technical rationale behind chosen technologies including Three.js TSL, Next.js App Router, Web Audio synthesizers, Astronomy Engine, and Chrome Built-in Prompt API.
+- **[Features Specification](./features.md)**: Comprehensive breakdown of all sceneries, celestial mechanics, companion pet behavior, customizable props, volleyball physics, and target challenges.
+- **[User Manual & Controls](./user-manual.md)**: End-user guide covering navigation controls, camera perspectives, avatar customization, pet interactions, prop placement, and multiplayer room hosting.
+- **[Constellations & Celestial Simulation](./constellations.md)**: Real-time astronomical data libraries (astronomy-engine, d3-celestial, Stellarium), coordinate transformations, and mesh warping for mythological constellation artwork.
+- **[Engine Architecture Notes](./engine-notes.md)**: Technical notes covering rendering pipelines, procedural shaders, collision handling, and performance optimization benchmarks.

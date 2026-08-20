@@ -112,7 +112,11 @@ export function createAutumnTerrainMaterial(
   const pebbleNoise = detail.noise2D(worldX.mul(8.0), worldZ.mul(8.0)) as F
   const microGrain = detail.noise2D(worldX.mul(24.0), worldZ.mul(24.0)) as F
 
-  const bump = soilNoise.mul(0.06).add(pebbleNoise.mul(0.03)).add(microGrain.mul(0.015)).mul(detailFade) as F
+  const bump = soilNoise
+    .mul(0.06)
+    .add(pebbleNoise.mul(0.03))
+    .add(microGrain.mul(0.015))
+    .mul(detailFade) as F
   const detailNormal = vec3(bump.mul(1.8), 1, bump.mul(1.8)).normalize() as V3
   const normal = macroNormal.add(detailNormal.mul(detailFade.mul(0.32))).normalize() as V3
   material.normalNode = normal
@@ -130,8 +134,8 @@ export function createAutumnTerrainMaterial(
   const grassAlbedo = mix(goldenGrassA, goldenGrassB, microGrain.mul(0.4).add(0.6)) as V3
 
   // 3. Cliff Rock Strata
-  const rockDark = vec3(0.22, 0.20, 0.18)
-  const rockLit = vec3(0.38, 0.34, 0.30)
+  const rockDark = vec3(0.22, 0.2, 0.18)
+  const rockLit = vec3(0.38, 0.34, 0.3)
   const rockAlbedo = mix(rockDark, rockLit, soilNoise.mul(0.5).add(0.5)) as V3
 
   // Blend soil vs grass based on noise patches

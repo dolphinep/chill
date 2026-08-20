@@ -15,22 +15,8 @@ function createBladeGeometry(): THREE.BufferGeometry {
   const w = BLADE_WIDTH
   const h = BLADE_HEIGHT
   // Two triangles crossed at 90° so the blade reads from any yaw without looking like a flat board
-  const positions = new Float32Array([
-    -w, 0, 0,
-     w, 0, 0,
-     0, h, 0,
-     0, 0, -w,
-     0, 0,  w,
-     0, h, 0,
-  ])
-  const normals = new Float32Array([
-    0, 0, 1,
-    0, 0, 1,
-    0, 0, 1,
-    1, 0, 0,
-    1, 0, 0,
-    1, 0, 0,
-  ])
+  const positions = new Float32Array([-w, 0, 0, w, 0, 0, 0, h, 0, 0, 0, -w, 0, 0, w, 0, h, 0])
+  const normals = new Float32Array([0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0])
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
   geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3))
@@ -49,8 +35,8 @@ function createGoldenGrassMaterial(): THREE.MeshStandardNodeMaterial {
   material.positionNode = positionWorld.add(wind) as V3
 
   // Earthy soil root color blending to glowing golden-amber sunlit tip
-  const rootColor = vec3(0.32, 0.20, 0.10)
-  const tipColor = vec3(0.88, 0.64, 0.20)
+  const rootColor = vec3(0.32, 0.2, 0.1)
+  const tipColor = vec3(0.88, 0.64, 0.2)
   material.colorNode = mix(rootColor, tipColor, heightWeight) as V3
   material.mrtNode = mrt({ output, emissive: vec4(0, 0, 0, 1) })
 

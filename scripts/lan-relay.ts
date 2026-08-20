@@ -81,7 +81,9 @@ function getOrCreateRoom(
       nextThoughtId: 1,
     }
     rooms.set(key, room)
-    console.log(`[lan-relay] created room "${name}" (key="${key}", passkey=${room.passkey ? 'yes' : 'no'})`)
+    console.log(
+      `[lan-relay] created room "${name}" (key="${key}", passkey=${room.passkey ? 'yes' : 'no'})`,
+    )
   }
   return room
 }
@@ -125,7 +127,9 @@ export function attachLanRelay(wss: WebSocketServer): WebSocketServer {
         const existingRoom = rooms.get(roomKey)
         if (existingRoom && existingRoom.passkey) {
           if (msg.passkey?.trim() !== existingRoom.passkey) {
-            console.log(`[lan-relay] join rejected: invalid passkey for room "${existingRoom.name}"`)
+            console.log(
+              `[lan-relay] join rejected: invalid passkey for room "${existingRoom.name}"`,
+            )
             send(ws, {
               t: 'error',
               reason: 'invalid_passkey',
@@ -138,11 +142,7 @@ export function attachLanRelay(wss: WebSocketServer): WebSocketServer {
           }
         }
 
-        const room = getOrCreateRoom(
-          msg.roomName,
-          msg.sceneryId || 'frostholm-ridge',
-          msg.passkey,
-        )
+        const room = getOrCreateRoom(msg.roomName, msg.sceneryId || 'frostholm-ridge', msg.passkey)
         currentRoom = room
 
         // Anti-ghost: If a client with the same name already exists in this room (e.g. from previous tab/refresh),

@@ -112,7 +112,7 @@ export function SceneryModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
 
       {/* Modal Card floating above bottom dock */}
       <div
-        className="animate-in fade-in zoom-in-95 fixed bottom-24 left-1/2 z-40 flex max-h-[calc(100vh-120px)] sm:max-h-145 w-110 max-w-[calc(100vw-32px)] -translate-x-1/2 flex-col gap-3.5 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/90 p-4 text-white shadow-2xl backdrop-blur-xl duration-150"
+        className="animate-in fade-in zoom-in-95 fixed bottom-24 left-1/2 z-40 flex max-h-[calc(100vh-120px)] w-110 max-w-[calc(100vw-32px)] -translate-x-1/2 flex-col gap-3.5 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/90 p-4 text-white shadow-2xl backdrop-blur-xl duration-150 sm:max-h-145"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -131,13 +131,13 @@ export function SceneryModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                 <path d="M14 18l3-5 4 7" />
               </svg>
             </div>
-            <h2 className="text-sm font-bold text-white tracking-wide">Scenery & Atmosphere</h2>
+            <h2 className="text-sm font-bold tracking-wide text-white">Scenery & Atmosphere</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-white/60 transition hover:bg-white/10 hover:text-white"
           >
             <svg
               viewBox="0 0 24 24"
@@ -152,7 +152,7 @@ export function SceneryModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
         </div>
 
         {/* Scenery Grid (Scrollable) */}
-        <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto pr-0.5 custom-scrollbar">
+        <div className="custom-scrollbar flex flex-1 flex-col gap-2.5 overflow-y-auto pr-0.5">
           {(Object.keys(SCENERY_REGISTRY) as SceneryId[]).map((id) => {
             const active = sceneryId === id
             const info = SCENERY_DETAILS[id]
@@ -166,22 +166,26 @@ export function SceneryModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                 }}
                 className={`group relative flex items-center justify-between rounded-2xl border p-3 text-left transition-all ${
                   active
-                    ? 'border-white/30 bg-white/20 shadow-md ring-1 ring-white/30 text-white'
-                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 text-white/80'
+                    ? 'border-white/30 bg-white/20 text-white shadow-md ring-1 ring-white/30'
+                    : 'border-white/10 bg-white/5 text-white/80 hover:border-white/20 hover:bg-white/10'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`flex h-10 w-10 items-center justify-center rounded-xl border p-2 shadow transition group-hover:scale-105 ${
-                      active ? 'border-white/30 bg-white/20 text-white' : 'border-white/10 bg-white/10 text-white/90'
+                      active
+                        ? 'border-white/30 bg-white/20 text-white'
+                        : 'border-white/10 bg-white/10 text-white/90'
                     }`}
                   >
                     {info.icon}
                   </div>
                   <div className="flex flex-1 flex-col">
                     <h3 className="text-xs font-bold text-white">{info.title}</h3>
-                    <p className="text-[10px] text-white/60 leading-tight mt-0.5">{info.subtitle}</p>
-                    <p className="text-[10px] leading-relaxed text-white/40 mt-0.5">{info.desc}</p>
+                    <p className="mt-0.5 text-[10px] leading-tight text-white/60">
+                      {info.subtitle}
+                    </p>
+                    <p className="mt-0.5 text-[10px] leading-relaxed text-white/40">{info.desc}</p>
                   </div>
                 </div>
 

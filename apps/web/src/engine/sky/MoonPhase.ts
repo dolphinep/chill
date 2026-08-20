@@ -116,7 +116,7 @@ function renderLunarCanvas(canvas: HTMLCanvasElement, phaseDeg: number): void {
       const idx = (py * size + px) * 4
 
       // Pure glowing celestial white light (#f8fafc / #ffffff)
-      data[idx] = 250     // R
+      data[idx] = 250 // R
       data[idx + 1] = 252 // G
       data[idx + 2] = 255 // B
       data[idx + 3] = Math.round(alpha * 255)

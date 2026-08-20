@@ -12,11 +12,7 @@ import type { SceneryAudioAssets } from '@/lib/audio/engine'
  * without touching this shape's existing fields.
  */
 export type SceneryId =
-  | 'frostholm-ridge'
-  | 'kamakura-bay'
-  | 'aki-highlands'
-  | 'sports-arena'
-  | 'observatory'
+  'frostholm-ridge' | 'kamakura-bay' | 'aki-highlands' | 'sports-arena' | 'observatory'
 
 export type Scenery = {
   id: SceneryId

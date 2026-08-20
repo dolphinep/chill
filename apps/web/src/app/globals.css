@@ -178,7 +178,12 @@ html[data-ui-polarity='dark'] {
 
   body {
     margin: 0;
-    font-family: var(--font-cozy), var(--font-sans), system-ui, -apple-system, sans-serif;
+    font-family:
+      var(--font-cozy),
+      var(--font-sans),
+      system-ui,
+      -apple-system,
+      sans-serif;
     color: var(--glass-fg);
     background: var(--glass-ink-dark); /* seen only before the canvas mounts */
     overscroll-behavior: none;

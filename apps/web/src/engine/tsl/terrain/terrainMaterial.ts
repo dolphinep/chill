@@ -243,7 +243,10 @@ export function createTerrainMaterial(
   const viewDir = positionWorld.sub(cameraPosition).normalize() as V3
   const sparkleViewShiftX = viewDir.x.mul(18.0) as F
   const sparkleViewShiftZ = viewDir.z.mul(18.0) as F
-  const sparkleA = detail.noise2D(worldX.mul(58.0).add(sparkleViewShiftX), worldZ.mul(58.0).add(sparkleViewShiftZ)) as F
+  const sparkleA = detail.noise2D(
+    worldX.mul(58.0).add(sparkleViewShiftX),
+    worldZ.mul(58.0).add(sparkleViewShiftZ),
+  ) as F
   const sparkleB = detail.noise2D(worldX.mul(120.0), worldZ.mul(120.0)) as F
   const microSparkle = pow(clamp(sparkleA.mul(sparkleB).add(0.45), 0, 1) as F, 11.0)
     .mul(isSand)

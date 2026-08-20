@@ -177,24 +177,36 @@ export function createWaterMaterial(
 
   // --- dynamic turbulent shore foam & swash (multi-layer) -------------------------
   // 1. Shore band: shallow region where waves break
-  const shoreBand = smoothstep(0.01, 0.25, depth).mul(float(1).sub(smoothstep(0.25, 1.8, depth))) as F
-  
+  const shoreBand = smoothstep(0.01, 0.25, depth).mul(
+    float(1).sub(smoothstep(0.25, 1.8, depth)),
+  ) as F
+
   // 2. Lacy procedural noise break-up for realistic foam edges instead of smooth lines
-  const foamNoise1 = detail.noise2D(restX.mul(2.2).add(time.mul(0.8)), restZ.mul(2.2).sub(time.mul(0.4))) as F
-  const foamNoise2 = detail.noise2D(restX.mul(6.5).sub(time.mul(1.2)), restZ.mul(6.5).add(time.mul(0.9))) as F
+  const foamNoise1 = detail.noise2D(
+    restX.mul(2.2).add(time.mul(0.8)),
+    restZ.mul(2.2).sub(time.mul(0.4)),
+  ) as F
+  const foamNoise2 = detail.noise2D(
+    restX.mul(6.5).sub(time.mul(1.2)),
+    restZ.mul(6.5).add(time.mul(0.9)),
+  ) as F
   const lacyFoam = clamp(foamNoise1.add(foamNoise2.mul(0.5)).add(0.4), 0, 1) as F
 
   // 3. Dynamic swash wave pulse moving up and down the shore
   const swashPulse = sin(restX.mul(0.4).add(restZ.mul(0.3)).add(time.mul(1.4)))
     .mul(0.5)
     .add(0.5) as F
-  
-  const shoreFoam = clamp(shoreBand.mul(swashPulse.mul(0.6).add(0.4)).mul(lacyFoam.mul(0.7).add(0.4)), 0, 1) as F
+
+  const shoreFoam = clamp(
+    shoreBand.mul(swashPulse.mul(0.6).add(0.4)).mul(lacyFoam.mul(0.7).add(0.4)),
+    0,
+    1,
+  ) as F
 
   // 4. Crest whitecaps where wave peaks steepen
   const crestFoam = smoothstep(0.58, 0.92, crest).mul(chopFade).mul(lacyFoam) as F
   const totalFoam = clamp(shoreFoam.add(crestFoam.mul(0.6)), 0, 1) as F
-  
+
   const foamColor = vec3(0.95, 0.97, 0.98)
   color = mix(color, foamColor, totalFoam) as V3
 

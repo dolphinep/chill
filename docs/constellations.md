@@ -12,12 +12,12 @@ catalog จริง, เส้นเชื่อมกลุ่มดาวเ�
 
 ## 📦 1. Library & แหล่งข้อมูล (What & Why)
 
-| ส่วนประกอบ                  | มาจาก                                                                                          | License                | ใช้ทำอะไร                                              |
-| --------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------- | ------------------------------------------------------- |
-| **ตำแหน่งดาว** (5,044 ดวง)  | [`d3-celestial`](https://github.com/ofrohn/d3-celestial) (`stars.6.json`)                         | BSD-2-Clause           | RA/Dec/magnitude ของดาวถึงความสว่าง mag ≤ 6              |
-| **เส้นเชื่อมกลุ่มดาว** (88) | `d3-celestial` (`constellations.lines.json` + `constellations.json`)                              | BSD-2-Clause           | รูปทรง stick-figure จริงของแต่ละกลุ่มดาว + ชื่อภาษาอังกฤษ |
-| **ภาพประกอบเทพปกรณัม** (85) | [`stellarium-skycultures`](https://github.com/Stellarium/stellarium-skycultures) (western)         | Free Art License       | ภาพวาดโดย Johan Meuris + จุด calibration (anchor points) |
-| **คำนวณตำแหน่งจริงบนฟ้า**   | [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (npm, `astronomy-engine@2.1.19`)    | MIT, zero dependencies | แปลงพิกัด equatorial (RA/Dec) → horizontal (alt/az) ตามวันที่/เวลา/ตำแหน่งผู้สังเกตจริง |
+| ส่วนประกอบ                  | มาจาก                                                                                           | License                | ใช้ทำอะไร                                                                               |
+| --------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
+| **ตำแหน่งดาว** (5,044 ดวง)  | [`d3-celestial`](https://github.com/ofrohn/d3-celestial) (`stars.6.json`)                       | BSD-2-Clause           | RA/Dec/magnitude ของดาวถึงความสว่าง mag ≤ 6                                             |
+| **เส้นเชื่อมกลุ่มดาว** (88) | `d3-celestial` (`constellations.lines.json` + `constellations.json`)                            | BSD-2-Clause           | รูปทรง stick-figure จริงของแต่ละกลุ่มดาว + ชื่อภาษาอังกฤษ                               |
+| **ภาพประกอบเทพปกรณัม** (85) | [`stellarium-skycultures`](https://github.com/Stellarium/stellarium-skycultures) (western)      | Free Art License       | ภาพวาดโดย Johan Meuris + จุด calibration (anchor points)                                |
+| **คำนวณตำแหน่งจริงบนฟ้า**   | [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (npm, `astronomy-engine@2.1.19`) | MIT, zero dependencies | แปลงพิกัด equatorial (RA/Dec) → horizontal (alt/az) ตามวันที่/เวลา/ตำแหน่งผู้สังเกตจริง |
 
 ### ทำไมไม่สร้างข้อมูลเอง (generative)
 
@@ -84,7 +84,8 @@ const hor = Astronomy.Horizon(date, observer, raHours, decDeg, 'normal')
 
 ```ts
 function altAzToDirection(altitudeDeg, azimuthDeg, out) {
-  const alt = degToRad(altitudeDeg), az = degToRad(azimuthDeg)
+  const alt = degToRad(altitudeDeg),
+    az = degToRad(azimuthDeg)
   const horizontal = Math.cos(alt)
   out.set(horizontal * Math.sin(az), Math.sin(alt), -horizontal * Math.cos(az))
 }
@@ -143,13 +144,13 @@ sky dome อย่างเห็นได้ชัด
 
 ## 🗂️ 5. แผนที่ไฟล์ & Credit
 
-| ไฟล์                                                       | หน้าที่                                                    |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `engine/sky/ConstellationField.ts`                            | ทุกอย่าง: ดาว, เส้น, ภาพ, date-based positioning, opacity     |
-| `engine/sky/data/*.json`                                      | ข้อมูลที่แปลงแล้ว (ดูหัวข้อ 2)                                |
-| `public/constellations/*.webp` + `CREDITS.txt`                | ภาพประกอบจริง + คำอ้างอิงลิขสิทธิ์                            |
-| `components/hud/ConstellationModal.tsx`                       | UI ค้นหา, เลือกวันที่, ปรับความเข้ม/เปิดปิด                   |
-| `components/world/ConstellationHighlightLayer.tsx`            | ป้ายชื่อ (HTML overlay, ไม่ใช่ 3D text)                       |
+| ไฟล์                                               | หน้าที่                                                   |
+| -------------------------------------------------- | --------------------------------------------------------- |
+| `engine/sky/ConstellationField.ts`                 | ทุกอย่าง: ดาว, เส้น, ภาพ, date-based positioning, opacity |
+| `engine/sky/data/*.json`                           | ข้อมูลที่แปลงแล้ว (ดูหัวข้อ 2)                            |
+| `public/constellations/*.webp` + `CREDITS.txt`     | ภาพประกอบจริง + คำอ้างอิงลิขสิทธิ์                        |
+| `components/hud/ConstellationModal.tsx`            | UI ค้นหา, เลือกวันที่, ปรับความเข้ม/เปิดปิด               |
+| `components/world/ConstellationHighlightLayer.tsx` | ป้ายชื่อ (HTML overlay, ไม่ใช่ 3D text)                   |
 
 **Credit ที่ต้องรักษาไว้** (Free Art License กำหนด): ภาพประกอบโดย Johan Meuris ผ่านโปรเจกต์
 Stellarium — แสดงอยู่ที่ท้ายหน้าต่าง Constellations ในแอป และใน `CREDITS.txt`

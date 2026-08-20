@@ -519,7 +519,12 @@ export interface CompanionInteractionResult {
 function getPetSystemPrompt(speciesOrName: string): string {
   const name = speciesOrName.toLowerCase()
 
-  if (name.includes('cat') || name.includes('neko') || name.includes('เนโกะ') || name.includes('แมว')) {
+  if (
+    name.includes('cat') ||
+    name.includes('neko') ||
+    name.includes('เนโกะ') ||
+    name.includes('แมว')
+  ) {
     return `[ROLE]: You are "เนโกะ" (Neko), a clever, loving pet cat in a cozy relaxing game.
 PERSONALITY & RULES:
 1. Always understand and answer the user's question directly with cat logic (loves fish, naps, treats, chasing butterflies, cozy spots).
@@ -536,7 +541,12 @@ User: ไปวิ่งเล่นกันไหม
 เนโกะ: *กระโดดดุ๊กดิ๊ก สะบัดหางไปมา* แง้ว! ไปสิทาส ไปวิ่งไล่จับผีเสื้อกัน!`
   }
 
-  if (name.includes('shiba') || name.includes('dog') || name.includes('ชิบะ') || name.includes('หมา')) {
+  if (
+    name.includes('shiba') ||
+    name.includes('dog') ||
+    name.includes('ชิบะ') ||
+    name.includes('หมา')
+  ) {
     return `[ROLE]: You are "ชิบะคุง" (Shiba), an energetic, loyal puppy dog in a cozy relaxing game.
 PERSONALITY & RULES:
 1. Always understand and answer the user's question directly with happy dog logic (loves grilled meat, running, balls, walks, pleasing owner).
@@ -553,7 +563,12 @@ User: อากาศดีจัง
 ชิบะ: *กระโดดดุ๊กดิ๊ก หมุนตัวรอบขาคุณ* แฮ่กๆ ไปวิ่งเล่นริมหาดกันเถอะครับเจ้านาย! โฮ่ง!`
   }
 
-  if (name.includes('bunny') || name.includes('marshmallow') || name.includes('กระต่าย') || name.includes('มาร์ช')) {
+  if (
+    name.includes('bunny') ||
+    name.includes('marshmallow') ||
+    name.includes('กระต่าย') ||
+    name.includes('มาร์ช')
+  ) {
     return `[ROLE]: You are "มาร์ชเมลโลว์", a sweet, gentle pet bunny in a cozy relaxing game.
 PERSONALITY & RULES:
 1. Always understand and answer the user's question with gentle bunny logic (loves carrots, fresh berries, cool breezes, soft petting).
@@ -569,7 +584,12 @@ User: อากาศหนาวไหม
 มาร์ช: *นอนขดตัวเป็นก้อนกลมนุ่มฟู* อยู่ข้างๆ คุณแล้วอุ่นสบายที่สุดเลยค่ะ...`
   }
 
-  if (name.includes('penguin') || name.includes('penpen') || name.includes('เปนเปน') || name.includes('เพนกวิน')) {
+  if (
+    name.includes('penguin') ||
+    name.includes('penpen') ||
+    name.includes('เปนเปน') ||
+    name.includes('เพนกวิน')
+  ) {
     return `[ROLE]: You are "เปนเปน" (Penpen), an adorable chibi penguin in a cozy relaxing game.
 PERSONALITY & RULES:
 1. Always understand and answer the user's question directly with penguin logic (loves fresh fish, icy treats, waddling adventures, snow).
@@ -586,7 +606,12 @@ User: ไปเดินเล่นกันไหม
 เปนเปน: *สะบัดปีกแปะๆ เดินเตาะแตะนำหน้า* กวักๆ! พร้อมลุยแล้วครับคนเก่ง!`
   }
 
-  if (name.includes('dragon') || name.includes('ryuu') || name.includes('ริว') || name.includes('มังกร')) {
+  if (
+    name.includes('dragon') ||
+    name.includes('ryuu') ||
+    name.includes('ริว') ||
+    name.includes('มังกร')
+  ) {
     return `[ROLE]: You are "ริวคุง" (Ryuu), a brave yet cute baby dragon pet in a cozy relaxing game.
 PERSONALITY & RULES:
 1. Always understand and answer the user's question directly with baby dragon logic (loves barbecues, roasting food with fire, treasure, flying adventures).
@@ -660,7 +685,10 @@ const SPECIES_FALLBACK_REPLIES: Record<string, string[]> = {
 function cleanPetResponse(rawText: string, specKey: string): string {
   // Strip emojis and non-Thai/non-ASCII weird characters
   let text = rawText
-    .replace(/[\u{1F300}-\u{1FAFF}\u{1F900}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
+    .replace(
+      /[\u{1F300}-\u{1FAFF}\u{1F900}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu,
+      '',
+    )
     .replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s*!~?.,'"()\-]/g, '')
     .trim()
 
@@ -669,8 +697,14 @@ function cleanPetResponse(rawText: string, specKey: string): string {
     .replace(/ในดอกจัน[^\s*]*/g, '')
     .replace(/\*\.\.\.\*/g, '')
     .replace(/\[คำสั่ง[^\]]*\]/g, '')
-    .replace(/^(เข้าใจเลยค่ะ[!.]*|เข้าใจเลยครับ[!.]*|สวัสดีค่ะ[!.]*|สวัสดีครับ[!.]*|ยินดีด้วยค่ะ[!.]*|ยินดีด้วยครับ[!.]*|ขอให้คุณ[!.]*)\s*/gi, '')
-    .replace(/^(เจ้านาย|คำพูดจากเจ้านาย|ปฏิกิริยาสัตว์เลี้ยง|เนโกะ|ชิบะ|เปนเปน|มาร์ช|ริว|คิตสึเนะ)\s*:\s*/gi, '')
+    .replace(
+      /^(เข้าใจเลยค่ะ[!.]*|เข้าใจเลยครับ[!.]*|สวัสดีค่ะ[!.]*|สวัสดีครับ[!.]*|ยินดีด้วยค่ะ[!.]*|ยินดีด้วยครับ[!.]*|ขอให้คุณ[!.]*)\s*/gi,
+      '',
+    )
+    .replace(
+      /^(เจ้านาย|คำพูดจากเจ้านาย|ปฏิกิริยาสัตว์เลี้ยง|เนโกะ|ชิบะ|เปนเปน|มาร์ช|ริว|คิตสึเนะ)\s*:\s*/gi,
+      '',
+    )
     .replace(/^[*\-#\s]+/gm, '')
     .trim()
 
@@ -689,15 +723,29 @@ function cleanPetResponse(rawText: string, specKey: string): string {
 
   // Fix species cross-talk sound hallucination
   if (specKey === 'penguin') {
-    text = text.replace(/เหมียว[ๆ~]*/g, 'กวักๆ!').replace(/โฮ่ง[!~]*/g, 'กวักๆ!').replace(/เห่า[^\s]*/g, 'ร้องกวักๆ').replace(/Pip\s*pip[!*]*/gi, 'กวักๆ!').replace(/ตู๊ด[ๆ!]*/g, 'กวักๆ!')
+    text = text
+      .replace(/เหมียว[ๆ~]*/g, 'กวักๆ!')
+      .replace(/โฮ่ง[!~]*/g, 'กวักๆ!')
+      .replace(/เห่า[^\s]*/g, 'ร้องกวักๆ')
+      .replace(/Pip\s*pip[!*]*/gi, 'กวักๆ!')
+      .replace(/ตู๊ด[ๆ!]*/g, 'กวักๆ!')
   } else if (specKey === 'cat') {
-    text = text.replace(/โฮ่ง[!~]*/g, 'เหมียว~').replace(/กวัก[ๆ!]*/g, 'เหมียว~').replace(/เห่า[^\s]*/g, 'ส่งเสียงคราง')
+    text = text
+      .replace(/โฮ่ง[!~]*/g, 'เหมียว~')
+      .replace(/กวัก[ๆ!]*/g, 'เหมียว~')
+      .replace(/เห่า[^\s]*/g, 'ส่งเสียงคราง')
   } else if (specKey === 'shiba') {
     text = text.replace(/เหมียว[ๆ~]*/g, 'โฮ่ง!').replace(/กวัก[ๆ!]*/g, 'โฮ่ง!')
   } else if (specKey === 'bunny') {
-    text = text.replace(/เหมียว[ๆ~]*/g, 'ดุ๊กดิ๊ก...').replace(/โฮ่ง[!~]*/g, 'ดุ๊กดิ๊ก...').replace(/กวัก[ๆ!]*/g, 'ดุ๊กดิ๊ก...')
+    text = text
+      .replace(/เหมียว[ๆ~]*/g, 'ดุ๊กดิ๊ก...')
+      .replace(/โฮ่ง[!~]*/g, 'ดุ๊กดิ๊ก...')
+      .replace(/กวัก[ๆ!]*/g, 'ดุ๊กดิ๊ก...')
   } else if (specKey === 'dragon') {
-    text = text.replace(/เหมียว[ๆ~]*/g, 'กรร~').replace(/โฮ่ง[!~]*/g, 'กรร~').replace(/กวัก[ๆ!]*/g, 'กรร~')
+    text = text
+      .replace(/เหมียว[ๆ~]*/g, 'กรร~')
+      .replace(/โฮ่ง[!~]*/g, 'กรร~')
+      .replace(/กวัก[ๆ!]*/g, 'กรร~')
   }
 
   // If text has no asterisks for physical actions, add a cozy pet action
@@ -737,17 +785,23 @@ export async function chatWithCompanion(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _sceneryName = 'Kamakura Bay',
 ): Promise<CompanionInteractionResult> {
-  const specKey = companionSpeciesOrName.toLowerCase().includes('cat') || companionSpeciesOrName.includes('เนโกะ')
-    ? 'cat'
-    : companionSpeciesOrName.toLowerCase().includes('shiba') || companionSpeciesOrName.includes('ชิบะ')
-      ? 'shiba'
-      : companionSpeciesOrName.toLowerCase().includes('bunny') || companionSpeciesOrName.includes('กระต่าย')
-        ? 'bunny'
-        : companionSpeciesOrName.toLowerCase().includes('penguin') || companionSpeciesOrName.includes('เปนเปน')
-          ? 'penguin'
-          : companionSpeciesOrName.toLowerCase().includes('dragon') || companionSpeciesOrName.includes('ริว') || companionSpeciesOrName.includes('มังกร')
-            ? 'dragon'
-            : 'fox'
+  const specKey =
+    companionSpeciesOrName.toLowerCase().includes('cat') || companionSpeciesOrName.includes('เนโกะ')
+      ? 'cat'
+      : companionSpeciesOrName.toLowerCase().includes('shiba') ||
+          companionSpeciesOrName.includes('ชิบะ')
+        ? 'shiba'
+        : companionSpeciesOrName.toLowerCase().includes('bunny') ||
+            companionSpeciesOrName.includes('กระต่าย')
+          ? 'bunny'
+          : companionSpeciesOrName.toLowerCase().includes('penguin') ||
+              companionSpeciesOrName.includes('เปนเปน')
+            ? 'penguin'
+            : companionSpeciesOrName.toLowerCase().includes('dragon') ||
+                companionSpeciesOrName.includes('ริว') ||
+                companionSpeciesOrName.includes('มังกร')
+              ? 'dragon'
+              : 'fox'
 
   const fallbackList = SPECIES_FALLBACK_REPLIES[specKey] || SPECIES_FALLBACK_REPLIES.cat!
 
@@ -775,11 +829,27 @@ ${companionSpeciesOrName}:`
         `%c🐾 [Companion AI: ${companionSpeciesOrName}] User: "${userMessage}"`,
         'color: #38bdf8; font-weight: bold; font-size: 11px;',
       )
-      console.log('%c📤 [1] System Prompt (ส่งให้ LLM):', 'color: #c084fc; font-weight: bold;', systemPrompt)
-      console.log('%c📤 [2] User Prompt (ส่งให้ LLM):', 'color: #60a5fa; font-weight: bold;', petPrompt)
-      console.log('%c📥 [3] Raw Output (LLM ตอบกลับมา):', 'color: #34d399; font-weight: bold;', res.text)
+      console.log(
+        '%c📤 [1] System Prompt (ส่งให้ LLM):',
+        'color: #c084fc; font-weight: bold;',
+        systemPrompt,
+      )
+      console.log(
+        '%c📤 [2] User Prompt (ส่งให้ LLM):',
+        'color: #60a5fa; font-weight: bold;',
+        petPrompt,
+      )
+      console.log(
+        '%c📥 [3] Raw Output (LLM ตอบกลับมา):',
+        'color: #34d399; font-weight: bold;',
+        res.text,
+      )
       const clean = cleanPetResponse(res.text, specKey)
-      console.log('%c✨ [4] Final Cleaned Text (แสดงใน UI):', 'color: #fbbf24; font-weight: bold;', clean)
+      console.log(
+        '%c✨ [4] Final Cleaned Text (แสดงใน UI):',
+        'color: #fbbf24; font-weight: bold;',
+        clean,
+      )
       console.log('%c🏷️ Provider:', 'color: #94a3b8;', res.providerName)
       console.groupEnd()
 

@@ -41,7 +41,7 @@ export function Compass({
 
   // Camera yaw in degrees (0 = North, 90 = East, 180 = South, 270 = West)
   const rawYaw = snapshot.local.cameraYaw ?? snapshot.local.yaw
-  const deg = Math.round((((-rawYaw * 180) / Math.PI) % 360 + 360) % 360)
+  const deg = Math.round(((((-rawYaw * 180) / Math.PI) % 360) + 360) % 360)
   const cardinal = getCardinalDirection(deg)
 
   if (minimized) {
@@ -52,13 +52,13 @@ export function Compass({
         className="glass fixed top-4 left-4 z-40 flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 text-white/90 shadow-lg backdrop-blur-md transition hover:bg-white/15"
         title="Expand Compass"
       >
-        <span className="font-bold text-rose-400 text-xs">N</span>
+        <span className="text-xs font-bold text-rose-400">N</span>
       </button>
     )
   }
 
   return (
-    <div className="fixed top-4 left-4 z-40 select-none animate-in fade-in duration-200">
+    <div className="animate-in fade-in fixed top-4 left-4 z-40 duration-200 select-none">
       {/* Square Glass Box */}
       <div className="glass relative flex h-22 w-22 flex-col items-center justify-between rounded-2xl border border-white/15 p-2 text-white shadow-xl backdrop-blur-xl">
         {/* Rotating Circular Compass Dial */}
@@ -69,19 +69,19 @@ export function Compass({
             style={{ transform: `rotate(${-deg}deg)` }}
           >
             {/* North Indicator */}
-            <span className="absolute -top-0.5 text-[9px] font-black text-rose-400 tracking-tighter">
+            <span className="absolute -top-0.5 text-[9px] font-black tracking-tighter text-rose-400">
               N
             </span>
             {/* South Indicator */}
-            <span className="absolute -bottom-0.5 text-[8px] font-bold text-white/50 tracking-tighter">
+            <span className="absolute -bottom-0.5 text-[8px] font-bold tracking-tighter text-white/50">
               S
             </span>
             {/* East Indicator */}
-            <span className="absolute -right-0.5 text-[8px] font-bold text-white/50 tracking-tighter">
+            <span className="absolute -right-0.5 text-[8px] font-bold tracking-tighter text-white/50">
               E
             </span>
             {/* West Indicator */}
-            <span className="absolute -left-0.5 text-[8px] font-bold text-white/50 tracking-tighter">
+            <span className="absolute -left-0.5 text-[8px] font-bold tracking-tighter text-white/50">
               W
             </span>
 
@@ -94,16 +94,12 @@ export function Compass({
 
         {/* Heading & Degrees */}
         <div className="flex items-center gap-1 leading-none">
-          <span className="font-bold text-white text-xs tracking-wide">
-            {cardinal}
-          </span>
-          <span className="font-mono text-[11px] text-white/70">
-            {deg}°
-          </span>
+          <span className="text-xs font-bold tracking-wide text-white">{cardinal}</span>
+          <span className="font-mono text-[11px] text-white/70">{deg}°</span>
         </div>
 
         {/* Subtle Coordinates Footer */}
-        <div className="font-mono text-[9px] text-white/45 leading-none">
+        <div className="font-mono text-[9px] leading-none text-white/45">
           {snapshot.local.x.toFixed(0)}, {snapshot.local.z.toFixed(0)}
         </div>
 
@@ -111,10 +107,16 @@ export function Compass({
         <button
           type="button"
           onClick={() => setMinimized(true)}
-          className="absolute top-1.5 right-1.5 text-white/30 hover:text-white transition p-0.5 rounded-md"
+          className="absolute top-1.5 right-1.5 rounded-md p-0.5 text-white/30 transition hover:text-white"
           title="Minimize Compass"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-2.5 w-2.5">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            className="h-2.5 w-2.5"
+          >
             <path d="M18 12H6" strokeLinecap="round" />
           </svg>
         </button>

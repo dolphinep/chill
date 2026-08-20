@@ -879,7 +879,10 @@ export class Engine {
       // Radius just inside the (already-shrunk, see `#skyDomeRadius`) sky dome, same
       // ~0.875-ish margin as the moon's own orbit distance, so real stars read as
       // sitting on the dome rather than floating obviously in front of/behind it.
-      const constellations = new ConstellationField(this.#skyDomeRadius * 0.9, defaultObservatoryDate())
+      const constellations = new ConstellationField(
+        this.#skyDomeRadius * 0.9,
+        defaultObservatoryDate(),
+      )
       this.#constellations = constellations
       this.#scene.add(constellations.group)
       this.#disposables.add({ dispose: () => constellations.dispose() })
@@ -1328,8 +1331,7 @@ export class Engine {
         this.#companionPet?.setSpecies(cmd.species)
         const charX = this.#stateMachine.state === 'stand' ? this.#character.x : this.#spawn.x
         const charZ = this.#stateMachine.state === 'stand' ? this.#character.z : this.#spawn.z
-        const charYaw =
-          this.#stateMachine.state === 'stand' ? this.#character.yaw : this.#spawn.yaw
+        const charYaw = this.#stateMachine.state === 'stand' ? this.#character.yaw : this.#spawn.yaw
         this.#companionPet?.teleportNear(charX, charZ, charYaw)
         break
       }
@@ -1414,9 +1416,9 @@ export class Engine {
         }
 
         if (prop.data.type === 'bench') {
-          // Plank top surface is at y = +0.42m
+          // Plank top surface is at y = +0.425m; torsoPivot in sit is +0.06m
           this.#spawn.x = prop.data.x
-          this.#spawn.y = prop.group.position.y + 0.42
+          this.#spawn.y = prop.group.position.y + 0.36
           this.#spawn.z = prop.data.z
           this.#spawn.yaw = prop.data.yaw
         } else if (prop.data.type === 'tea_table') {
@@ -1426,12 +1428,12 @@ export class Engine {
           const cosY = Math.cos(prop.data.yaw)
           const sinY = Math.sin(prop.data.yaw)
           this.#spawn.x = prop.data.x + sign * cosY * 0.65
-          this.#spawn.y = prop.group.position.y + 0.08
+          this.#spawn.y = prop.group.position.y + 0.02
           this.#spawn.z = prop.data.z + sign * sinY * 0.65
           this.#spawn.yaw = prop.data.yaw + (seatIdx === 1 ? -Math.PI / 2 : Math.PI / 2)
         } else {
           this.#spawn.x = prop.data.x
-          this.#spawn.y = prop.group.position.y + 0.05
+          this.#spawn.y = prop.group.position.y
           this.#spawn.z = prop.data.z
           this.#spawn.yaw = prop.data.yaw
         }
@@ -1673,7 +1675,10 @@ export class Engine {
    * times a second." One label per currently-visible-and-on-screen constellation,
    * not just the searched one — see `ConstellationField.projectLabels`'s own doc
    * comment. `[]` outside the observatory scenery (no field at all). */
-  getConstellationLabels(viewportWidth: number, viewportHeight: number): ConstellationLabelProjection[] {
+  getConstellationLabels(
+    viewportWidth: number,
+    viewportHeight: number,
+  ): ConstellationLabelProjection[] {
     if (!this.#constellations || !this.#cameraRig) return []
     return this.#constellations.projectLabels(this.#cameraRig.camera, viewportWidth, viewportHeight)
   }
@@ -1905,7 +1910,12 @@ export class Engine {
     // still needs to move and animate on a scenery with no footprints at all.
     const remoteFootfalls: { x: number; z: number; pressure: number }[] = []
     for (const avatar of this.#remoteAvatars.values()) {
-      const footfalls = avatar.update(tick.rawDt, this.#scenery.terrain, this.#clock.wallTime, skiMode)
+      const footfalls = avatar.update(
+        tick.rawDt,
+        this.#scenery.terrain,
+        this.#clock.wallTime,
+        skiMode,
+      )
       remoteFootfalls.push(...footfalls)
       if (this.#snowSpray && skiMode && avatar.speed > 0.25) {
         this.#snowSpray.emit(avatar.x, avatar.y, avatar.z, avatar.yaw, avatar.speed, 0, tick.rawDt)

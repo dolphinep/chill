@@ -62,7 +62,17 @@ export function buildBusGraph(ctx: AudioContext): BusGraph {
   master.connect(limiter)
   limiter.connect(ctx.destination)
 
-  return { musicBus, musicDuck, ambienceBus, ambDuck, uiBus, worldBus, waterFilter, master, limiter }
+  return {
+    musicBus,
+    musicDuck,
+    ambienceBus,
+    ambDuck,
+    uiBus,
+    worldBus,
+    waterFilter,
+    master,
+    limiter,
+  }
 }
 
 export function setWaterFilterActive(graph: BusGraph, ctx: AudioContext, active: boolean): void {

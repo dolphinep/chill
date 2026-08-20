@@ -15,7 +15,11 @@ export function createObservatoryDeck(spec: HeightSpec, x: number, z: number) {
   group.position.set(x, groundY, z)
 
   const stoneMat = new THREE.MeshStandardMaterial({ color: 0x2b2f38, roughness: 0.92 })
-  const metalMat = new THREE.MeshStandardMaterial({ color: 0x11151c, roughness: 0.55, metalness: 0.4 })
+  const metalMat = new THREE.MeshStandardMaterial({
+    color: 0x11151c,
+    roughness: 0.55,
+    metalness: 0.4,
+  })
 
   const deckGeo = new THREE.CylinderGeometry(3.4, 3.6, 0.3, 24)
   const deck = new THREE.Mesh(deckGeo, stoneMat)

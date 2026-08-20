@@ -41,7 +41,11 @@ export function createPlayerLantern(): PlayerLantern {
     transparent: true,
     opacity: 0.92,
   })
-  const frameMat = new THREE.MeshStandardMaterial({ color: 0x2a2015, roughness: 0.6, metalness: 0.3 })
+  const frameMat = new THREE.MeshStandardMaterial({
+    color: 0x2a2015,
+    roughness: 0.6,
+    metalness: 0.3,
+  })
 
   const bodyGeo = new THREE.SphereGeometry(0.12, 16, 12)
   const body = new THREE.Mesh(bodyGeo, glassMat)

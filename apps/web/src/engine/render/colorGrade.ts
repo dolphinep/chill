@@ -1,4 +1,16 @@
-import { clamp, dot, float, fract, hash, mix, pow, screenCoordinate, smoothstep, time, vec3 } from 'three/tsl'
+import {
+  clamp,
+  dot,
+  float,
+  fract,
+  hash,
+  mix,
+  pow,
+  screenCoordinate,
+  smoothstep,
+  time,
+  vec3,
+} from 'three/tsl'
 import type { Node } from 'three/webgpu'
 
 type F = Node<'float'>
@@ -11,8 +23,8 @@ export function grade(color: V3): V3 {
   const luma = dot(c, LUMA) as F
 
   // Mask black lift in dark shadows so night skies stay rich dark black rather than muddy noise
-  const shadowMask = smoothstep(0.02, 0.20, luma) as F
-  const liftColor = vec3(0.008, 0.010, 0.015).mul(shadowMask)
+  const shadowMask = smoothstep(0.02, 0.2, luma) as F
+  const liftColor = vec3(0.008, 0.01, 0.015).mul(shadowMask)
   const lifted = liftColor.add(c.mul(vec3(1).sub(liftColor))) as V3
   c = pow(lifted, vec3(0.95)) as V3
 
@@ -30,9 +42,9 @@ export function grade(color: V3): V3 {
 /**
  * Animated white-noise grain, masked in dark shadow regions so night scenes stay crystal clear.
  */
-export function filmGrain(color: V3, strength = 0.010): V3 {
+export function filmGrain(color: V3, strength = 0.01): V3 {
   const luma = dot(color, LUMA) as F
-  const shadowMask = smoothstep(0.03, 0.30, luma) as F
+  const shadowMask = smoothstep(0.03, 0.3, luma) as F
   const n = hash(
     screenCoordinate.x.add(screenCoordinate.y.mul(1920)).add(fract(time.mul(997))),
   ) as F

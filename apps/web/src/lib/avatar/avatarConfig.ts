@@ -75,7 +75,10 @@ export const DEFAULT_AVATAR_CONFIG: ChibiAvatarConfig = {
   accessoryColor: '#ef4444',
 }
 
-export const AVATAR_PRESETS: Record<string, { name: string; icon: string; config: ChibiAvatarConfig }> = {
+export const AVATAR_PRESETS: Record<
+  string,
+  { name: string; icon: string; config: ChibiAvatarConfig }
+> = {
   'chibi-girl': {
     name: 'Chibi Girl',
     icon: '🎀',

@@ -23,7 +23,12 @@ function detuneRate(): number {
   return 1 + (Math.random() * 2 - 1) * DETUNE_RANGE
 }
 
-function playBuffer(ctx: AudioContext, buffer: AudioBuffer, destination: AudioNode, rate: number): void {
+function playBuffer(
+  ctx: AudioContext,
+  buffer: AudioBuffer,
+  destination: AudioNode,
+  rate: number,
+): void {
   const source = ctx.createBufferSource()
   source.buffer = buffer
   source.playbackRate.value = rate

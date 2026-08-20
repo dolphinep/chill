@@ -49,7 +49,12 @@ export function valleyMask(spec: RidgeTerrainSpec, x: number, z: number): number
   return c * c * (3 - 2 * c)
 }
 
-function sampleCoastalHeight(spec: CoastalTerrainSpec, perm: Uint8Array, x: number, z: number): number {
+function sampleCoastalHeight(
+  spec: CoastalTerrainSpec,
+  perm: Uint8Array,
+  x: number,
+  z: number,
+): number {
   let h = rawOctaveSum(spec, perm, x, z)
 
   // Blend toward the sea floor, not toward zero — see `seaFloorM`.

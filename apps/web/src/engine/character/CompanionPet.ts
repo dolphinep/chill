@@ -76,7 +76,7 @@ export class CompanionPet {
         if (s && ['fox', 'cat', 'shiba', 'bunny', 'penguin', 'dragon', 'none'].includes(s)) {
           saved = s
         }
-      } catch { }
+      } catch {}
     }
     this.setSpecies(saved)
   }
@@ -102,7 +102,7 @@ export class CompanionPet {
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(`chill_companion_name_${this.#species}`, name)
-      } catch { }
+      } catch {}
     }
 
     if (this.#species === 'none') {
@@ -131,7 +131,7 @@ export class CompanionPet {
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('chill_companion_species', species)
-      } catch { }
+      } catch {}
     }
 
     // Clear existing model
@@ -167,7 +167,7 @@ export class CompanionPet {
         if (saved && saved.trim().length > 0) {
           petName = saved.trim()
         }
-      } catch { }
+      } catch {}
     }
     this.setName(petName)
   }
@@ -360,7 +360,11 @@ export class CompanionPet {
     const hornMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.5 })
     const eyeMat = new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.3 })
     const eyeHighlightMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1 })
-    const wingMat = new THREE.MeshStandardMaterial({ color: 0x34d399, roughness: 0.6, side: THREE.DoubleSide })
+    const wingMat = new THREE.MeshStandardMaterial({
+      color: 0x34d399,
+      roughness: 0.6,
+      side: THREE.DoubleSide,
+    })
 
     // Body
     const body = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 12), dragonMat)
@@ -535,7 +539,11 @@ export class CompanionPet {
     const orangeMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.85 })
     const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 })
     const collarMat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, roughness: 0.5 })
-    const bellMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8, roughness: 0.3 })
+    const bellMat = new THREE.MeshStandardMaterial({
+      color: 0xfacc15,
+      metalness: 0.8,
+      roughness: 0.3,
+    })
 
     // Round Plump Body
     const body = new THREE.Mesh(new THREE.SphereGeometry(0.19, 10, 10), whiteMat)

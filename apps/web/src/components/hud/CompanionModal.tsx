@@ -19,22 +19,32 @@ import { ChromeAiGuide } from './ChromeAiGuide'
 
 function HidePetIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      className={className}
+    >
       <circle cx="12" cy="15" r="3.2" stroke="currentColor" />
       <circle cx="7.5" cy="10.5" r="1.5" fill="currentColor" />
       <circle cx="16.5" cy="10.5" r="1.5" fill="currentColor" />
       <circle cx="10.5" cy="7.5" r="1.4" fill="currentColor" />
       <circle cx="13.5" cy="7.5" r="1.4" fill="currentColor" />
-      <line x1="4.5" y1="4.5" x2="19.5" y2="19.5" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+      <line
+        x1="4.5"
+        y1="4.5"
+        x2="19.5"
+        y2="19.5"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+      />
     </svg>
   )
 }
 
-export function CompanionModal({
-  command,
-}: {
-  command?: (cmd: EngineCommand) => void
-}) {
+export function CompanionModal({ command }: { command?: (cmd: EngineCommand) => void }) {
   const {
     isOpen,
     setIsOpen,
@@ -197,15 +207,17 @@ export function CompanionModal({
   const isHidden = species === 'none'
 
   return (
-    <div className="fixed bottom-24 right-6 z-40 flex flex-col items-end animate-in fade-in slide-in-from-bottom-3 duration-200">
+    <div className="animate-in fade-in slide-in-from-bottom-3 fixed right-6 bottom-24 z-40 flex flex-col items-end duration-200">
       {/* Floating Bottom-Right Widget Card */}
       <div className="border-glass-edge bg-glass-surface text-glass-foreground relative flex h-130 w-95 max-w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-3xl border shadow-2xl backdrop-blur-2xl transition-all">
         {/* Header */}
-        <div className="border-glass-edge flex items-center justify-between border-b px-5 py-3.5 bg-black/20">
+        <div className="border-glass-edge flex items-center justify-between border-b bg-black/20 px-5 py-3.5">
           <div className="flex items-center gap-3">
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-2xl border ${
-                isHidden ? 'border-white/15 bg-white/10 text-white/60 shadow-inner' : `${activePetInfo.cardBorder} ${activePetInfo.cardBg}`
+                isHidden
+                  ? 'border-white/15 bg-white/10 text-white/60 shadow-inner'
+                  : `${activePetInfo.cardBorder} ${activePetInfo.cardBg}`
               } p-1.5 shadow-inner ring-1 ring-white/10`}
             >
               {isHidden ? (
@@ -217,7 +229,9 @@ export function CompanionModal({
             <div>
               {isHidden ? (
                 <div>
-                  <h2 className="text-sm font-bold text-white tracking-wide">No Companion Active</h2>
+                  <h2 className="text-sm font-bold tracking-wide text-white">
+                    No Companion Active
+                  </h2>
                   <p className="text-glass-muted text-[10px]">Pet is currently hidden</p>
                 </div>
               ) : isEditingName ? (
@@ -232,13 +246,13 @@ export function CompanionModal({
                     type="text"
                     value={nameInput}
                     onChange={(e) => setNameInput(e.target.value)}
-                    className="glass text-xs font-bold text-white rounded-lg px-2 py-0.5 border border-white/30 outline-none w-28 scheme-dark"
+                    className="glass w-28 rounded-lg border border-white/30 px-2 py-0.5 text-xs font-bold text-white scheme-dark outline-none"
                     autoFocus
                     maxLength={16}
                   />
                   <button
                     type="submit"
-                    className="text-emerald-300 hover:text-emerald-200 text-xs px-1 font-bold"
+                    className="px-1 text-xs font-bold text-emerald-300 hover:text-emerald-200"
                     title="Save name"
                   >
                     ✓
@@ -246,7 +260,7 @@ export function CompanionModal({
                   <button
                     type="button"
                     onClick={() => setIsEditingName(false)}
-                    className="text-white/40 hover:text-white text-xs px-1"
+                    className="px-1 text-xs text-white/40 hover:text-white"
                     title="Cancel"
                   >
                     ✕
@@ -254,14 +268,14 @@ export function CompanionModal({
                 </form>
               ) : (
                 <div
-                  className="flex items-center gap-1.5 group cursor-pointer"
+                  className="group flex cursor-pointer items-center gap-1.5"
                   onClick={() => {
                     setNameInput(petName)
                     setIsEditingName(true)
                   }}
                   title="Click to rename companion"
                 >
-                  <h2 className="text-sm font-bold text-white tracking-wide group-hover:text-amber-200 transition">
+                  <h2 className="text-sm font-bold tracking-wide text-white transition group-hover:text-amber-200">
                     {petName || activePetInfo.name}
                   </h2>
                   <svg
@@ -269,7 +283,7 @@ export function CompanionModal({
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={2}
-                    className="h-3 w-3 text-white/30 group-hover:text-white/80 transition"
+                    className="h-3 w-3 text-white/30 transition group-hover:text-white/80"
                   >
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -286,14 +300,20 @@ export function CompanionModal({
             aria-label="Close"
             className="text-glass-muted hover:bg-glass-foreground/10 hover:text-glass-foreground flex h-7 w-7 items-center justify-center rounded-full transition"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-4 w-4"
+            >
               <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-glass-edge flex border-b px-4 py-1.5 bg-black/10">
+        <div className="border-glass-edge flex border-b bg-black/10 px-4 py-1.5">
           <button
             type="button"
             onClick={() => setActiveTab('chat')}
@@ -303,8 +323,17 @@ export function CompanionModal({
                 : 'text-white/60 hover:text-white'
             }`}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3.5 w-3.5">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" strokeLinejoin="round" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              className="h-3.5 w-3.5"
+            >
+              <path
+                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                strokeLinejoin="round"
+              />
             </svg>
             <span>Chat</span>
           </button>
@@ -317,7 +346,13 @@ export function CompanionModal({
                 : 'text-white/60 hover:text-white'
             }`}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-3.5 w-3.5">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              className="h-3.5 w-3.5"
+            >
               <rect x="3" y="3" width="7" height="7" rx="2" />
               <rect x="14" y="3" width="7" height="7" rx="2" />
               <rect x="3" y="14" width="7" height="7" rx="2" />
@@ -330,9 +365,9 @@ export function CompanionModal({
         {/* Tab Content */}
         {activeTab === 'select' ? (
           /* Species Selector List */
-          <div className="flex-1 space-y-2 overflow-y-auto p-4 custom-scrollbar">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-white/70 text-xs font-medium tracking-wide">
+          <div className="custom-scrollbar flex-1 space-y-2 overflow-y-auto p-4">
+            <div className="mb-1 flex items-center justify-between">
+              <p className="text-xs font-medium tracking-wide text-white/70">
                 Choose or hide your companion pet
               </p>
             </div>
@@ -347,14 +382,14 @@ export function CompanionModal({
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 p-1 shadow-inner text-white/70">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 p-1 text-white/70 shadow-inner">
                   <HidePetIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-white group-hover:text-amber-200 transition">
+                  <span className="text-xs font-bold text-white transition group-hover:text-amber-200">
                     No Companion (Hide Pet)
                   </span>
-                  <p className="text-[11px] text-white/60 line-clamp-1 mt-0.5">
+                  <p className="mt-0.5 line-clamp-1 text-[11px] text-white/60">
                     Explore the world quietly without a companion pet.
                   </p>
                 </div>
@@ -382,19 +417,17 @@ export function CompanionModal({
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-white group-hover:text-amber-200 transition">
+                        <span className="text-xs font-bold text-white transition group-hover:text-amber-200">
                           {info.name}
                         </span>
                         <span className="text-[10px] text-white/50">{info.title}</span>
                       </div>
-                      <p className="text-[11px] text-white/60 line-clamp-1 mt-0.5">
+                      <p className="mt-0.5 line-clamp-1 text-[11px] text-white/60">
                         {info.description}
                       </p>
                     </div>
                   </div>
-                  {isSelected && (
-                    <span className="text-xs font-bold text-amber-400">✓</span>
-                  )}
+                  {isSelected && <span className="text-xs font-bold text-amber-400">✓</span>}
                 </div>
               )
             })}
@@ -402,20 +435,27 @@ export function CompanionModal({
         ) : isHidden ? (
           /* Empty State when Companion is Hidden */
           <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-white/10 bg-white/5 shadow-inner mb-3 text-white/60">
+            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-3xl border border-white/10 bg-white/5 text-white/60 shadow-inner">
               <HidePetIcon className="h-8 w-8" />
             </div>
-            <h3 className="text-sm font-bold text-white mb-1">Companion is Hidden</h3>
-            <p className="text-xs text-white/60 max-w-xs mb-5 leading-relaxed">
-              You do not have an active pet with you right now. Choose a companion pet to walk with you and chat!
+            <h3 className="mb-1 text-sm font-bold text-white">Companion is Hidden</h3>
+            <p className="mb-5 max-w-xs text-xs leading-relaxed text-white/60">
+              You do not have an active pet with you right now. Choose a companion pet to walk with
+              you and chat!
             </p>
             <button
               type="button"
               onClick={() => setActiveTab('select')}
-              className="flex items-center gap-2 rounded-2xl bg-amber-400 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg hover:bg-amber-300 transition"
+              className="flex items-center gap-2 rounded-2xl bg-amber-400 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg transition hover:bg-amber-300"
             >
               <span>Choose Companion</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="h-3.5 w-3.5"
+              >
                 <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
@@ -449,19 +489,16 @@ export function CompanionModal({
             )}
 
             {/* Message Feed */}
-            <div className="flex-1 space-y-3 overflow-y-auto p-4 custom-scrollbar">
+            <div className="custom-scrollbar flex-1 space-y-3 overflow-y-auto p-4">
               {messages.map((m) => {
                 const isUser = m.sender === 'user'
                 return (
-                  <div
-                    key={m.id}
-                    className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
-                  >
+                  <div key={m.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
                     <div
                       className={`max-w-[82%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed ${
                         isUser
                           ? 'bg-amber-400 font-medium text-slate-950 shadow-md'
-                          : 'border-glass-edge bg-white/10 text-white backdrop-blur-md border shadow'
+                          : 'border-glass-edge border bg-white/10 text-white shadow backdrop-blur-md'
                       }`}
                     >
                       {m.text}
@@ -483,11 +520,11 @@ export function CompanionModal({
             </div>
 
             {/* Quick Chips & Neutral Pet Action */}
-            <div className="border-glass-edge flex flex-wrap items-center gap-1.5 border-t px-4 py-2 bg-black/15">
+            <div className="border-glass-edge flex flex-wrap items-center gap-1.5 border-t bg-black/15 px-4 py-2">
               <button
                 type="button"
                 onClick={handlePetAction}
-                className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/90 hover:bg-white/20 hover:text-white transition"
+                className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/90 transition hover:bg-white/20 hover:text-white"
               >
                 <span>Pet / Hug</span>
               </button>
@@ -496,7 +533,7 @@ export function CompanionModal({
                   key={q}
                   type="button"
                   onClick={() => handleSendMessage(q)}
-                  className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-white/70 hover:bg-white/15 hover:text-white transition"
+                  className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-white/70 transition hover:bg-white/15 hover:text-white"
                 >
                   {q}
                 </button>
@@ -509,22 +546,28 @@ export function CompanionModal({
                 e.preventDefault()
                 void handleSendMessage()
               }}
-              className="border-glass-edge flex items-center gap-2 border-t p-3 bg-black/20"
+              className="border-glass-edge flex items-center gap-2 border-t bg-black/20 p-3"
             >
               <input
                 type="text"
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 placeholder={`Chat with ${petName || activePetInfo.name}...`}
-                className="border-white/15 bg-white/10 text-white placeholder:text-white/40 flex-1 rounded-xl border px-3.5 py-2 text-xs outline-none focus:border-amber-400/50"
+                className="flex-1 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 text-xs text-white outline-none placeholder:text-white/40 focus:border-amber-400/50"
               />
               <button
                 type="submit"
                 disabled={!inputVal.trim() || isThinking}
-                className="flex items-center gap-1 rounded-xl bg-amber-400 px-3.5 py-2 text-xs font-bold text-slate-950 shadow-md hover:bg-amber-300 disabled:opacity-40 transition"
+                className="flex items-center gap-1 rounded-xl bg-amber-400 px-3.5 py-2 text-xs font-bold text-slate-950 shadow-md transition hover:bg-amber-300 disabled:opacity-40"
               >
                 <span>Send</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3 w-3">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  className="h-3 w-3"
+                >
                   <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>

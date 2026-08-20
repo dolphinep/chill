@@ -16,8 +16,23 @@ export type GenerativeMusic = {
 /** Converts note name like 'C4', 'F#3', 'Bb3' to frequency in Hz */
 function noteToFreq(note: string): number {
   const noteNames: Record<string, number> = {
-    C: 0, 'C#': 1, Db: 1, D: 2, 'D#': 3, Eb: 3, E: 4, F: 5,
-    'F#': 6, Gb: 6, G: 7, 'G#': 8, Ab: 8, A: 9, 'A#': 10, Bb: 10, B: 11,
+    C: 0,
+    'C#': 1,
+    Db: 1,
+    D: 2,
+    'D#': 3,
+    Eb: 3,
+    E: 4,
+    F: 5,
+    'F#': 6,
+    Gb: 6,
+    G: 7,
+    'G#': 8,
+    Ab: 8,
+    A: 9,
+    'A#': 10,
+    Bb: 10,
+    B: 11,
   }
   const match = note.match(/^([A-Ga-g][#b]?)([0-9])$/)
   if (!match || !match[1] || !match[2]) return 440
@@ -58,10 +73,10 @@ export function createGenerativeMusic(ctx: AudioContext, destination: AudioNode)
 
   // 2. Jazz Guitar Chords
   const GUITAR_CHORDS = [
-    ['C3', 'G3', 'B3', 'E4', 'G4'],   // Cmaj7
-    ['A2', 'E3', 'G3', 'C4', 'E4'],   // Am7
-    ['D3', 'F3', 'A3', 'C4', 'F4'],   // Dm7
-    ['G2', 'D3', 'F3', 'B3', 'E4'],   // G7
+    ['C3', 'G3', 'B3', 'E4', 'G4'], // Cmaj7
+    ['A2', 'E3', 'G3', 'C4', 'E4'], // Am7
+    ['D3', 'F3', 'A3', 'C4', 'F4'], // Dm7
+    ['G2', 'D3', 'F3', 'B3', 'E4'], // G7
   ]
   let guitarIndex = 0
 
@@ -86,7 +101,12 @@ export function createGenerativeMusic(ctx: AudioContext, destination: AudioNode)
   // without anything melodic enough to actually listen to.
   const FOCUS_DRONE_NOTES = ['C3', 'G3', 'C4']
 
-  function playVoice(freq: number, dur: number, instrument: 'piano' | 'guitar' | 'synth' | 'koto' | 'ambient', gainMult = 1.0): void {
+  function playVoice(
+    freq: number,
+    dur: number,
+    instrument: 'piano' | 'guitar' | 'synth' | 'koto' | 'ambient',
+    gainMult = 1.0,
+  ): void {
     if (!running || ctx.state !== 'running') return
     const now = ctx.currentTime
 
@@ -274,8 +294,12 @@ export function createGenerativeMusic(ctx: AudioContext, destination: AudioNode)
     dispose(): void {
       running = false
       if (timer) clearTimeout(timer)
-      try { masterGain.disconnect() } catch {}
-      try { delay.disconnect() } catch {}
+      try {
+        masterGain.disconnect()
+      } catch {}
+      try {
+        delay.disconnect()
+      } catch {}
     },
   }
 }

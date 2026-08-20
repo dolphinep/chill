@@ -30,7 +30,7 @@ const QUALITY_TIERS: { id: QualityTierName; label: string; desc: string }[] = [
 function Section({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="border-glass-edge flex flex-col gap-2.5 border-t pt-4 first:border-t-0 first:pt-0">
-      <span className="text-white/50 text-[10px] font-semibold tracking-widest uppercase">
+      <span className="text-[10px] font-semibold tracking-widest text-white/50 uppercase">
         {label}
       </span>
       {children}
@@ -40,7 +40,13 @@ function Section({ label, children }: { label: string; children: ReactNode }) {
 
 function SpeakerIcon({ muted }: { muted: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      className="h-4 w-4"
+    >
       <path d="M4 9v6h4l5 4V5L8 9H4z" strokeLinejoin="round" />
       {muted ? (
         <path d="M17 9l5 6M22 9l-5 6" strokeLinecap="round" />
@@ -120,37 +126,47 @@ export function ComfortSettings({
 
       {/* Modal Card floating above bottom dock */}
       <div
-        className="animate-in fade-in zoom-in-95 fixed bottom-24 left-1/2 z-40 flex max-h-[calc(100vh-120px)] sm:max-h-145 w-110 max-w-[calc(100vw-32px)] -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-white/15 bg-slate-950/90 shadow-2xl backdrop-blur-xl duration-150 text-white"
+        className="animate-in fade-in zoom-in-95 fixed bottom-24 left-1/2 z-40 flex max-h-[calc(100vh-120px)] w-110 max-w-[calc(100vw-32px)] -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-white/15 bg-slate-950/90 text-white shadow-2xl backdrop-blur-xl duration-150 sm:max-h-145"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-white shadow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                className="h-4 w-4"
+              >
                 <rect x="2" y="3" width="20" height="14" rx="2" />
                 <path d="M8 21h8M12 17v4" />
               </svg>
             </div>
-            <h2 className="text-sm font-bold text-white tracking-wide">
-              Display & Comfort
-            </h2>
+            <h2 className="text-sm font-bold tracking-wide text-white">Display & Comfort</h2>
           </div>
 
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-white/60 transition hover:bg-white/10 hover:text-white"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-4 w-4"
+            >
               <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 space-y-4 overflow-y-auto p-5 custom-scrollbar">
+        <div className="custom-scrollbar flex-1 space-y-4 overflow-y-auto p-5">
           {/* 1. Graphics Quality Setting */}
           {command && (
             <Section label="Graphics Quality">
@@ -164,17 +180,23 @@ export function ComfortSettings({
                       onClick={() => handleSetTier(tier.id)}
                       className={`flex flex-col items-center justify-center rounded-xl border p-3 text-center transition ${
                         isSelected
-                          ? 'border-amber-400 bg-amber-500/20 text-white shadow-lg ring-1 ring-amber-400/50 font-bold'
+                          ? 'border-amber-400 bg-amber-500/20 font-bold text-white shadow-lg ring-1 ring-amber-400/50'
                           : 'border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10 hover:text-white'
                       }`}
                     >
                       <span className="text-xs font-semibold">{tier.label}</span>
-                      <span className="mt-1 text-[9px] text-white/50 leading-tight">{tier.id === 'low' ? '30-60 FPS' : tier.id === 'medium' ? 'Balanced' : 'Ultra 3D'}</span>
+                      <span className="mt-1 text-[9px] leading-tight text-white/50">
+                        {tier.id === 'low'
+                          ? '30-60 FPS'
+                          : tier.id === 'medium'
+                            ? 'Balanced'
+                            : 'Ultra 3D'}
+                      </span>
                     </button>
                   )
                 })}
               </div>
-              <p className="text-glass-muted text-[11px] mt-1">
+              <p className="text-glass-muted mt-1 text-[11px]">
                 {QUALITY_TIERS.find((t) => t.id === selectedTier)?.desc}
               </p>
             </Section>
@@ -186,7 +208,7 @@ export function ComfortSettings({
               <label className="flex flex-col gap-1.5">
                 <div className="text-glass-muted flex justify-between text-xs">
                   <span>Field of View</span>
-                  <span className="font-mono text-white font-medium">{Math.round(fov)}°</span>
+                  <span className="font-mono font-medium text-white">{Math.round(fov)}°</span>
                 </div>
                 <input
                   type="range"
@@ -195,15 +217,19 @@ export function ComfortSettings({
                   step={1}
                   value={fov}
                   onChange={(e) => setStoredFov(Number(e.target.value))}
-                  className="accent-amber-400 cursor-pointer"
+                  className="cursor-pointer accent-amber-400"
                 />
               </label>
 
-              <label className="flex flex-col gap-1.5 mt-2">
+              <label className="mt-2 flex flex-col gap-1.5">
                 <div className="text-glass-muted flex justify-between text-xs">
                   <span>Camera Smoothness</span>
-                  <span className="font-mono text-white font-medium">
-                    {damping <= 0.02 ? 'Snappy' : damping >= MAX_DAMPING - 0.02 ? 'Floaty' : 'Balanced'}
+                  <span className="font-mono font-medium text-white">
+                    {damping <= 0.02
+                      ? 'Snappy'
+                      : damping >= MAX_DAMPING - 0.02
+                        ? 'Floaty'
+                        : 'Balanced'}
                   </span>
                 </div>
                 <input
@@ -213,7 +239,7 @@ export function ComfortSettings({
                   step={0.01}
                   value={damping}
                   onChange={(e) => setStoredDamping(Number(e.target.value))}
-                  className="accent-amber-400 cursor-pointer"
+                  className="cursor-pointer accent-amber-400"
                 />
               </label>
             </Section>
@@ -239,9 +265,9 @@ export function ComfortSettings({
                 step={0.01}
                 value={audioState.masterVolume}
                 onChange={(e) => setMasterVolume(Number(e.target.value))}
-                className="accent-amber-400 flex-1 cursor-pointer"
+                className="flex-1 cursor-pointer accent-amber-400"
               />
-              <span className="font-mono text-xs text-white/80 w-10 text-right">
+              <span className="w-10 text-right font-mono text-xs text-white/80">
                 {Math.round(audioState.masterVolume * 100)}%
               </span>
             </div>
@@ -260,7 +286,7 @@ export function ComfortSettings({
                       onClick={() => setSceneryId(id)}
                       className={`flex items-center justify-between rounded-xl border p-2.5 text-left text-xs transition ${
                         isCurrent
-                          ? 'border-amber-400 bg-amber-500/20 text-white font-semibold shadow ring-1 ring-amber-400/40'
+                          ? 'border-amber-400 bg-amber-500/20 font-semibold text-white shadow ring-1 ring-amber-400/40'
                           : 'border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10 hover:text-white'
                       }`}
                     >

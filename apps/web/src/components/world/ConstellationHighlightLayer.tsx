@@ -44,15 +44,15 @@ export function ConstellationHighlightLayer({
             className="absolute flex flex-col items-center gap-1 transition-transform"
             style={{ left: l.x, top: l.y, transform: 'translate(-50%, -50%)' }}
           >
-            <div className="glass flex items-center gap-2 rounded-full border border-cyan-400/60 bg-slate-950/70 px-4 py-1.5 text-xs font-bold text-cyan-200 uppercase tracking-wider shadow-[0_0_20px_rgba(34,211,238,0.35)] backdrop-blur-md">
-              <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
+            <div className="glass flex items-center gap-2 rounded-full border border-cyan-400/60 bg-slate-950/70 px-4 py-1.5 text-xs font-bold tracking-wider text-cyan-200 uppercase shadow-[0_0_20px_rgba(34,211,238,0.35)] backdrop-blur-md">
+              <span className="h-2 w-2 animate-ping rounded-full bg-cyan-400" />
               <span>{l.name}</span>
             </div>
           </div>
         ) : (
           <div
             key={l.id}
-            className="absolute font-constellation text-[10px] text-white/45 uppercase tracking-widest"
+            className="font-constellation absolute text-[10px] tracking-widest text-white/45 uppercase"
             style={{
               left: l.x,
               top: l.y,

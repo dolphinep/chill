@@ -65,12 +65,7 @@ export class CharacterController {
    * Input arrives in camera-relative coordinates; this transforms it onto the terrain
    * plane using `cameraYaw`, integrates velocity, and clamps to ground height.
    */
-  step(
-    spec: HeightSpec,
-    input: InputFrame,
-    cameraYaw: number,
-    skiMode = false,
-  ): void {
+  step(spec: HeightSpec, input: InputFrame, cameraYaw: number, skiMode = false): void {
     const sinY = Math.sin(cameraYaw)
     const cosY = Math.cos(cameraYaw)
     const forwardX = -sinY
@@ -118,7 +113,7 @@ export class CharacterController {
       // Snap to ground on slopes (step-down snapping up to 0.40m)
       const distAboveGround = this.y - groundY
       const isSteppingDown =
-        this.isGrounded && distAboveGround >= 0 && distAboveGround <= (skiMode ? 0.65 : 0.40)
+        this.isGrounded && distAboveGround >= 0 && distAboveGround <= (skiMode ? 0.65 : 0.4)
 
       if (isSteppingDown || distAboveGround <= 0) {
         this.y = groundY

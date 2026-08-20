@@ -156,7 +156,13 @@ export class SnowField {
     const x = Math.max(0, Math.min(SAND_RESOLUTION - patch, center.x - half))
     const y = Math.max(0, Math.min(SAND_RESOLUTION - patch, center.y - half))
     const target = this.#targets[this.#readIndex]!
-    const data = (await renderer.readRenderTargetPixelsAsync(target, x, y, patch, patch)) as Uint16Array
+    const data = (await renderer.readRenderTargetPixelsAsync(
+      target,
+      x,
+      y,
+      patch,
+      patch,
+    )) as Uint16Array
     const bytesPerRow = Math.ceil((patch * 4) / 256) * 256
     const strideU16 = bytesPerRow / 2
     let max = 0
@@ -231,7 +237,10 @@ function buildStampMesh(maxCount: number): THREE.InstancedMesh {
   material.blending = THREE.AdditiveBlending
 
   const dist = positionGeometry.xy.length().mul(2) as F
-  const falloff = float(1.0).sub(dist).clamp(0, 1).mul(smoothstep(float(1.0), float(0.0), dist)) as F
+  const falloff = float(1.0)
+    .sub(dist)
+    .clamp(0, 1)
+    .mul(smoothstep(float(1.0), float(0.0), dist)) as F
 
   material.colorNode = vec4(falloff.mul(MAX_DEPTH), 0, 0, 1)
 

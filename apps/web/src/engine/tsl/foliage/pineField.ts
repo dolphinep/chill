@@ -45,7 +45,12 @@ function withVertexColor(geometry: THREE.BufferGeometry, color: THREE.Color): TH
 }
 
 function createPineGeometry(): THREE.BufferGeometry {
-  const trunk = new THREE.CylinderGeometry(TRUNK_RADIUS, TRUNK_RADIUS * 1.3, TRUNK_HEIGHT, 6).toNonIndexed()
+  const trunk = new THREE.CylinderGeometry(
+    TRUNK_RADIUS,
+    TRUNK_RADIUS * 1.3,
+    TRUNK_HEIGHT,
+    6,
+  ).toNonIndexed()
   trunk.translate(0, TRUNK_HEIGHT / 2, 0)
   withVertexColor(trunk, TRUNK_COLOR)
 

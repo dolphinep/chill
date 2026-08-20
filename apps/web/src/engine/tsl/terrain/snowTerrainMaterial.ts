@@ -135,7 +135,7 @@ export function createSnowTerrainMaterial(
 
   // Pristine Alpine Snow & Glacial SSS Blue
   const snowShadow = vec3(0.64, 0.72, 0.84) // Glacial cool ambient
-  const snowLit = vec3(0.96, 0.98, 1.0)     // Bright alpine sunlit white
+  const snowLit = vec3(0.96, 0.98, 1.0) // Bright alpine sunlit white
   const snowAlbedo = mix(snowShadow, snowLit, grain.mul(0.25).add(0.75)) as V3
 
   // Snow coverage based on slope & elevation — thresholds pushed up from the original
@@ -152,7 +152,7 @@ export function createSnowTerrainMaterial(
 
   // Compacted Snow in footprints
   const compaction = clamp(footprintDepth.mul(6), 0, 1) as F
-  const packedSnow = vec3(0.70, 0.78, 0.88)
+  const packedSnow = vec3(0.7, 0.78, 0.88)
   albedo = mix(albedo, packedSnow, compaction.mul(snowCoverage)) as V3
 
   // Footprint ambient occlusion shadow shading

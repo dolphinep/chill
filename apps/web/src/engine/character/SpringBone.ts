@@ -2,9 +2,9 @@ import * as THREE from 'three/webgpu'
 
 export interface SpringBoneOptions {
   stiffness?: number // Spring return force (e.g. 120 - 240)
-  damping?: number   // Resistance / settling (e.g. 10 - 20)
-  maxAngle?: number  // Maximum angular deflection in radians (e.g. 0.6)
-  gravity?: number   // Downward sag force
+  damping?: number // Resistance / settling (e.g. 10 - 20)
+  maxAngle?: number // Maximum angular deflection in radians (e.g. 0.6)
+  gravity?: number // Downward sag force
 }
 
 /**

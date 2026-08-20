@@ -80,7 +80,8 @@ export class ThoughtField {
   post(text: string, x: number, z: number, authorId: string = LOCAL_AUTHOR_ID, id?: string): void {
     // Retransmit guard — only meaningful when `id` is caller-supplied (a remote
     // thought); locally-generated ids are always fresh.
-    if (id && (this.#pending.some((t) => t.id === id) || this.#live.some((t) => t.id === id))) return
+    if (id && (this.#pending.some((t) => t.id === id) || this.#live.some((t) => t.id === id)))
+      return
     const thought: Thought & { x: number; z: number } = {
       id: id ?? `local-${this.#nextId++}`,
       authorId,
@@ -153,7 +154,8 @@ export class ThoughtField {
       if (screenY < -100 || screenY > viewportHeight + 100) continue
 
       const distanceM = camPos.distanceTo(new THREE.Vector3(t.x, y, t.z))
-      const tier: LanternTier = distanceM < NEAR_TIER_M ? 'full' : distanceM < FAR_TIER_M ? 'truncated' : 'mote'
+      const tier: LanternTier =
+        distanceM < NEAR_TIER_M ? 'full' : distanceM < FAR_TIER_M ? 'truncated' : 'mote'
 
       const occluded = isOccluded(terrainSpec, camPos.x, camPos.y, camPos.z, t.x, y, t.z)
       const opacity = fadeOpacity(age) * (occluded ? OCCLUDED_OPACITY : 1)
