@@ -31,6 +31,10 @@ function lanDevOrigins(): string[] {
 }
 
 const nextConfig: NextConfig = {
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
   reactStrictMode: true,
   allowedDevOrigins: lanDevOrigins(),
 
