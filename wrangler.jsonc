@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "chill",
+  "compatibility_date": "2026-08-21",
+  "assets": {
+    "directory": "apps/web/out",
+    "not_found_handling": "404-page"
+  }
+}
