@@ -27,6 +27,9 @@ export type InputFrame = {
 export class InputMap {
   #keys = new Set<string>()
   #justPressed = new Set<string>()
+  #virtualMoveX = 0
+  #virtualMoveZ = 0
+  #virtualRun = false
   #lookDX = 0
   #lookDY = 0
   #dragging = false
@@ -34,6 +37,18 @@ export class InputMap {
 
   constructor(target: HTMLElement) {
     this.#target = target
+  }
+
+  /** Update virtual mobile / tablet touch joystick input */
+  setVirtualMovement(moveX: number, moveZ: number, run = false): void {
+    this.#virtualMoveX = Math.max(-1, Math.min(1, moveX))
+    this.#virtualMoveZ = Math.max(-1, Math.min(1, moveZ))
+    this.#virtualRun = run
+  }
+
+  /** Trigger one-shot jump from mobile UI button */
+  triggerVirtualJump(): void {
+    this.#justPressed.add('Space')
   }
 
   attach(): void {
@@ -62,13 +77,19 @@ export class InputMap {
   /** Consume the frame's input. Look deltas are cleared on read. */
   sample(): InputFrame {
     const k = this.#keys
+    const keyMoveX = (k.has('KeyD') ? 1 : 0) - (k.has('KeyA') ? 1 : 0)
+    const keyMoveZ = (k.has('KeyS') ? 1 : 0) - (k.has('KeyW') ? 1 : 0)
+
+    const rawMoveX = keyMoveX + this.#virtualMoveX
+    const rawMoveZ = keyMoveZ + this.#virtualMoveZ
+
     const frame: InputFrame = {
-      moveX: (k.has('KeyD') ? 1 : 0) - (k.has('KeyA') ? 1 : 0),
-      moveZ: (k.has('KeyS') ? 1 : 0) - (k.has('KeyW') ? 1 : 0),
+      moveX: Math.max(-1, Math.min(1, rawMoveX)),
+      moveZ: Math.max(-1, Math.min(1, rawMoveZ)),
       moveY: (k.has('KeyE') ? 1 : 0) - (k.has('KeyQ') ? 1 : 0),
       lookDX: this.#lookDX,
       lookDY: this.#lookDY,
-      run: k.has('ShiftLeft') || k.has('ShiftRight'),
+      run: k.has('ShiftLeft') || k.has('ShiftRight') || this.#virtualRun,
       jump: this.consumeJustPressed('Space'),
     }
     this.#lookDX = 0
@@ -122,6 +143,9 @@ export class InputMap {
   #reset = () => {
     this.#keys.clear()
     this.#justPressed.clear()
+    this.#virtualMoveX = 0
+    this.#virtualMoveZ = 0
+    this.#virtualRun = false
     this.#lookDX = 0
     this.#lookDY = 0
     this.#dragging = false

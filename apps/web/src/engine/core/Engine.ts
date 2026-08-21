@@ -165,6 +165,8 @@ export type EngineCommand =
   | { type: 'setConstellationOpacity'; value: number }
   | { type: 'setConstellationsEnabled'; enabled: boolean }
   | { type: 'resetCoins' }
+  | { type: 'virtualMove'; moveX: number; moveZ: number; run?: boolean }
+  | { type: 'virtualJump' }
 
 export type MinimapSnapshot = {
   local: { x: number; z: number; yaw: number; cameraYaw?: number }
@@ -1536,6 +1538,14 @@ export class Engine {
             this.#roomClient.sendSkeetAction({ action: 'reset' })
           }
         }
+        break
+      }
+      case 'virtualMove': {
+        this.#input.setVirtualMovement(cmd.moveX, cmd.moveZ, cmd.run ?? false)
+        break
+      }
+      case 'virtualJump': {
+        this.#input.triggerVirtualJump()
         break
       }
       case 'diagnose': {

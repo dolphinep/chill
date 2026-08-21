@@ -15,6 +15,7 @@ import { LanChat } from '@/components/hud/LanChat'
 import { TargetCounter } from '@/components/hud/TargetCounter'
 import { CoinHud } from '@/components/hud/CoinHud'
 import { PropInteractionPrompt } from '@/components/hud/PropInteractionPrompt'
+import { VirtualMovePad } from '@/components/hud/VirtualMovePad'
 import { ConstellationHighlightLayer } from '@/components/world/ConstellationHighlightLayer'
 import { useSceneryId } from '@/lib/scenery/sceneryStore'
 
@@ -61,6 +62,7 @@ export function WorldClient() {
             onSubmit={(text) => api.command({ type: 'postThought', text })}
           />
           <PropInteractionPrompt nearbyProp={api.nearbyProp} command={api.command} />
+          <VirtualMovePad command={api.command} />
           <HUDDock
             ready={!!api.ready}
             command={api.command}

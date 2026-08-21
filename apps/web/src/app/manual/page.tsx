@@ -1032,7 +1032,7 @@ export default function ManualPage() {
               href="/"
               className={`${fredoka.className} inline-flex items-center gap-2 rounded-2xl border border-[#f2c879]/40 bg-linear-to-r from-[#f2c879] to-[#d97706] px-8 py-3.5 text-base font-bold text-slate-950 shadow-xl transition hover:brightness-110 active:scale-95`}
             >
-              Enter Chill 3D World 🚀
+              Enter Chill 3D World
             </Link>
           </div>
           <p className="text-xs text-white/40">
