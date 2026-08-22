@@ -17,6 +17,7 @@ import { CoinHud } from '@/components/hud/CoinHud'
 import { PropInteractionPrompt } from '@/components/hud/PropInteractionPrompt'
 import { VirtualMovePad } from '@/components/hud/VirtualMovePad'
 import { ConstellationHighlightLayer } from '@/components/world/ConstellationHighlightLayer'
+import { SceneryWelcomeModal } from '@/components/boot/SceneryWelcomeModal'
 import { useSceneryId } from '@/lib/scenery/sceneryStore'
 
 /**
@@ -29,7 +30,7 @@ const EngineCanvas = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex min-h-dvh items-center justify-center">
-        <p className="text-glass-faint text-sm">Frostholm Ridge — a clear alpine morning</p>
+        <p className="text-glass-faint text-sm">Observatory Peak — deep night, clear skies</p>
       </div>
     ),
   },
@@ -70,6 +71,7 @@ export function WorldClient() {
             getConstellationNames={api.getConstellationNames}
             isConstellationVisible={api.isConstellationVisible}
           />
+          <SceneryWelcomeModal ready={!!api.ready} />
         </>
       )}
     </EngineCanvas>

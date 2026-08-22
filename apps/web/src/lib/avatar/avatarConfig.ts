@@ -61,18 +61,18 @@ export interface ChibiAvatarConfig {
 }
 
 export const DEFAULT_AVATAR_CONFIG: ChibiAvatarConfig = {
-  modelType: 'chibi-classic',
-  hairStyle: 'bun',
-  hairColor: '#475569',
-  skinTone: '#ffdfc4',
-  eyeStyle: 'happy',
-  eyeColor: '#1e293b',
-  outfitStyle: 'winter-coat',
-  outfitColor: '#0284c7',
-  pantsColor: '#334155',
-  shoesColor: '#1e293b',
-  accessory: 'scarf',
-  accessoryColor: '#ef4444',
+  modelType: 'chibi-chick',
+  hairStyle: 'spiky',
+  hairColor: '#facc15',
+  skinTone: '#fef08a',
+  eyeStyle: 'anime',
+  eyeColor: '#0284c7',
+  outfitStyle: 'cozy-hoodie',
+  outfitColor: '#facc15',
+  pantsColor: '#f97316',
+  shoesColor: '#ea580c',
+  accessory: 'none',
+  accessoryColor: '#f43f5e',
 }
 
 export const AVATAR_PRESETS: Record<

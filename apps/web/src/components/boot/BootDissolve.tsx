@@ -19,7 +19,7 @@ const ESCALATE_AFTER_MS = 8000
 
 export function BootDissolve({
   ready,
-  place = 'Kamakura Bay — 6:40 in the morning',
+  place = 'Observatory Peak — deep night, clear skies',
 }: {
   ready: boolean
   place?: string
@@ -49,7 +49,7 @@ export function BootDissolve({
       style={{
         opacity: ready ? 0 : 1,
         transitionDuration: `${DISSOLVE_MS}ms`,
-        background: 'linear-gradient(to bottom, #1f4a8f, #d8c9ad)',
+        background: 'linear-gradient(to bottom, #040611, #141c33)',
       }}
       aria-hidden={ready}
     >

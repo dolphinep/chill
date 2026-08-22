@@ -252,7 +252,7 @@ export function HUDDock({
 
       {/* Main Floating Bottom Dock */}
       <div
-        className={`glass fixed bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-1.5 overflow-visible rounded-2xl border border-white/15 p-1.5 shadow-2xl backdrop-blur-md transition-all duration-300 ease-out contain-none select-none sm:bottom-6 ${
+        className={`glass fixed bottom-4 left-1/2 z-40 flex max-w-[94vw] -translate-x-1/2 flex-wrap items-center justify-center gap-1.5 overflow-visible rounded-2xl border border-white/15 p-1.5 shadow-2xl backdrop-blur-md transition-all duration-300 ease-out contain-none select-none sm:max-w-none sm:flex-nowrap sm:bottom-6 ${
           isCollapsed
             ? 'pointer-events-none translate-y-[calc(100%+36px)] scale-95 opacity-0'
             : 'pointer-events-auto translate-y-0 scale-100 opacity-100'

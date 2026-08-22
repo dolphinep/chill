@@ -210,7 +210,7 @@ for (const scenery of Object.values(SCENERY_REGISTRY)) {
   scenerySchema.parse(scenery)
 }
 
-export const DEFAULT_SCENERY_ID: SceneryId = 'frostholm-ridge'
+export const DEFAULT_SCENERY_ID: SceneryId = 'observatory'
 
 export function resolveScenery(id: string | null | undefined): Scenery {
   if (id && id in SCENERY_REGISTRY) return SCENERY_REGISTRY[id as SceneryId]

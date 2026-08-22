@@ -6,6 +6,7 @@ Welcome to the technical documentation for **Chill** — an ambient 3D haven, ce
 
 ## Documentation Sections
 
+- **[Roadmap](./roadmap.md)**: Current development priorities — solo experience polish now, gated multiplayer rollout next, exploratory ideas later.
 - **[System Architecture](./architecture.md)**: Monorepo architecture, data flow diagrams, 3D engine subsystems, and unified containerized deployment on Google Cloud Run.
 - **[Technology Stack & Rationale](./technologies.md)**: In-depth technical rationale behind chosen technologies including Three.js TSL, Next.js App Router, Web Audio synthesizers, Astronomy Engine, and Chrome Built-in Prompt API.
 - **[Features Specification](./features.md)**: Comprehensive breakdown of all sceneries, celestial mechanics, companion pet behavior, customizable props, volleyball physics, and target challenges.

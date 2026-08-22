@@ -1,6 +1,14 @@
 # Chill - 3D Ambient World & Interactive Haven
 
-Chill is a web-based, real-time 3D ambient haven built with Three.js (WebGPU/WebGL), Next.js, Web Audio API, and local on-device AI. It provides an immersive spatial experience featuring procedurally shaded landscapes, real astronomical celestial mapping, customizable humanoid avatars, companion pets, physics-based mini-games, and peer-to-peer multiplayer connectivity.
+**Live**: [chill.plaloma.com](https://chill.plaloma.com)
+
+Chill is a web-based, real-time 3D ambient haven built with Three.js (WebGPU/WebGL), Next.js, Web Audio API, and local on-device AI. It provides an immersive spatial experience featuring procedurally shaded landscapes, real astronomical celestial mapping, customizable humanoid avatars, companion pets, and physics-based mini-games.
+
+> **Status**: Chill is under active development. Current priority is delivering the best possible **solo experience** — world exploration, avatar and pet customization, and stargazing. Multiplayer is implemented at the protocol level but is not yet enabled for players; see the [Roadmap](docs/roadmap.md) for what's shipping next.
+
+<p align="center">
+  <img src="docs/images/stargazing-observatory.png" alt="Constellation identification with mythological overlays in the Stargazing Observatory" width="800" />
+</p>
 
 ---
 
@@ -10,8 +18,8 @@ Chill is a web-based, real-time 3D ambient haven built with Three.js (WebGPU/Web
 - **Accurate Astronomical Skybox**: Powered by `astronomy-engine` for real-time solar/lunar position calculations, dynamic moon phases, celestial coordinates, and 88 IAU constellation projections with mythological artwork warping.
 - **Humanoid Avatars & Physics**: Procedural chibi avatar customizer with customizable hair, outfits, expressions, and accessories, alongside VRoid GLB humanoid support featuring spring-bone physics and skeletal inverse kinematics for sitting and skiing.
 - **Companion Pet System**: Interactive pets (cats, dogs, foxes, birds, and dragons) with autonomous pathfinding, reactive behavior trees, and local AI dialogue via Chrome Prompt API.
-- **Multiplayer Relay Protocol**: Low-latency WebSocket room and relay protocol (`@chill/protocol`) supporting avatar synchronization, proximity-based spatial audio, interactive chat, and co-op mini-games.
 - **Procedural Soundscape**: Zero-asset procedural audio synthesizer built on the Web Audio API, generating continuous ambient wind, ocean waves, snow crunching, bell chimes, and adaptive day/night background melodies.
+- **Multiplayer Relay Protocol** *(in development)*: Low-latency WebSocket room and relay protocol (`@chill/protocol`) for avatar synchronization, proximity-based spatial audio, chat, and co-op mini-games. Built and functional, but gated off while solo-experience polish takes priority — see [Roadmap](docs/roadmap.md).
 
 ---
 
@@ -32,7 +40,7 @@ Chill is a web-based, real-time 3D ambient haven built with Three.js (WebGPU/Web
 | **Graphics & Rendering**   | Three.js (r174+), Three Shading Language (TSL), WebGPU, WebGL2 Fallback |
 | **Frontend Framework**     | Next.js 16 (Turbopack, App Router), React 19, Tailwind CSS              |
 | **Astronomy & Physics**    | Astronomy Engine, D3 Celestial, Custom Spatial Collision Grids          |
-| **Networking & State**     | WebSocket Relay Protocol (`@chill/protocol`), Zustand, Peer Discovery   |
+| **Networking & State**     | WebSocket Relay Protocol (`@chill/protocol`), Zustand, Peer Discovery *(in development)* |
 | **Audio Engine**           | Web Audio API (Procedural Synthesizers & Spatial Audio Panners)         |
 | **On-Device AI**           | Chrome Built-in Prompt API (Gemini Nano) with rule-based fallback       |
 | **Infrastructure & CI/CD** | Node.js 22, pnpm Workspaces, Docker, Google Cloud Run                   |
@@ -94,9 +102,9 @@ Start the development server with Turbopack:
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in a WebGPU-enabled browser (such as Google Chrome or Microsoft Edge).
+Open [http://localhost:3100](http://localhost:3100) in a WebGPU-enabled browser (such as Google Chrome or Microsoft Edge).
 
-To run a dedicated local multiplayer relay server alongside the frontend:
+To run the standalone multiplayer relay server locally (experimental, not yet enabled in production — see [Roadmap](docs/roadmap.md)):
 
 ```bash
 pnpm lan:host
@@ -119,7 +127,15 @@ pnpm lan:host
 
 ## Deployment
 
-The application is containerized and designed for single-container deployment on Google Cloud Run with unified Next.js web serving and WebSocket relay handling:
+The production build is a static export served via **Cloudflare Workers**, currently live at [chill.plaloma.com](https://chill.plaloma.com):
+
+```bash
+# Build the static export and deploy to Cloudflare Workers
+pnpm build
+npx wrangler deploy
+```
+
+The repository also includes a containerized unified server (Next.js + WebSocket relay) for deployment on Google Cloud Run, used for the multiplayer relay backend as it matures:
 
 ```bash
 # Deploy to Google Cloud Run
@@ -132,6 +148,7 @@ The application is containerized and designed for single-container deployment on
 
 For in-depth architecture diagrams, engine internals, and feature specifications, refer to the `docs/` directory:
 
+- [Roadmap](docs/roadmap.md)
 - [System Architecture](docs/architecture.md)
 - [Technology Rationale](docs/technologies.md)
 - [Features Specification](docs/features.md)
